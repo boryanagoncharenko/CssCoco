@@ -1,12 +1,12 @@
 import os
 import json
-from src.parser import ParseWrapper
+import src.parser as parser
 import src.ast as ast
 
 json = ['root', ['ch1', ['ch2', ['ch3', ['s', ' '], ['p', 'p']]]]]
 # json = ['root', ['ch0', ['ch1', ['stop', ''], ['s', '\n'], ['ch2', ['s', ' '], ['p', 'p'], ['s', '\t']]]]]
 print(json)
-transformer = ast.AstTransformer(json)
+transformer = parser.SExprTransformer(json)
 transformer._traverse_for_whitespace(json)
 print(json)
 
