@@ -64,14 +64,10 @@ class SExprTransformer(object):
     @staticmethod
     def _add_value_transformation(s_expr):
         if SExprTransformer._is_expr_without_value(s_expr):
-            value = SExprTransformer._get_value(s_expr[0])
-            s_expr.append(value)
-
-    @staticmethod
-    def _get_value(type_):
-        if type_ not in SExprTransformer._type_to_value:
-            raise NotImplementedError('Cannot infer value for token type')
-        return SExprTransformer._type_to_value[type_]
+            type_ = s_expr[0]
+            if type_ in SExprTransformer._type_to_value:
+                value = SExprTransformer._type_to_value[type_]
+                s_expr.append(value)
 
     @staticmethod
     def _is_expr_without_value(s_expr):
