@@ -161,6 +161,10 @@ class ValueMarker(CssMarker):
     pass
 
 
+class EofMarker(CssMarker):
+    pass
+
+
 class SymbolMarker(CssMarker):
 
     def __init__(self, value):
@@ -335,6 +339,8 @@ class AstBuilder(object):
             return SymbolMarker(name[1:-1])
         if name == 'value':
             return ValueMarker()
+        if name == 'eof_':
+            return EofMarker()
         raise NotImplementedError('Other css marker are not implemented yet')
 
     def __is_string(self, str):

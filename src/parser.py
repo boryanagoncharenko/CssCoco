@@ -27,6 +27,7 @@ class SExprTransformer(object):
     def transform(s_expr):
         transformer = SExprTransformer()
         transformer._add_missing_tokens(s_expr)
+        transformer._add_eof(s_expr)
         transformer._push_down(s_expr)
         transformer._pull_up_whitespace(s_expr)
         transformer._split_up_whitespace(s_expr)
@@ -47,6 +48,9 @@ class SExprTransformer(object):
         while i < len(s_expr):
             self._add_missing_tokens(s_expr[i])
             i += 1
+
+    def _add_eof(self, s_expr):
+        s_expr.append(['eof', ''])
 
     def _has_no_children(self, s_expr):
         return type(s_expr[1]) is not list

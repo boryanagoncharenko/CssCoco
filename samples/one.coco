@@ -7,4 +7,5 @@ whitespace
 
 	require declaration newline declaration
 	require declaration newline "}"
+	require newline eof_
 }

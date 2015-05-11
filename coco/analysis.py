@@ -86,6 +86,10 @@ class Evaluator():
     def visit(self, node):
         return matching.NodeDescriptor(type_='value')
 
+    @vis.visitor(ast.EofMarker)
+    def visit(self, node):
+        return matching.NodeDescriptor(type_='eof')
+
     @vis.visitor(ast.SymbolMarker)
     def visit(self, node):
         return matching.NodeDescriptor(value=node.value)

@@ -23,7 +23,7 @@ __g = Grammar("""
                 | 'block'
                 | 'property'
                 | 'value'
-                | 'eof'
+                | 'eof_'
                 | STRING
                 ;
 
