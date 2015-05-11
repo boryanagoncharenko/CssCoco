@@ -1,4 +1,9 @@
-/* muhahaha */
-a { color: darkcyan; }
-/* trallala */
-p { background-color: red; }
+
+a {
+    color: darkcyan;
+    background-color: red;
+}
+
+p {
+    background-color: red;
+}

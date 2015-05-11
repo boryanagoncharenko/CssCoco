@@ -1,5 +1,6 @@
 __author__ = 'boryana'
 
+
 class NodeDescriptor(object):
 
     def __init__(self, type_=None, value=None):
@@ -21,18 +22,20 @@ class NodeDescriptor(object):
             return self.type_ == node_type
         return True
 
-    def is_any(self):
-        return self.search_by_type is False and self.search_by_value is False
-
-    @classmethod
-    def any(cls):
-        return NodeDescriptor()
-
     def __str__(self):
-        return ' Descriptor: type_=' + self.type_ + ' value=' + self.value
+        type_str = (' type=' + self.type_) if self.search_by_type else ''
+        value_str = (' value=' + self.value) if self.search_by_value else ''
+        return ''.join([' Descriptor:', type_str, value_str])
+
+NodeDescriptor.ANY = NodeDescriptor()
+
+WHITESPACE_PATTERN = [NodeDescriptor(type_='space'),
+                      NodeDescriptor(type_='indent'),
+                      NodeDescriptor(type_='tab'),
+                      NodeDescriptor(type_='newline')]
 
 
-class Pattern(object):
+class NodePattern(object):
 
     def __init__(self, descriptors, ignores):
         self.descriptors = descriptors
@@ -50,77 +53,90 @@ class Pattern(object):
 
 class Requirement(object):
 
-    def __init__(self, before=None, inner=None, after=None, ignores=None):
-        self.before = [] if before is None else before
-        self.inner = [] if inner is None else inner
-        self.after = [] if after is None else after
-        self.ignores = [] if ignores is None else ignores
-
-    # are the pattern methods necessary at all?
-    def _get_after_pattern(self):
-        return Pattern(self.after, self.ignores)
-
-    def _get_before_pattern(self):
-        return Pattern(self.before, self.ignores)
+    def __init__(self, before_pattern=None, inner_patterns=None, after_pattern=None, ignore_list=None):
+        self.before_pattern = [] if before_pattern is None else before_pattern
+        self.inner_patterns = [] if inner_patterns is None else inner_patterns
+        self.after_pattern = [] if after_pattern is None else after_pattern
+        self.ignore_list = [] if ignore_list is None else ignore_list
 
     def is_fulfilled(self, nodes):
         assert len(nodes) > 0
         parent = nodes[0].parent
         first_child = nodes[0]
         last_child = nodes[-1]
-        self._is_before_fulfilled(parent, first_child.index)
-        self._is_after_fulfilled(parent, last_child.index)
-        return self._is_inner_fulfilled(parent, nodes)
-
-    def _is_inner_fulfilled(self, parent, nodes):
-        if self._is_inner_empty():
-            return True
-        for index, desc in enumerate(self.inner):
-            pattern = self._get_pattern(desc)
-            first_sibling = parent.value[nodes[index].index + 1]
-            success, s = Walker().try_match_pattern(first_sibling, pattern)
-            if not success:
-                return False
-        return True
-
-    def _get_pattern(self, desc):
-        if type(desc) is list:
-            return Pattern(desc, self.ignores)
-        return Pattern([desc], self.ignores)
-
-    def _is_before_empty(self):
-        return len(self.before) == 0
-
-    def _is_inner_empty(self):
-        return len(self.inner) == 0
-
-    def _is_after_empty(self):
-        return len(self.after) == 0
+        return self._is_before_fulfilled(parent, first_child.index) and \
+            self._is_after_fulfilled(parent, last_child.index) and \
+            self._is_inner_fulfilled(parent, nodes)
 
     def _is_before_fulfilled(self, parent, first_child_index):
         if self._is_before_empty():
             return True
-        start_index = first_child_index - len(self.before)
-        if start_index < 0:
+        start_index = first_child_index - len(self.before_pattern)
+        if self._is_index_out_of_bounds(start_index, parent.value):
             return False
-        first_before_child = parent.value[start_index]
-        walker = Walker()
-        success, s = walker.try_match_pattern(first_before_child, self._get_before_pattern())
+
+        pattern_start = parent.value[start_index]
+        before_pattern = NodePattern(self.before_pattern, self.ignore_list)
+        success, s = Walker().try_match_pattern(pattern_start, before_pattern)
         return success
 
     def _is_after_fulfilled(self, parent, last_child_index):
         if self._is_after_empty():
             return True
-        if last_child_index >= len(parent.value) - 1:
+        if self._is_index_out_of_bounds(last_child_index, parent.value):
             return False
-        first_after_child = parent.value[last_child_index+1]
-        walker = Walker()
-        success, s = walker.try_match_pattern(first_after_child, self._get_after_pattern())
+
+        pattern_index = parent.value[last_child_index + 1]
+        after_pattern = NodePattern(self.after_pattern, self.ignore_list)
+        success, s = Walker().try_match_pattern(pattern_index, after_pattern)
         return success
+
+    def _is_inner_fulfilled(self, parent, nodes):
+        if self._is_inner_empty():
+            return True
+        for index, desc in enumerate(self.inner_patterns):
+            pattern = self._get_pattern(desc)
+            first_sibling = parent.value[nodes[index].index + 1]
+            success, _ = Walker().try_match_pattern(first_sibling, pattern)
+            if not success:
+                return False
+        return True
+
+    def _get_pattern(self, desc):
+        res = desc if type(desc) is list else [desc]
+        return NodePattern(res, self.ignore_list)
+
+    def _is_before_empty(self):
+        return len(self.before_pattern) == 0
+
+    def _is_inner_empty(self):
+        return len(self.inner_patterns) == 0
+
+    def _is_after_empty(self):
+        return len(self.after_pattern) == 0
+
+    def _is_index_out_of_bounds(self, index, list):
+        # The index should not point to the last element
+        return index < 0 or index >= len(list) - 1
+
+
+class Convention(object):
+
+    def __init__(self, pattern, requirement):
+        self.pattern = pattern
+        self.requirement = requirement
+
+
+class ConventionsMap(object):
+
+    def __init__(self, conventions):
+        self.conventions = conventions
+
+    def __iter__(self):
+        return self.conventions.__iter__()
 
 
 class Walker(object):
-
     def find_pattern(self, tree, pattern):
         """
         Traverses a tree and returns all occurrences of a given pattern
@@ -186,7 +202,7 @@ class Walker(object):
         if node.has_parent():
             children = node.parent.value
 
-            for index in range(node.index+1, len(children)):
+            for index in range(node.index + 1, len(children)):
                 sibling = children[index]
                 if not self._is_ignored(sibling, desc_ignores):
                     return True, sibling

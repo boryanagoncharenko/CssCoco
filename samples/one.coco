@@ -1,0 +1,10 @@
+whitespace
+{
+    require rule newline{2} rule
+    require selector space block
+    require "{" newline declaration
+    require ":" space value
+
+	require declaration newline declaration
+	require declaration newline "}"
+}

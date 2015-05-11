@@ -17,6 +17,6 @@ process.stdin.on('end', function () {
     var css = process.argv[2];
     var ast = gonzo.parse(css);
     var res = JSON.stringify(ast)
-    //var res = 'tralala';
+
     process.stdout.write(res);
 });

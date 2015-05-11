@@ -3,7 +3,7 @@ from subprocess import Popen, PIPE
 GONZO_PATH = 'src/gonzales_parser.js'
 
 
-class ParseWrapper(object):
+class Parser(object):
 
     @staticmethod
     def parse_css(css):
@@ -20,88 +20,132 @@ class ParseWrapper(object):
 
 
 class SExprTransformer(object):
-    # Shall I transform the ast or the json
-    # Maybe I need to keep a reference in the child to its parent and its index
-    # In this case, transforming the json and building the ast as a last step would be best
 
     _type_to_value = {'decldelim': ';', 'delim': ','}
 
     @staticmethod
     def transform(s_expr):
-        transformer = SExprTransformer(s_expr)
+        transformer = SExprTransformer()
         transformer._add_missing_tokens(s_expr)
+        transformer._push_down(s_expr)
         transformer._pull_up_whitespace(s_expr)
         transformer._split_up_whitespace(s_expr)
         return s_expr
-
-    def __init__(self, s_expr):
-        self._root = s_expr
 
     def _add_missing_tokens(self, s_expr):
         """
         The method adds missing values and omitted tokens to a given s_expr
         """
-        if SExprTransformer._is_terminal_expr(s_expr):
+        if self._is_terminal_expr(s_expr):
             return
 
-        SExprTransformer._add_value_transformation(s_expr)
-        SExprTransformer._block_transformation(s_expr)
-        SExprTransformer._declaration_transformation(s_expr)
+        self._add_value_transformation(s_expr)
+        self._block_transformation(s_expr)
+        self._declaration_transformation(s_expr)
 
         i = 1
         while i < len(s_expr):
             self._add_missing_tokens(s_expr[i])
             i += 1
 
-    @staticmethod
-    def _has_no_children(s_expr):
+    def _has_no_children(self, s_expr):
         return type(s_expr[1]) is not list
 
-    @staticmethod
-    def _is_terminal_expr(s_expr):
+    def _is_terminal_expr(self, s_expr):
         return type(s_expr) is not list
 
-    @staticmethod
-    def _add_value_transformation(s_expr):
-        if SExprTransformer._is_expr_without_value(s_expr):
+    def _add_value_transformation(self, s_expr):
+        """
+        Gonzales produces nodes that have type, but no value, e.g. delim and decldelim
+        The method adds the omitted values, i.e. ['delim', ','] and ['decldelim', ';']
+        """
+        if self._is_expr_without_value(s_expr):
             type_ = s_expr[0]
-            if type_ in SExprTransformer._type_to_value:
-                value = SExprTransformer._type_to_value[type_]
+            if type_ in self._type_to_value:
+                value = self._type_to_value[type_]
                 s_expr.append(value)
 
-    @staticmethod
-    def _is_expr_without_value(s_expr):
+    def _is_expr_without_value(self, s_expr):
         return len(s_expr) == 1
 
-    @staticmethod
-    def _block_transformation(s_expr):
+    def _block_transformation(self, s_expr):
+        """
+        Gonzales omits the symbols '{' and '}' in a block
+        The method adds the two missing values to the block s-expr
+        """
         if s_expr[0] == 'block':
             s_expr.insert(1, ['symbol', '{'])
             s_expr.append(['symbol', '}'])
 
-    @staticmethod
-    def _declaration_transformation(s_expr):
+    def _declaration_transformation(self, s_expr):
+        """
+        Gonzalez omits the ':' symbol between the property and value of a declaration
+        The method adds the missing value to the declaration s-expr
+        """
         if s_expr[0] == 'declaration':
             s_expr.insert(2, ['symbol', ':'])
+
+    def _push_down(self, s_expr):
+        has_transformed = self._push_down_declaration_delimiter(s_expr)
+        if has_transformed:
+            self._push_down(s_expr)
+
+    def _push_down_declaration_delimiter(self, current):
+        if self._has_no_children(current):
+            return False
+        i = 1
+        while i < len(current):
+            child = current[i]
+            if self._try_push_down(child, current, i):
+                return True
+
+            transformed = self._push_down_declaration_delimiter(child)
+            if transformed:
+                return True
+            i += 1
+        return False
+
+    def _try_push_down(self, child, current, index):
+        if current[0] == 'block' and child[0] == 'decldelim':
+            previous_child = current[index-1]
+            if previous_child and previous_child[0] == 'declaration':
+                current.pop(index)
+                previous_child.append(child)
+                return True
+            else:
+                pass
+        return False
 
     # Whitespace nodes should not be the first of the last child of a node, except it if is the root node
     # Moreover spaces should bubble up until the condition above is met
     # The method relies on the assumption that gonzales does not produce two sibling spaces
-    def _pull_up_whitespace(self, current, parent=None, position_in_parent=-1):
+    def _pull_up_whitespace(self, s_expr):
         """
-        The method aborts and starts traversing from the root whenever a transformation is made
+        Whenever a transformation is made the method aborts and starts traversing from the root
+        """
+        has_transformed = self._try_pull_up_whitespace(s_expr, None, -1)
+        if has_transformed:
+            self._pull_up_whitespace(s_expr)
+
+    def _try_pull_up_whitespace(self, current, parent, position_in_parent):
+        """
+        Returns True right after it performs a whitespace pull up.
+        If no transformations are made, returns False
         """
         if self._has_no_children(current):
-            return
+            return False
         i = 1
         while i < len(current):
             child = current[i]
             if self._should_pull_up_child(child, current, parent, i):
                 self._pull_up_child(current, parent, i, position_in_parent)
-                return self._pull_up_whitespace(self._root)
+                return True
 
-            self._pull_up_whitespace(child, current, i)
+            transformed = self._try_pull_up_whitespace(child, current, i)
+            if transformed:
+                return True
             i += 1
+        return False
 
     def _should_pull_up_child(self, child, current, parent, i):
         if parent is not None and child[0] == 's':
@@ -130,47 +174,48 @@ class SExprTransformer(object):
             child = s_expr[index]
             if child[0] == 's':
                 del s_expr[index]
-                spaces = self._get_whitespace_tokens(child)
+                spaces = self._get_whitespace_expr(child)
                 for offset, s in enumerate(spaces):
                     s_expr.insert(index+offset, s)
-                # index += len(spaces)
             else:
                 self._split_up_whitespace(child)
             index += 1
 
-    def _get_whitespace_tokens(self, s_expr):
+    def _get_whitespace_expr(self, s_expr):
         result = []
-        values = SExprTransformer._split_whitespace_value(s_expr[1])
+        values = self._split_whitespace_value(s_expr[1])
         for index, value in enumerate(values):
             prev_value = None if index == 0 else values[index-1]
-            type_ = SExprTransformer._get_whitespace_type(value, prev_value)
+            type_ = self._get_whitespace_type(value, prev_value)
             result.append([type_, value])
         return result
 
-    @staticmethod
-    def _split_whitespace_value(str):
+    def _split_whitespace_value(self, str):
         result = []
+        for value in self._get_whitespace_values(str):
+            result.append(''.join(value))
+        return result
+
+    def _get_whitespace_values(self, str):
         buffer = []
         for s in str:
             if len(buffer) == 0 or s == buffer[-1]:
                 buffer.append(s)
             else:
-                result.append(''.join(buffer))
+                yield buffer
                 buffer = [s]
         if len(buffer) > 0:
-            result.append(''.join(buffer))
-        return result
+            yield buffer
 
-    @staticmethod
-    def _get_whitespace_type(value, prev_value):
-        if value[0] == '\n':
+    def _get_whitespace_type(self, value, prev_value):
+        char = value[0]
+        if char == '\n':
             return 'newline'
         if prev_value and prev_value[0] == '\n':
             return 'indent'
-        if value[0] == ' ':
+        if char == ' ':
             return 'space'
-        if value[0] == '\t':
+        if char == '\t':
             return 'tab'
-        else:
-            raise NotImplementedError('Whitespace token with unknown value')
+        raise NotImplementedError('Whitespace token with unknown value')
 
