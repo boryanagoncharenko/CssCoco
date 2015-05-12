@@ -5,7 +5,6 @@ import coco.ast as cocoast
 import coco.analysis as analysis
 import src.parser as parser
 import src.parse_tree as ast
-import src.tree_search as matching
 
 filename = os.path.join('samples', 'tiny.css')
 file = open(filename)
@@ -16,7 +15,7 @@ tr = parser.SExprTransformer.transform(l)
 a = ast.ParseTreeBuilder.build(tr)
 print(a.pretty_print())
 
-
+#
 # pattern_descriptors = [matching.NodeDescriptor(value='{'),
 #                        matching.NodeDescriptor(type_='declaration'),
 #                        # matching.NodeDescriptor(type_='decldelim'),
@@ -46,15 +45,10 @@ coco_file = open(coco_filename)
 cs = coco_file.read()
 
 res = grammar.parse(cs)
-
 tree = cocoast.AstBuilder.build(res)
-# print(tree.pretty_print())
 
 map = analysis.Evaluator.evaluate(tree)
 
 for convention in map:
-    walker = matching.Walker()
-    for nodes in walker.find_pattern(a, convention.pattern):
-        success = convention.requirement.is_fulfilled(nodes)
-        print(success)
+    print(convention.is_violated(a))
 

@@ -25,7 +25,7 @@ class Evaluator():
 
     @vis.visitor(ast.WhitespaceContext)
     def visit(self, node):
-        self._ignores_stack.append(matching.WHITESPACE_PATTERN)
+        self._ignores_stack.append(matching.WHITESPACE_DESC)
 
         conventions = []
         for stat in node.statements:
@@ -38,70 +38,76 @@ class Evaluator():
     @vis.visitor(ast.RequireRule)
     def visit(self, node):
         desc_list = self.visit(node.css_markers)
-        pattern = matching.NodePattern(desc_list, self._ignores_stack[-1])
-        requirement = self.visit(node.ws_markers)
-        return matching.Convention(pattern, requirement)
+        pattern = matching.NodeSequence(desc_list, self._ignores_stack[-1])
+        option_list = self._visit_options(node.ws_options)
+        requirement = matching.Requirement(option_list, matching.SimpleDescriptor(type_='indent'))
+        return matching.IfThenConvention(pattern, requirement)
 
-    @vis.visitor(ast.WhitespaceMarkerSequence)
-    def visit(self, node):
-        before = self.visit(node.before)
-        inner = self.visit(node.inner)
-        after = self.visit(node.after)
-        return matching.Requirement(before_pattern=before, inner_patterns=inner, after_pattern=after,
-                                    ignore_list=[matching.NodeDescriptor(type_='indent')])
-
-    @vis.visitor(ast.MultiMarkers)
-    def visit(self, node):
+    def _visit_options(self, ws_options):
         res = []
-        for m in node.markers_list:
-            desc_list = self.visit(m)
-            res.append(desc_list)
+        for option in ws_options:
+            op = self.visit(option)
+            res.append(op)
         return res
 
-    @vis.visitor(ast.Markers)
+    @vis.visitor(ast.MarkerSequenceOption)
+    def visit(self, node):
+        if not node.marker_sequences:
+            return matching.SequenceOption.NONE_OPTION
+        res = []
+        for sequence in node.marker_sequences:
+            s = self.visit(sequence)
+            res.append(s)
+        return matching.SequenceOption(res, matching.SimpleDescriptor(type_='indent'))
+
+    @vis.visitor(ast.MarkerSequence)
     def visit(self, node):
         res = []
         for m in node.markers:
             desc = self.visit(m)
             res.append(desc)
-        return res
+        return matching.NodeSequence(res, self._ignores_stack[-1])
 
     @vis.visitor(ast.RuleMarker)
     def visit(self, node):
-        return matching.NodeDescriptor(type_='ruleset')
+        return matching.SimpleDescriptor(type_='ruleset')
 
     @vis.visitor(ast.SelectorMarker)
     def visit(self, node):
-        return matching.NodeDescriptor(type_='selector') # or simpleselector
+        return matching.SimpleDescriptor(type_='selector') # or simpleselector
 
     @vis.visitor(ast.DeclarationMarker)
     def visit(self, node):
-        return matching.NodeDescriptor(type_='declaration')
+        return matching.SimpleDescriptor(type_='declaration')
 
     @vis.visitor(ast.BlockMarker)
     def visit(self, node):
-        return matching.NodeDescriptor(type_='block')
+        return matching.SimpleDescriptor(type_='block')
 
     @vis.visitor(ast.ValueMarker)
     def visit(self, node):
-        return matching.NodeDescriptor(type_='value')
+        return matching.SimpleDescriptor(type_='value')
 
     @vis.visitor(ast.EofMarker)
     def visit(self, node):
-        return matching.NodeDescriptor(type_='eof')
+        return matching.SimpleDescriptor(type_='eof')
+
+    @vis.visitor(ast.CommentMarker)
+    def visit(self, node):
+        return matching.SimpleDescriptor(type_='comment')
 
     @vis.visitor(ast.SymbolMarker)
     def visit(self, node):
-        return matching.NodeDescriptor(value=node.value)
+        return matching.SimpleDescriptor(value=node.value)
 
     @vis.visitor(ast.TabMarker)
     def visit(self, node):
-        return matching.NodeDescriptor(type_='tab', value=node.get_value())
+        return matching.SimpleDescriptor(type_='tab', value=node.get_value())
 
     @vis.visitor(ast.SpaceMarker)
     def visit(self, node):
-        return matching.NodeDescriptor(type_='space', value=node.get_value())
+        return matching.SimpleDescriptor(type_='space', value=node.get_value())
 
     @vis.visitor(ast.NewlineMarker)
     def visit(self, node):
-        return matching.NodeDescriptor(type_='newline', value=node.get_value())
+        return matching.SimpleDescriptor(type_='newline', value=node.get_value())

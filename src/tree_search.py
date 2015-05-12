@@ -1,8 +1,17 @@
-__author__ = 'boryana'
+import abc
 
 
 class NodeDescriptor(object):
 
+    @abc.abstractmethod
+    def is_match(self, node):
+        pass
+
+
+class SimpleDescriptor(NodeDescriptor):
+    """
+    Contains information about the type and/or value of a node
+    """
     def __init__(self, type_=None, value=None):
         self.type_ = type_
         self.value = value
@@ -10,6 +19,9 @@ class NodeDescriptor(object):
         self.search_by_value = self.value is not None
 
     def is_match(self, node):
+        """
+        Returns a boolean value indicating whether the node matches the descriptor
+        """
         return self._match_type(node.type_) and self._match_value(node.value)
 
     def _match_value(self, node_value):
@@ -22,27 +34,59 @@ class NodeDescriptor(object):
             return self.type_ == node_type
         return True
 
-    def __str__(self):
+    def get_type_and_value_str(self):
         type_str = (' type=' + self.type_) if self.search_by_type else ''
         value_str = (' value=' + self.value) if self.search_by_value else ''
-        return ''.join([' Descriptor:', type_str, value_str])
+        return type_str, value_str
+
+    def __str__(self):
+        type_str, value_str = self.get_type_and_value_str()
+        return ''.join([' Simple Descriptor:', type_str, value_str])
+
+
+class CompoundDescriptor(NodeDescriptor):
+    """
+    Contains a list of SimpleDescriptors and tries to match with any of them
+    """
+    def __init__(self, descriptors):
+        self.descriptors = descriptors
+
+    def is_match(self, node):
+        """
+        Returns a boolean value indicating whether the node matches any of the descriptors
+        """
+        for d in self.descriptors:
+            if d.is_match(node):
+                return True
+        return False
+
+    def __str__(self):
+        s = ''
+        for d in self.descriptors:
+            type_str, value_str = d.get_type_and_value_str()
+            s = ''.join([s, ' ', type_str, ' ', value_str, ' or'])
+        return ''.join([' Compound Descriptor:', s[:-2]])
+
 
 NodeDescriptor.ANY = NodeDescriptor()
 
-WHITESPACE_PATTERN = [NodeDescriptor(type_='space'),
-                      NodeDescriptor(type_='indent'),
-                      NodeDescriptor(type_='tab'),
-                      NodeDescriptor(type_='newline')]
+WHITESPACE_DESC = CompoundDescriptor([SimpleDescriptor(type_='space'),
+                                      SimpleDescriptor(type_='indent'),
+                                      SimpleDescriptor(type_='tab'),
+                                      SimpleDescriptor(type_='newline')])
 
 
-class NodePattern(object):
-
-    def __init__(self, descriptors, ignores):
+class NodeSequence(object):
+    """
+    The class contains a list of descriptors that describe sibling nodes that need to matched and
+    a descriptor for the nodes that need to be ignored
+    """
+    def __init__(self, descriptors, ignore_desc):
         self.descriptors = descriptors
-        self.ignores = ignores
+        self.ignore_desc = ignore_desc
 
-    def __getitem__(self, i):
-        return self.descriptors[i]
+    def __getitem__(self, item):
+        return self.descriptors[item]
 
     def is_empty(self):
         return len(self.descriptors) == 0
@@ -50,81 +94,170 @@ class NodePattern(object):
     def __len__(self):
         return len(self.descriptors)
 
+    def __iter__(self):
+        return iter(self.descriptors)
+
+NodeSequence.NONE_SEQUENCE = NodeSequence([], None)
+
+
+class SequenceOption(object):
+
+    def __init__(self, sequences, ignore_desc):
+        self.sequences = sequences
+        self.ignore_desc = ignore_desc
+
+    def __iter__(self):
+        return iter(self.sequences)
+
+SequenceOption.NONE_OPTION = SequenceOption([], None)
+
+
+class SequenceFinder(object):
+    """
+    The class is responsible for finding NodeSequences and SequenceOptions in a tree
+    """
+    @staticmethod
+    def find_sequence_option(tree, option):
+        for s in option:
+            yield from SequenceFinder.find_sequence(tree, s)
+
+    @staticmethod
+    def find_sequence(tree, sequence):
+        yield from Walker().find_pattern(tree, sequence)
+
+    @staticmethod
+    def find_node(tree, node_desc):
+        """
+        Traverses a tree and yields all nodes that match a given descriptor
+        """
+        if node_desc.is_match(tree):
+            yield tree
+        if tree.has_children():
+            for child in tree.value:
+                yield from SequenceFinder.find_node(child, node_desc)
+
+    @staticmethod
+    def is_option_present_after(node, option):
+        if option is SequenceOption.NONE_OPTION:
+            return True
+
+        for sequence in option:
+            if SequenceFinder.is_sequence_present_after(node, sequence, option.ignore_desc):
+                return True
+        return False
+
+    @staticmethod
+    def is_sequence_present_after(node, sequence, ignore_desc=None):
+        if sequence is not NodeSequence.NONE_SEQUENCE:
+            ignore_desc = sequence.ignore_desc if ignore_desc is None else ignore_desc
+            current_node = node
+            for desc in sequence:
+                is_valid, next_node = SequenceFinder._get_next_non_ignored_child(current_node, ignore_desc)
+                if not is_valid or not desc.is_match(next_node):
+                    return False
+                current_node = next_node
+        return True
+
+    @staticmethod
+    def is_option_present_before(node, option):
+        if option is SequenceOption.NONE_OPTION:
+            return True
+
+        for sequence in option:
+            if SequenceFinder.is_sequence_present_before(node, sequence, ignore_desc=option.ignore_desc):
+                return True
+        return False
+
+    @staticmethod
+    def is_sequence_present_before(node, sequence, ignore_desc=None):
+        if sequence is not NodeSequence.NONE_SEQUENCE:
+            ignore_desc = sequence.ignore_desc if ignore_desc is None else ignore_desc
+            nodes_before = SequenceFinder._get_n_non_ignored_before(len(sequence), node, ignore_desc)
+            for index, node_before in enumerate(nodes_before):
+                if not sequence[index].is_match(node_before):
+                    return False
+        return True
+
+    @staticmethod
+    def _get_next_non_ignored_child(node, ignore_desc):
+        parent = node.parent
+        next_child_index = node.index + 1
+        number_of_children = len(parent.value)
+
+        for i in range(next_child_index, number_of_children):
+            child = parent.value[i]
+            if not ignore_desc.is_match(child):
+                return True, child
+
+        return False, None
+
+    @staticmethod
+    def _get_n_non_ignored_before(n, node, ignore_desc):
+        parent = node.parent
+        result = []
+        for i in range(0, node.index):
+            child = parent.value[i]
+            if not ignore_desc.is_match(child):
+                result.append(child)
+        return result[-n:]
+
 
 class Requirement(object):
-
-    def __init__(self, before_pattern=None, inner_patterns=None, after_pattern=None, ignore_list=None):
-        self.before_pattern = [] if before_pattern is None else before_pattern
-        self.inner_patterns = [] if inner_patterns is None else inner_patterns
-        self.after_pattern = [] if after_pattern is None else after_pattern
-        self.ignore_list = [] if ignore_list is None else ignore_list
+    """
+    Describes how the whitespaces around the css nodes should be
+    Requires n+1 whitespace sequences to be provided for n css nodes: before, inner and after nodes
+    """
+    def __init__(self, sequence_options, ignore_desc=None):
+        self.sequence_options = sequence_options
+        self.ignore_desc = ignore_desc
 
     def is_fulfilled(self, nodes):
         assert len(nodes) > 0
-        parent = nodes[0].parent
         first_child = nodes[0]
-        last_child = nodes[-1]
-        return self._is_before_fulfilled(parent, first_child.index) and \
-            self._is_after_fulfilled(parent, last_child.index) and \
-            self._is_inner_fulfilled(parent, nodes)
+        return self._is_before_fulfilled(first_child) and \
+            self._are_inner_and_after_fulfilled(nodes)
 
-    def _is_before_fulfilled(self, parent, first_child_index):
-        if self._is_before_empty():
+    def _are_inner_and_after_fulfilled(self, nodes):
+        if len(self.sequence_options) < 2:
             return True
-        start_index = first_child_index - len(self.before_pattern)
-        if self._is_index_out_of_bounds(start_index, parent.value):
-            return False
-
-        pattern_start = parent.value[start_index]
-        before_pattern = NodePattern(self.before_pattern, self.ignore_list)
-        success, s = Walker().try_match_pattern(pattern_start, before_pattern)
-        return success
-
-    def _is_after_fulfilled(self, parent, last_child_index):
-        if self._is_after_empty():
-            return True
-        if self._is_index_out_of_bounds(last_child_index, parent.value):
-            return False
-
-        pattern_index = parent.value[last_child_index + 1]
-        after_pattern = NodePattern(self.after_pattern, self.ignore_list)
-        success, s = Walker().try_match_pattern(pattern_index, after_pattern)
-        return success
-
-    def _is_inner_fulfilled(self, parent, nodes):
-        if self._is_inner_empty():
-            return True
-        for index, desc in enumerate(self.inner_patterns):
-            pattern = self._get_pattern(desc)
-            first_sibling = parent.value[nodes[index].index + 1]
-            success, _ = Walker().try_match_pattern(first_sibling, pattern)
-            if not success:
+        inner_and_after_options = self.sequence_options[1:]
+        for index, option in enumerate(inner_and_after_options):
+            node = nodes[index]
+            if not SequenceFinder.is_option_present_after(node, option):
                 return False
         return True
 
-    def _get_pattern(self, desc):
-        res = desc if type(desc) is list else [desc]
-        return NodePattern(res, self.ignore_list)
-
-    def _is_before_empty(self):
-        return len(self.before_pattern) == 0
-
-    def _is_inner_empty(self):
-        return len(self.inner_patterns) == 0
-
-    def _is_after_empty(self):
-        return len(self.after_pattern) == 0
-
-    def _is_index_out_of_bounds(self, index, list):
-        # The index should not point to the last element
-        return index < 0 or index >= len(list) - 1
+    def _is_before_fulfilled(self, first_child_index):
+        if len(self.sequence_options) < 2:
+            return True
+        before_option = self.sequence_options[0]
+        return SequenceFinder.is_option_present_before(first_child_index, before_option)
 
 
 class Convention(object):
 
-    def __init__(self, pattern, requirement):
-        self.pattern = pattern
-        self.requirement = requirement
+    @abc.abstractmethod
+    def is_violated(self, tree):
+        pass
+
+
+class IfThenConvention(Convention):
+
+    def __init__(self, sequence, requirement):
+        self._sequence = sequence
+        self._requirement = requirement
+        self._finder = SequenceFinder()
+
+    def is_violated(self, tree):
+        for nodes in self._finder.find_sequence(tree, self._sequence):
+            print(self._requirement.is_fulfilled(nodes))
+        # TODO: return useful information about the result
+
+
+class ForbidConvention(Convention):
+
+    def is_violated(self, tree):
+        pass
 
 
 class ConventionsMap(object):
@@ -153,14 +286,14 @@ class Walker(object):
         Returns 1. if the node and its siblings follow the given pattern
         2. the nodes that form the pattern
         """
-        success, current = self._get_first_not_ignored(node, pattern.ignores)
+        success, current = self._get_first_not_ignored(node, pattern.ignore_desc)
         current_desc = pattern[0]
         if not success or not current_desc.is_match(current):
             return False, None
         result = [current]
         for i in range(1, len(pattern)):
             sibling_desc = pattern[i]
-            match, sibling = self.is_next_sibling(current, sibling_desc, pattern.ignores)
+            match, sibling = self.is_next_sibling(current, sibling_desc, pattern.ignore_desc)
             if not match:
                 return False, None
             result.append(sibling)
@@ -209,7 +342,4 @@ class Walker(object):
         return False, None
 
     def _is_ignored(self, node, ignore_desc):
-        for desc in ignore_desc:
-            if desc.is_match(node):
-                return True
-        return False
+        return ignore_desc.is_match(node)
