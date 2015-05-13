@@ -9,33 +9,21 @@ __g = Grammar("""
             start: context* ;
             context : WORD '{' (rule)* '}' ;
 
-            rule: 'require' (css_marker | ws_expr) (css_marker? ws_expr?)*
-                | 'allow' (css_marker | ws_expr) (css_marker? ws_expr?)*
+            rule: 'require' expr+
+                | 'forbid' expr+
+                | 'allow' expr+
                 ;
 
-            ws_expr: ws_marker OR_ ws_marker
-                | ws_marker
+            expr: '\(' expr '\)'
+                | '\(' marker+ '\)'
+                | expr OR_ expr
+                | marker
                 ;
 
-            css_marker: css_keyword ;
+            marker: name (repetition)? ;
 
-            ws_marker: ws_keyword (repetition)? ;
-
-            css_keyword: 'rule'
-                | 'declaration'
-                | 'selector'
-                | 'block'
-                | 'property'
-                | 'value'
-                | 'eof_'
-                | 'comment'
+            name: WORD
                 | STRING
-                ;
-
-            ws_keyword: 'whitespace_'
-                | 'newline'
-                | 'tab_'
-                | 'space'
                 ;
 
             repetition: '{' NUMBER '}'

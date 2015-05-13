@@ -70,20 +70,23 @@ class CompoundDescriptor(NodeDescriptor):
 
 NodeDescriptor.ANY = NodeDescriptor()
 
-WHITESPACE_DESC = CompoundDescriptor([SimpleDescriptor(type_='space'),
-                                      SimpleDescriptor(type_='indent'),
-                                      SimpleDescriptor(type_='tab'),
-                                      SimpleDescriptor(type_='newline')])
+CompoundDescriptor.WHITESPACE = CompoundDescriptor([SimpleDescriptor(type_='space'),
+                                                    SimpleDescriptor(type_='indent'),
+                                                    SimpleDescriptor(type_='tab'),
+                                                    SimpleDescriptor(type_='newline')])
+
+CompoundDescriptor.INDENT = CompoundDescriptor([SimpleDescriptor(type_='indent')])
 
 
-class NodeSequence(object):
+class Sequence(object):
     """
-    The class contains a list of descriptors that describe sibling nodes that need to matched and
-    a descriptor for the nodes that need to be ignored
+    The class contains a list of descriptors that describe sibling nodes that need to matched
     """
-    def __init__(self, descriptors, ignore_desc):
+    def __init__(self, descriptors):
         self.descriptors = descriptors
-        self.ignore_desc = ignore_desc
+
+    def __iter__(self):
+        return iter(self.descriptors)
 
     def __getitem__(self, item):
         return self.descriptors[item]
@@ -94,13 +97,11 @@ class NodeSequence(object):
     def __len__(self):
         return len(self.descriptors)
 
-    def __iter__(self):
-        return iter(self.descriptors)
 
-NodeSequence.NONE_SEQUENCE = NodeSequence([], None)
+Sequence.NONE = Sequence([])
 
 
-class SequenceOption(object):
+class SequenceVariation(object):
 
     def __init__(self, sequences, ignore_desc):
         self.sequences = sequences
@@ -109,7 +110,7 @@ class SequenceOption(object):
     def __iter__(self):
         return iter(self.sequences)
 
-SequenceOption.NONE_OPTION = SequenceOption([], None)
+SequenceVariation.NONE = SequenceVariation([], None)
 
 
 class SequenceFinder(object):
@@ -117,38 +118,45 @@ class SequenceFinder(object):
     The class is responsible for finding NodeSequences and SequenceOptions in a tree
     """
     @staticmethod
-    def find_sequence_option(tree, option):
-        for s in option:
-            yield from SequenceFinder.find_sequence(tree, s)
+    def find_variation(tree, variation):
+        for sequence in variation:
+            yield from SequenceFinder._find_sequence(tree, sequence, variation.ignore_desc)
 
     @staticmethod
-    def find_sequence(tree, sequence):
-        yield from Walker().find_pattern(tree, sequence)
+    def _find_sequence(tree, sequence, ignore_desc):
+        """
+        Traverses a tree and returns all occurrences of a given sequence
+        """
+        if not sequence.is_empty():
+            for start in SequenceFinder.find_node_in_tree(tree, sequence[0]):
+                success, nodes = SequenceFinder._is_sequence_present_from(start, sequence, ignore_desc)
+                if success:
+                    yield nodes
 
     @staticmethod
-    def find_node(tree, node_desc):
+    def find_node_in_tree(node, desc):
         """
-        Traverses a tree and yields all nodes that match a given descriptor
+        Returns all nodes that match a given pattern
         """
-        if node_desc.is_match(tree):
-            yield tree
-        if tree.has_children():
-            for child in tree.value:
-                yield from SequenceFinder.find_node(child, node_desc)
+        if desc.is_match(node):
+            yield node
+        if node.has_children():
+            for child in node.value:
+                yield from SequenceFinder.find_node_in_tree(child, desc)
 
     @staticmethod
     def is_option_present_after(node, option):
-        if option is SequenceOption.NONE_OPTION:
+        if option is SequenceVariation.NONE:
             return True
 
         for sequence in option:
-            if SequenceFinder.is_sequence_present_after(node, sequence, option.ignore_desc):
+            if SequenceFinder._is_sequence_present_after(node, sequence, option.ignore_desc):
                 return True
         return False
 
     @staticmethod
-    def is_sequence_present_after(node, sequence, ignore_desc=None):
-        if sequence is not NodeSequence.NONE_SEQUENCE:
+    def _is_sequence_present_after(node, sequence, ignore_desc=None):
+        if sequence is not Sequence.NONE:
             ignore_desc = sequence.ignore_desc if ignore_desc is None else ignore_desc
             current_node = node
             for desc in sequence:
@@ -160,23 +168,38 @@ class SequenceFinder(object):
 
     @staticmethod
     def is_option_present_before(node, option):
-        if option is SequenceOption.NONE_OPTION:
+        if option is SequenceVariation.NONE:
             return True
 
         for sequence in option:
-            if SequenceFinder.is_sequence_present_before(node, sequence, ignore_desc=option.ignore_desc):
+            if SequenceFinder._is_sequence_present_before(node, sequence, ignore_desc=option.ignore_desc):
                 return True
         return False
 
     @staticmethod
-    def is_sequence_present_before(node, sequence, ignore_desc=None):
-        if sequence is not NodeSequence.NONE_SEQUENCE:
+    def _is_sequence_present_before(node, sequence, ignore_desc=None):
+        if sequence is not Sequence.NONE:
             ignore_desc = sequence.ignore_desc if ignore_desc is None else ignore_desc
             nodes_before = SequenceFinder._get_n_non_ignored_before(len(sequence), node, ignore_desc)
+            if not nodes_before:
+                return False
             for index, node_before in enumerate(nodes_before):
                 if not sequence[index].is_match(node_before):
                     return False
         return True
+
+    @staticmethod
+    def _is_sequence_present_from(node, sequence, ignore_desc):
+        if sequence is Sequence.NONE:
+            return False, None
+        result = []
+        current = node
+        for desc in sequence:
+            if not current or not desc.is_match(current):
+                return False, None
+            result.append(current)
+            _, current = SequenceFinder._get_next_non_ignored_child(current, ignore_desc)
+        return True, result
 
     @staticmethod
     def _get_next_non_ignored_child(node, ignore_desc):
@@ -205,10 +228,10 @@ class SequenceFinder(object):
 class Requirement(object):
     """
     Describes how the whitespaces around the css nodes should be
-    Requires n+1 whitespace sequences to be provided for n css nodes: before, inner and after nodes
+    Requires n+1 whitespace variations to be provided for n css nodes: before, inner and after nodes
     """
-    def __init__(self, sequence_options, ignore_desc=None):
-        self.sequence_options = sequence_options
+    def __init__(self, variation_list, ignore_desc=None):
+        self.variation_list = variation_list
         self.ignore_desc = ignore_desc
 
     def is_fulfilled(self, nodes):
@@ -218,9 +241,9 @@ class Requirement(object):
             self._are_inner_and_after_fulfilled(nodes)
 
     def _are_inner_and_after_fulfilled(self, nodes):
-        if len(self.sequence_options) < 2:
+        if len(self.variation_list) < 2:
             return True
-        inner_and_after_options = self.sequence_options[1:]
+        inner_and_after_options = self.variation_list[1:]
         for index, option in enumerate(inner_and_after_options):
             node = nodes[index]
             if not SequenceFinder.is_option_present_after(node, option):
@@ -228,9 +251,9 @@ class Requirement(object):
         return True
 
     def _is_before_fulfilled(self, first_child_index):
-        if len(self.sequence_options) < 2:
+        if len(self.variation_list) < 2:
             return True
-        before_option = self.sequence_options[0]
+        before_option = self.variation_list[0]
         return SequenceFinder.is_option_present_before(first_child_index, before_option)
 
 
@@ -243,21 +266,24 @@ class Convention(object):
 
 class IfThenConvention(Convention):
 
-    def __init__(self, sequence, requirement):
-        self._sequence = sequence
+    def __init__(self, cond_variation, requirement):
+        self._cond_variation = cond_variation
         self._requirement = requirement
-        self._finder = SequenceFinder()
 
     def is_violated(self, tree):
-        for nodes in self._finder.find_sequence(tree, self._sequence):
+        for nodes in SequenceFinder.find_variation(tree, self._cond_variation):
             print(self._requirement.is_fulfilled(nodes))
         # TODO: return useful information about the result
 
 
 class ForbidConvention(Convention):
 
+    def __init__(self, variation):
+        self.variation = variation
+
     def is_violated(self, tree):
-        pass
+        for nodes in SequenceFinder.find_variation(tree, self.variation):
+            print('Found')
 
 
 class ConventionsMap(object):
@@ -267,79 +293,3 @@ class ConventionsMap(object):
 
     def __iter__(self):
         return self.conventions.__iter__()
-
-
-class Walker(object):
-    def find_pattern(self, tree, pattern):
-        """
-        Traverses a tree and returns all occurrences of a given pattern
-        """
-        if pattern.is_empty():
-            return
-        for start in self.find_node_in_tree(tree, pattern[0]):
-            success, nodes = self.try_match_pattern(start, pattern)
-            if success:
-                yield nodes
-
-    def try_match_pattern(self, node, pattern):
-        """
-        Returns 1. if the node and its siblings follow the given pattern
-        2. the nodes that form the pattern
-        """
-        success, current = self._get_first_not_ignored(node, pattern.ignore_desc)
-        current_desc = pattern[0]
-        if not success or not current_desc.is_match(current):
-            return False, None
-        result = [current]
-        for i in range(1, len(pattern)):
-            sibling_desc = pattern[i]
-            match, sibling = self.is_next_sibling(current, sibling_desc, pattern.ignore_desc)
-            if not match:
-                return False, None
-            result.append(sibling)
-            current = sibling
-        return True, result
-
-    def find_node_in_tree(self, node, desc):
-        """
-        Returns all nodes that match a given pattern
-        """
-        if desc.is_match(node):
-            yield node
-        if node.has_children():
-            for child in node.value:
-                yield from self.find_node_in_tree(child, desc)
-
-    def is_next_sibling(self, start_node, sibling_desc, desc_ignores):
-        """
-        Returns 1. if the next sibling matches a specified descriptor and 2. the sibling
-        """
-        exists, sibling = self.get_next_sibling(start_node, desc_ignores)
-        if exists and sibling_desc.is_match(sibling):
-            return True, sibling
-        return False, None
-
-    def _get_first_not_ignored(self, node, ignore_desc):
-        """
-        If node is not ignored, returns node; Otherwise returns the next non-ignored sibling
-        """
-        if self._is_ignored(node, ignore_desc):
-            return self.get_next_sibling(node, ignore_desc)
-        return True, node
-
-    def get_next_sibling(self, node, desc_ignores):
-        """
-        Returns 1. boolean if a sibling exists and 2. the next sibling
-        Ignores the specified nodes
-        """
-        if node.has_parent():
-            children = node.parent.value
-
-            for index in range(node.index + 1, len(children)):
-                sibling = children[index]
-                if not self._is_ignored(sibling, desc_ignores):
-                    return True, sibling
-        return False, None
-
-    def _is_ignored(self, node, ignore_desc):
-        return ignore_desc.is_match(node)

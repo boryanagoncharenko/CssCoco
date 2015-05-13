@@ -1,5 +1,5 @@
 import abc
-
+import src.tree_search as search
 
 class AstNode(object):
 
@@ -30,11 +30,17 @@ class Context(AstNode):
     def __init__(self, statements):
         self.statements = statements
 
-    def get_ignored_markers(self):
-        pass
-
     def get_children(self):
         return self.statements
+
+    def get_cond_ignores(self):
+        pass
+
+    def get_requirement_ignores(self):
+        pass
+
+    def get_forbid_ignores(self):
+        pass
 
 
 class WhitespaceContext(Context):
@@ -42,8 +48,14 @@ class WhitespaceContext(Context):
     def __init__(self, statements):
         Context.__init__(self, statements)
 
-    def get_ignored_markers(self):
-        pass
+    def get_cond_ignores(self):
+        return search.CompoundDescriptor.WHITESPACE
+
+    def get_requirement_ignores(self):
+        return search.CompoundDescriptor.INDENT
+
+    def get_forbid_ignores(self):
+        return search.CompoundDescriptor.INDENT
 
 
 class Statement(AstNode):
@@ -59,22 +71,32 @@ class Declaration(Statement):
 
 class Rule(Statement):
 
-    def __init__(self, css_markers, ws_options):
-        self.css_markers = css_markers
-        self.ws_options = ws_options
+    def __init__(self, markers_list):
+        self.markers_list = markers_list
 
     def pretty_print(self, level=0, print_indent='  '):
         s = ''.join(['\n', print_indent*level, self.get_title(), ':'])
-        s = ''.join([s, self.css_markers.pretty_print(level + 1)])
-        for option in self.ws_options:
-            s = ''.join([s, option.pretty_print(level+1)])
+        for m in self.markers_list:
+            s = ''.join([s, m.pretty_print(level+1)])
         return s
 
 
 class RequireRule(Rule):
 
-    def __init__(self, css_markers, ws_options):
-        Rule.__init__(self, css_markers, ws_options)
+    def __init__(self, markers_list):
+        Rule.__init__(self, markers_list)
+
+
+class ForbidRule(Rule):
+
+    def __init__(self, markers_list):
+        Rule.__init__(self, markers_list)
+
+
+class AllowRule(Rule):
+
+    def __init__(self, markers_list):
+        Rule.__init__(self, markers_list)
 
 
 class MarkerSequence(AstNode):
@@ -109,12 +131,60 @@ class MarkerSequenceOption(AstNode):
 MarkerSequenceOption.NONE = MarkerSequenceOption([])
 
 
+class Expression(AstNode):
+
+    def get_markers_expression(self):
+        pass
+
+
+class OrExpression(AstNode):
+
+    def __init__(self, markers_list):
+        self.markers_list = markers_list
+
+    def get_markers_expression(self):
+        return iter(self.markers_list)
+
+    def pretty_print(self, level=0, print_indent='  '):
+        s = ''.join(['\n', print_indent*level, self.get_title(), ':'])
+        for m in self.markers_list:
+            s = ''.join([s, m.pretty_print(level+1)])
+        return s
+
+
+class MarkersExpression(AstNode):
+
+    def __init__(self, marker_list):
+        self.marker_list = marker_list
+
+    def __iter__(self):
+        return iter(self.marker_list)
+
+    def get_markers_expression(self):
+        yield self
+
+    def pretty_print(self, level=0, print_indent='  '):
+        s = ''.join(['\n', print_indent*level, self.get_title(), ':'])
+        for m in self.marker_list:
+            s = ''.join([s, m.pretty_print(level+1)])
+        return s
+
+MarkersExpression.EMPTY = MarkersExpression([])
+
+
 class Marker(AstNode):
-    pass
+
+    def is_css_marker(self):
+        return False
+
+    def is_ws_marker(self):
+        return False
 
 
 class CssMarker(Marker):
-    pass
+
+    def is_css_marker(self):
+        return True
 
 
 class DeclarationMarker(CssMarker):
@@ -126,6 +196,7 @@ class SelectorMarker(CssMarker):
 
 
 class RuleMarker(CssMarker):
+
     def __init__(self):
         pass
 
@@ -156,6 +227,12 @@ class WhitespaceMarker(Marker):
 
     def __init__(self, repetitions):
         self.repetitions = repetitions
+
+    def is_ws_marker(self):
+        return True
+
+    def is_repetitions_set(self):
+        return self.repetitions != -1
 
     @abc.abstractmethod
     def get_value(self):
@@ -228,64 +305,22 @@ class AstBuilder(object):
 
     def __build_rule(self, ply_rule):
         children = ply_rule.select('rule > *')
-        markers = children[1:]
-        css_markers = self.__get_css_markers(markers)
-        ws_options = self.__get_ws_options(markers)
+        markers = self._build_markers(children[1:])
+        name = children[0].lower()
 
-        name = children[0]
-        if name.lower() == 'require':
-            return RequireRule(css_markers, ws_options)
+        if name == 'require':
+            return RequireRule(markers)
+
+        if name == 'forbid':
+            return ForbidRule(markers)
+
         raise NotImplementedError('Other rules are not implemented yet')
 
-    def __get_css_markers(self, markers):
+    def _build_markers(self, marker_list):
         result = []
-        for marker in markers:
-            success, css_marker = self.__try_get_css_marker(marker)
-            if success:
-                result.append(css_marker)
-        return MarkerSequence(result)
-
-    def __get_ws_options(self, markers):
-        option_list = self._get_consecutive_ws_nodes_list(markers)
-        result_options = []
-        for option in option_list:
-            result_options.append(self._build_ws_option_for_consecutive_nodes(option))
-        return result_options
-
-    def _get_consecutive_ws_nodes_list(self, markers):
-        res = []
-        for con_node_list in self._get_consecutive_ws_nodes(markers):
-            res.append(con_node_list)
-        return res
-
-    def _get_consecutive_ws_nodes(self, markers):
-        buffer = []
-        for m in markers:
-            if self.__is_ws_node(m):
-                buffer.append(m)
-            else:
-                yield buffer
-                buffer = []
-        yield buffer
-
-    def _build_ws_option_for_consecutive_nodes(self, markers):
-        if not markers:
-            return MarkerSequenceOption.NONE
-        res = []
-        for m in markers:
-            choices = self._build_choices(m)
-            res.append(choices)
-        sequences = []
-        for s in self._generate_possible_sequences(res, []):
-            sequences.append(s)
-        return MarkerSequenceOption(sequences)
-
-    def _build_choices(self, ply_node):
-        # TODO: this method needs to be revamped
-        number_of_children = len(ply_node.tail)
-        if number_of_children == 3:
-            return [self.__get_ws_marker(ply_node.tail[0]), self.__get_ws_marker(ply_node.tail[2])]
-        return [self.__get_ws_marker(ply_node.tail[0])]
+        for m in marker_list:
+            result.append(self._build_marker(m))
+        return result
 
     def _generate_possible_sequences(self, option_list, res):
         if len(option_list) == 0:
@@ -297,53 +332,65 @@ class AstBuilder(object):
                 yield from self._generate_possible_sequences(option_list[1:], res)
                 del res[-1]
 
-    def __try_get_ws_marker(self, ply_node):
-        tail = ply_node.tail
-        marker = ply_node.select('ws_marker')
-        if len(tail) == 0:
-            return False, None
+    def _build_marker(self, ply_node):
+        if self._is_or_expr(ply_node):
+            return self._handle_or_expr(ply_node)
 
-        return True, self.__get_ws_marker(marker)
+        if self._is_parenthesis_expr(ply_node):
+            return self._handle_parenthesis_expr(ply_node)
 
-    def __get_ws_marker_type(self, marker):
-        return marker.select('ws_marker > ws_keyword > *')[0].lower()
+        if self._is_terminal_expr(ply_node):
+            return self._handle_terminal_expr(ply_node)
 
-    def __get_ws_repetitions(self, marker):
-        reps = marker.select('ws_marker > repetition > *')
-        if len(reps) > 1:
-            return int(reps[1])
-        return 1
+        raise NotImplementedError('Unknown marker')
 
-    def __get_ws_marker(self, marker):
-        repetition = self.__get_ws_repetitions(marker)
-        type = self.__get_ws_marker_type(marker)
-        if type == 'space':
-            return SpaceMarker(repetition)
-        if type == 'newline':
-            return NewlineMarker(repetition)
-        if type == 'tab_':
-            return TabMarker(repetition)
-        raise NotImplementedError('Other css marker are not implemented yet')
+    def _is_or_expr(self, ply_node):
+        return len(ply_node.tail) == 3 and \
+            ply_node.tail[1] == 'orrr'
 
-    def __is_ws_node(self, ply_node):
-        marker = ply_node.select('ws_expr')
-        return len(marker) != 0
+    def _handle_or_expr(self, ply_node):
+        left = self._build_marker(ply_node.tail[0])
+        right = self._build_marker(ply_node.tail[2])
 
-    def __get_option(self, ws_expr):
-        pass
+        option_list = []
+        if type(left) is OrExpression:
+            option_list = option_list + left.markers_list
+        else:
+            option_list.append(left)
 
-    def __try_get_css_marker(self, ply_node):
-        marker = ply_node.select('css_marker')
-        if len(marker) == 0:
-            return False, None
+        if type(right) is OrExpression:
+            option_list = option_list + right.markers_list
+        else:
+            option_list.append(right)
 
-        name = self.__get_css_keyword(marker)
-        return True, self.__get_css_marker(name)
+        return OrExpression(option_list)
 
-    def __get_css_keyword(self, marker):
-        return marker[0].select('css_marker > css_keyword > *')[0].lower()
 
-    def __get_css_marker(self, name):
+    def _is_parenthesis_expr(self, ply_node):
+        return ply_node.tail[0] == '(' and \
+            ply_node.tail[-1] == ')'
+
+    def _handle_parenthesis_expr(self, ply_node):
+        elements = ply_node.tail[1:-1]
+        markers = []
+        if len(elements) == 1:
+            result = self._build_marker(elements[0])
+            if type(result) in [OrExpression, MarkersExpression]:
+                return result
+
+        for element in elements:
+            markers.append(self._build_marker_two(element))
+        return MarkersExpression(markers)
+
+    def _is_terminal_expr(self, ply_node):
+        return len(ply_node.tail) == 1
+
+    def _handle_terminal_expr(self, ply_node):
+        marker = self._build_marker_two(ply_node.tail[0])
+        return MarkersExpression([marker])
+
+    def _build_marker_two(self, ply_node):
+        name = ply_node.select('name > *')[0]
         if name == 'rule':
             return RuleMarker()
         if name == 'declaration':
@@ -352,7 +399,7 @@ class AstBuilder(object):
             return SelectorMarker()
         if name == 'block':
             return BlockMarker()
-        if self.__is_string(name):
+        if self._is_string(name):
             return SymbolMarker(name[1:-1])
         if name == 'value':
             return ValueMarker()
@@ -360,8 +407,24 @@ class AstBuilder(object):
             return EofMarker()
         if name == 'comment':
             return CommentMarker()
+
+        repetitions = self._get_repetition(ply_node)
+        if name == 'space':
+            return SpaceMarker(repetitions)
+        if name == 'newline':
+            return NewlineMarker(repetitions)
+        if name == 'tab_':
+            return TabMarker(repetitions)
+
         raise NotImplementedError('Other css marker are not implemented yet')
 
-    def __is_string(self, str):
-        return len(str) > 1 and str[0] == '"' and str[-1] == '"'
+    def _get_repetition(self, ply_node):
+        reps = ply_node.select('repetition > *')
+        if len(reps) == 0:
+            return 1
+        if reps[1] == '*':
+            return -1
+        return int(reps[1])
 
+    def _is_string(self, str):
+        return len(str) > 1 and str[0] == '"' and str[-1] == '"'

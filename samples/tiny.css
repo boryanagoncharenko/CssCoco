@@ -1,10 +1,9 @@
 
 a {
-    color: darkcyan;
-    background-color: red;
+    color: #111111;
+    color: #222222;
 }
 
-
 p {
-    background-color: red;
+    font-family: sans-serif, serif;
 }
