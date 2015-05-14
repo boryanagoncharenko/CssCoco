@@ -1,49 +1,47 @@
 from plyplus import Grammar
 
 
-def parse(text):
-    return __g.parse(text)
+class Parser(object):
 
+    _grammar = """
+        start: context* ;
+        context : WORD '{' (rule)* '}' ;
 
-__g = Grammar("""
-            start: context* ;
-            context : WORD '{' (rule)* '}' ;
+        rule: (REQUIRE | FORBID | ALLOW) expr+ ;
 
-            rule: 'require' expr+
-                | 'forbid' expr+
-                | 'allow' expr+
-                ;
+        expr: '\(' expr '\)'
+            | '\(' marker+ '\)'
+            | expr OR expr
+            | marker
+            ;
 
-            expr: '\(' expr '\)'
-                | '\(' marker+ '\)'
-                | expr OR_ expr
-                | marker
-                ;
+        marker: name (repetition)? ;
 
-            marker: name (repetition)? ;
+        name: WORD
+            | STRING
+            ;
 
-            name: WORD
-                | STRING
-                ;
+        repetition: '{' NUMBER '}'
+            | '{' '\*' '}'
+            ;
 
-            repetition: '{' NUMBER '}'
-                | '{' '\*' '}'
-                ;
+        L_PAREN: '\(' ;
+        R_PAREN: '\)' ;
+        WORD: '[a-zA-Z]+' (%unless
+            OR: 'or' ;
+            REQUIRE: 'require' ;
+            FORBID: 'forbid' ;
+            ALLOW: 'allow' ;
+            MESSAGE: 'message' ;
+        );
+        STRING: '"' '[^"]*' '"' ;
+        NUMBER: '[1-9][0-9]*' ;
+        COMMENT: '\/\*[\S\s]*\*\/' (%ignore) ;
+        SPACES: '[ \t\n]+' (%ignore) ;
+        """
 
-            OR_: 'orrr';
-            L_PAREN: '\(' ;
-            R_PAREN: '\)' ;
-            WORD: '\w+' ;
-            STRING: '"' '[^"]*' '"' ;
-            NUMBER: '[1-9][0-9]*' ;
-            COMMENT: '\/\*[\S\s]*\*\/' (%ignore) ;
-            SPACES: '[ \t\n]+' (%ignore) ;
-            """, auto_filter_tokens=False)
+    _parser = Grammar(_grammar, auto_filter_tokens = False)
 
-
-
-            # ws_expr: L_PAREN ws_expr R_PAREN
-            #     | L_PAREN ws_marker+ R_PAREN
-            #     | ws_expr OR_ ws_expr
-            #     | ws_marker
-            #     ;
+    @staticmethod
+    def parse(text):
+        return Parser._parser.parse(text)

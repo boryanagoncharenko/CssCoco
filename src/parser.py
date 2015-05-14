@@ -117,7 +117,7 @@ class SExprTransformer(object):
                 previous_child.append(child)
                 return True
             else:
-                pass
+                raise NotImplementedError('Y U write ";" without declaration?')
         return False
 
     # Whitespace nodes should not be the first of the last child of a node, except it if is the root node

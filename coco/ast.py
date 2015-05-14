@@ -346,7 +346,7 @@ class AstBuilder(object):
 
     def _is_or_expr(self, ply_node):
         return len(ply_node.tail) == 3 and \
-            ply_node.tail[1] == 'orrr'
+            ply_node.tail[1] == 'or'
 
     def _handle_or_expr(self, ply_node):
         left = self._build_marker(ply_node.tail[0])
@@ -403,7 +403,7 @@ class AstBuilder(object):
             return SymbolMarker(name[1:-1])
         if name == 'value':
             return ValueMarker()
-        if name == 'eof_':
+        if name == 'eof':
             return EofMarker()
         if name == 'comment':
             return CommentMarker()
@@ -413,7 +413,7 @@ class AstBuilder(object):
             return SpaceMarker(repetitions)
         if name == 'newline':
             return NewlineMarker(repetitions)
-        if name == 'tab_':
+        if name == 'tab':
             return TabMarker(repetitions)
 
         raise NotImplementedError('Other css marker are not implemented yet')

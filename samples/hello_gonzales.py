@@ -13,17 +13,17 @@ result = parser.Parser.parse_css(css)
 l = json.loads(result.decode('utf-8'))
 tr = parser.SExprTransformer.transform(l)
 a = ast.ParseTreeBuilder.build(tr)
-# print(a.pretty_print())
+print(a.pretty_print())
 
 
 coco_filename = os.path.join('samples', 'one.coco')
 coco_file = open(coco_filename)
 cs = coco_file.read()
 
-res = grammar.parse(cs)
+res = grammar.Parser.parse(cs)
 tree = cocoast.AstBuilder.build(res)
 
-print(tree.pretty_print())
+# print(tree.pretty_print())
 # for t in analysis.ExpressionEvaluator().test(tree.contexts[0].statements[0].markers_list, []):
 #     print(t)
 map = analysis.Evaluator.evaluate(tree)
