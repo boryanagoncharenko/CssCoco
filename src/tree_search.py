@@ -43,6 +43,9 @@ class SimpleDescriptor(NodeDescriptor):
         type_str, value_str = self.get_type_and_value_str()
         return ''.join([' Simple Descriptor:', type_str, value_str])
 
+    def to_error_string(self):
+        return str(self.value)
+
 
 class CompoundDescriptor(NodeDescriptor):
     """
@@ -67,6 +70,8 @@ class CompoundDescriptor(NodeDescriptor):
             s = ''.join([s, ' ', type_str, ' ', value_str, ' or'])
         return ''.join([' Compound Descriptor:', s[:-2]])
 
+    def to_error_string(self):
+        return 'Compound'
 
 NodeDescriptor.ANY = NodeDescriptor()
 
@@ -96,6 +101,13 @@ class Sequence(object):
 
     def __len__(self):
         return len(self.descriptors)
+
+    def to_error_string(self, to_index=None):
+        to_index = len(self.descriptors) if to_index is None else to_index
+        s = ''
+        for i in range(0, to_index):
+            s = ''.join([s, self.descriptors[i].to_error_string()])
+        return s
 
 
 Sequence.NONE = Sequence([])
@@ -145,41 +157,60 @@ class SequenceFinder(object):
                 yield from SequenceFinder.find_node_in_tree(child, desc)
 
     @staticmethod
-    def is_option_present_after(node, option):
+    def is_variation_present_after(node, option):
         if option is SequenceVariation.NONE:
             return True
 
         for sequence in option:
-            if SequenceFinder._is_sequence_present_after(node, sequence, option.ignore_desc):
+            present, message = SequenceFinder._is_sequence_present_after(node, sequence, option.ignore_desc)
+            print(message)
+            if present:
                 return True
         return False
 
     @staticmethod
-    def _is_sequence_present_after(node, sequence, ignore_desc=None):
+    def _is_sequence_present_after(node, sequence, ignore_desc):
         if sequence is not Sequence.NONE:
-            ignore_desc = sequence.ignore_desc if ignore_desc is None else ignore_desc
             current_node = node
-            for desc in sequence:
+            for i, desc in enumerate(sequence):
                 is_valid, next_node = SequenceFinder._get_next_non_ignored_child(current_node, ignore_desc)
                 if not is_valid or not desc.is_match(next_node):
-                    return False
+                    return False, SequenceFinder._build_error_message(sequence, i, next_node)
                 current_node = next_node
-        return True
+        return True, ''
 
     @staticmethod
-    def is_option_present_before(node, option):
+    def _find_first_non_terminal(node):
+        if not node.has_children():
+            return node
+        for child in node.value:
+            res = SequenceFinder._find_first_non_terminal(child)
+            if res:
+               return res
+        return None
+
+    @staticmethod
+    def _build_error_message(sequence, to_index, node):
+        s = ''.join(['Violation on line ', str(node.start_position.line) , ': expected: \'', sequence.to_error_string(), '\' found: \''])
+        terminal_node = SequenceFinder._find_first_non_terminal(node)
+        s = ''.join([s, sequence.to_error_string(to_index), terminal_node.value, '\' instead' ])
+        s = s.replace('\n', '\\n')
+        s = s.replace('\t', '\\t')
+        return s
+
+    @staticmethod
+    def is_variation_present_before(node, option):
         if option is SequenceVariation.NONE:
             return True
 
         for sequence in option:
-            if SequenceFinder._is_sequence_present_before(node, sequence, ignore_desc=option.ignore_desc):
+            if SequenceFinder._is_sequence_present_before(node, sequence, option.ignore_desc):
                 return True
         return False
 
     @staticmethod
-    def _is_sequence_present_before(node, sequence, ignore_desc=None):
+    def _is_sequence_present_before(node, sequence, ignore_desc):
         if sequence is not Sequence.NONE:
-            ignore_desc = sequence.ignore_desc if ignore_desc is None else ignore_desc
             nodes_before = SequenceFinder._get_n_non_ignored_before(len(sequence), node, ignore_desc)
             if not nodes_before:
                 return False
@@ -246,7 +277,7 @@ class Requirement(object):
         inner_and_after_options = self.variation_list[1:]
         for index, option in enumerate(inner_and_after_options):
             node = nodes[index]
-            if not SequenceFinder.is_option_present_after(node, option):
+            if not SequenceFinder.is_variation_present_after(node, option):
                 return False
         return True
 
@@ -254,7 +285,7 @@ class Requirement(object):
         if len(self.variation_list) < 2:
             return True
         before_option = self.variation_list[0]
-        return SequenceFinder.is_option_present_before(first_child_index, before_option)
+        return SequenceFinder.is_variation_present_before(first_child_index, before_option)
 
 
 class Convention(object):

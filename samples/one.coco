@@ -1,9 +1,8 @@
 whitespace
 {
+    require selector newline tab block
 /*
-*/
     require rule newline{2} or newline{3} rule
-    require selector space block
     require "{" newline declaration
     require ":" space value
 
@@ -15,4 +14,5 @@ whitespace
 
     require newline rule newline{2} rule
 	require newline eof
+*/
 }
