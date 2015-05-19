@@ -1,5 +1,5 @@
-import abc
 import src.tree_search as search
+
 
 class AstNode(object):
 
@@ -205,6 +205,10 @@ class BlockMarker(CssMarker):
     pass
 
 
+class PropertyMarker(CssMarker):
+    pass
+
+
 class ValueMarker(CssMarker):
     pass
 
@@ -214,6 +218,10 @@ class EofMarker(CssMarker):
 
 
 class CommentMarker(CssMarker):
+    pass
+
+
+class CommaMarker(CssMarker):
     pass
 
 
@@ -234,7 +242,6 @@ class WhitespaceMarker(Marker):
     def is_repetitions_set(self):
         return self.repetitions != -1
 
-    @abc.abstractmethod
     def get_value(self):
         pass
 
@@ -313,6 +320,9 @@ class AstBuilder(object):
 
         if name == 'forbid':
             return ForbidRule(markers)
+
+        if name == 'allow':
+            return AllowRule(markers)
 
         raise NotImplementedError('Other rules are not implemented yet')
 
@@ -401,14 +411,20 @@ class AstBuilder(object):
             return BlockMarker()
         if self._is_string(name):
             return SymbolMarker(name[1:-1])
+        if name == 'property':
+            return PropertyMarker()
         if name == 'value':
             return ValueMarker()
         if name == 'eof':
             return EofMarker()
         if name == 'comment':
             return CommentMarker()
+        if name == 'comma':
+            return CommaMarker()
 
         repetitions = self._get_repetition(ply_node)
+        if name == 'whitespace':
+            return WhitespaceMarker(repetitions)
         if name == 'space':
             return SpaceMarker(repetitions)
         if name == 'newline':

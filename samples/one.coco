@@ -1,18 +1,23 @@
 whitespace
 {
-    require selector newline tab block
-/*
-    require rule newline{2} or newline{3} rule
-    require "{" newline declaration
-    require ":" space value
-
-    require declaration newline declaration
+	require "{" newline declaration
 	require declaration newline "}"
+	allow "{" space declaration space "}"
 
-    forbid space{*} newline{*}
+/*
+	forbid property whitespace ":"
+	require rule (newline{2} or newline{3}) rule
+	require selector space block
+
+	require ":" space value
+	require declaration newline declaration
+
+
+	forbid selector whitespace selector
+	forbid space{*} newline
 	forbid space{*} eof
 
-    require newline rule newline{2} rule
+	require comma space
 	require newline eof
 */
 }

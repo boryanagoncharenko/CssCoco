@@ -27,13 +27,23 @@ class Node(object):
             s = ''.join([s, child.pretty_print(level + 1, verbose)])
         return s
 
-    def get_position_str(self,):
+    def get_position_str(self):
         return ''.join([' start[', str(self.start_position.line), ':', str(self.start_position.column), ']',
                         'end[',  str(self.end_position.line), ':', str(self.end_position.column), ']'])
 
     def __repr__(self):
         parent_type = self.parent.type_ if self.has_parent() else 'none'
         return ''.join([' Node(type=', self.type_, ', parent=', parent_type, ' index=', str(self.index), ')'])
+
+    def to_error_string(self):
+        string = ''
+        for child in self.value:
+            string = ''.join([string, child.to_error_string()])
+        return string
+
+    def _get_terminal_nodes(self):
+        for child in self.value:
+            yield from child._get_terminal_nodes()
 
 
 class TerminalNode(Node):
@@ -49,6 +59,12 @@ class TerminalNode(Node):
         if verbose:
             s = ''.join([s, self.get_position_str()])
         return s
+
+    def to_error_string(self):
+        return self.value
+
+    def _get_terminal_nodes(self):
+        yield self
 
 
 class Position(object):
@@ -109,17 +125,11 @@ class ParseTreeBuilder(object):
 
     def _add_position_to_terminal_nodes(self, node):
         start = Position.START
-        for terminal in self._get_terminal_nodes(node):
+        for terminal in node._get_terminal_nodes():
             terminal.start_position = start
             terminal.end_position = start.get_next_position(terminal.value)
             start = Position(terminal.end_position.line, terminal.end_position.column)
 
-    def _get_terminal_nodes(self, node):
-        if not node.has_children():
-            yield node
-        else:
-            for child in node.value:
-                yield from self._get_terminal_nodes(child)
 
     def _add_position_to_nodes(self, node):
         if node.has_children():

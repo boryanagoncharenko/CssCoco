@@ -42,7 +42,7 @@ class ExpressionEvaluator(object):
 
     @vis.visitor(ast.SelectorMarker)
     def visit(self, node):
-        return matching.SimpleDescriptor(type_='selector') # or simpleselector
+        return matching.SimpleDescriptor(type_='selector')  # or simple selector
 
     @vis.visitor(ast.DeclarationMarker)
     def visit(self, node):
@@ -51,6 +51,10 @@ class ExpressionEvaluator(object):
     @vis.visitor(ast.BlockMarker)
     def visit(self, node):
         return matching.SimpleDescriptor(type_='block')
+
+    @vis.visitor(ast.PropertyMarker)
+    def visit(self, node):
+        return matching.SimpleDescriptor(type_='property')
 
     @vis.visitor(ast.ValueMarker)
     def visit(self, node):
@@ -67,6 +71,14 @@ class ExpressionEvaluator(object):
     @vis.visitor(ast.SymbolMarker)
     def visit(self, node):
         return matching.SimpleDescriptor(value=node.value)
+
+    @vis.visitor(ast.CommaMarker)
+    def visit(self, node):
+        return matching.SimpleDescriptor(type_='operator', value=',')
+
+    @vis.visitor(ast.WhitespaceMarker)
+    def visit(self, node):
+        return matching.CompoundDescriptor.WHITESPACE
 
     @vis.visitor(ast.TabMarker)
     def visit(self, node):
@@ -125,7 +137,6 @@ class Evaluator():
 
     @vis.visitor(ast.RequireRule)
     def visit(self, node):
-        # TODO: implement variations in css markers
         css_expr_list = self._get_list_of_css_mark_expr(node.markers_list)
         css_sequences = ExpressionEvaluator().get_sequence_list(css_expr_list)
         css_variation = matching.SequenceVariation(css_sequences, self._peek_context().get_cond_ignores())
@@ -176,6 +187,10 @@ class Evaluator():
         sequences = ExpressionEvaluator().get_sequence_list(node.markers_list)
         variation = matching.SequenceVariation(sequences, self._peek_context().get_forbid_ignores())
         return matching.ForbidConvention(variation)
+
+    @vis.visitor(ast.AllowRule)
+    def visit(self, node):
+        pass
 
     @vis.visitor(ast.MarkerSequenceOption)
     def visit(self, node):

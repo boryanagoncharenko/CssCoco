@@ -56,7 +56,10 @@ class SExprTransformer(object):
         return type(s_expr[1]) is not list
 
     def _is_terminal_expr(self, s_expr):
-        return type(s_expr) is not list
+        s = type(s_expr) is not list
+        if s:
+            pass
+        return s
 
     def _add_value_transformation(self, s_expr):
         """
@@ -65,12 +68,22 @@ class SExprTransformer(object):
         """
         if self._is_expr_without_value(s_expr):
             type_ = s_expr[0]
+            value = ['dummy', '']
             if type_ in self._type_to_value:
                 value = self._type_to_value[type_]
-                s_expr.append(value)
+            else:
+                pass
+            s_expr.insert(1, value)
 
     def _is_expr_without_value(self, s_expr):
-        return len(s_expr) == 1
+        if len(s_expr) == 1:
+            return True
+        if type(s_expr[1]) is not list:
+            return False
+        # selector 'a, ' produces a simple selector that has one space as a child that is later pulled up
+        if len(s_expr) == 2 and s_expr[1][0] == 's':
+            return True
+        return False
 
     def _block_transformation(self, s_expr):
         """

@@ -163,7 +163,8 @@ class SequenceFinder(object):
 
         for sequence in option:
             present, message = SequenceFinder._is_sequence_present_after(node, sequence, option.ignore_desc)
-            print(message)
+            if message:
+                print(message)
             if present:
                 return True
         return False
@@ -175,7 +176,7 @@ class SequenceFinder(object):
             for i, desc in enumerate(sequence):
                 is_valid, next_node = SequenceFinder._get_next_non_ignored_child(current_node, ignore_desc)
                 if not is_valid or not desc.is_match(next_node):
-                    return False, SequenceFinder._build_error_message(sequence, i, next_node)
+                    return False, SequenceFinder._build_error_message(sequence, i, next_node, before_node=current_node)
                 current_node = next_node
         return True, ''
 
@@ -186,14 +187,19 @@ class SequenceFinder(object):
         for child in node.value:
             res = SequenceFinder._find_first_non_terminal(child)
             if res:
-               return res
+                return res
         return None
 
     @staticmethod
-    def _build_error_message(sequence, to_index, node):
-        s = ''.join(['Violation on line ', str(node.start_position.line) , ': expected: \'', sequence.to_error_string(), '\' found: \''])
+    def _build_error_message(sequence, to_index, node, before_node=None, after_node=None):
+        s = ''.join(['Violation on line ', str(node.start_position.line), ':'])
+        if before_node:
+            s = ''.join([s, ' after \'', before_node.to_error_string(), '\''])
+        if after_node:
+            s = ''.join([s, ' before ', after_node.to_error_string()])
+        s = ''.join([s, ' expected \'', sequence.to_error_string(), '\' but found \''])
         terminal_node = SequenceFinder._find_first_non_terminal(node)
-        s = ''.join([s, sequence.to_error_string(to_index), terminal_node.value, '\' instead' ])
+        s = ''.join([s, sequence.to_error_string(to_index), terminal_node.value, '\' instead'])
         s = s.replace('\n', '\\n')
         s = s.replace('\t', '\\t')
         return s
@@ -214,10 +220,10 @@ class SequenceFinder(object):
             nodes_before = SequenceFinder._get_n_non_ignored_before(len(sequence), node, ignore_desc)
             if not nodes_before:
                 return False
-            for index, node_before in enumerate(nodes_before):
-                if not sequence[index].is_match(node_before):
-                    return False
-        return True
+            for i, node_before in enumerate(nodes_before):
+                if not sequence[i].is_match(node_before):
+                    return False, SequenceFinder._build_error_message(sequence, i, node_before, after_node=node)
+        return True, ''
 
     @staticmethod
     def _is_sequence_present_from(node, sequence, ignore_desc):
@@ -242,7 +248,6 @@ class SequenceFinder(object):
             child = parent.value[i]
             if not ignore_desc.is_match(child):
                 return True, child
-
         return False, None
 
     @staticmethod
@@ -268,6 +273,7 @@ class Requirement(object):
     def is_fulfilled(self, nodes):
         assert len(nodes) > 0
         first_child = nodes[0]
+
         return self._is_before_fulfilled(first_child) and \
             self._are_inner_and_after_fulfilled(nodes)
 
@@ -302,9 +308,10 @@ class IfThenConvention(Convention):
         self._requirement = requirement
 
     def is_violated(self, tree):
+        res = []
         for nodes in SequenceFinder.find_variation(tree, self._cond_variation):
-            print(self._requirement.is_fulfilled(nodes))
-        # TODO: return useful information about the result
+            res.append(self._requirement.is_fulfilled(nodes))
+        return res
 
 
 class ForbidConvention(Convention):
@@ -313,8 +320,17 @@ class ForbidConvention(Convention):
         self.variation = variation
 
     def is_violated(self, tree):
+        res = ''
         for nodes in SequenceFinder.find_variation(tree, self.variation):
-            print('Found')
+            res = ''.join([res, self._err(nodes)])
+        if res:
+            print(res)
+
+    def _err(self, nodes):
+        ns = ''
+        for n in nodes:
+            ns = ''.join([ns, n.to_error_string()])
+        return ''.join(['\nViolation on line, ', str(nodes[0].start_position.line), ': forbidden sequence of \'', ns, '\''])
 
 
 class ConventionsMap(object):
