@@ -150,7 +150,6 @@ class ParseTreeBuilder(object):
             terminal.end_position = start.get_next_position(terminal.value)
             start = Position(terminal.end_position.line, terminal.end_position.column)
 
-
     def _add_position_to_nodes(self, node):
         if node.has_children():
             for child in node.value:
