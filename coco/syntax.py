@@ -27,7 +27,7 @@ class Parser(object):
 
         L_PAREN: '\(' ;
         R_PAREN: '\)' ;
-        WORD: '[a-zA-Z]+' (%unless
+        WORD: '[a-zA-Z\-]+' (%unless
             OR: 'or' ;
             REQUIRE: 'require' ;
             FORBID: 'forbid' ;

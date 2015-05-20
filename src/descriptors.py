@@ -94,3 +94,5 @@ NodeDescriptor.WHITESPACE = CompoundDescriptor([SimpleDescriptor(type_='space'),
                                                 SimpleDescriptor(type_='newline')])
 
 NodeDescriptor.INDENT = CompoundDescriptor([SimpleDescriptor(type_='indent')])
+
+NodeDescriptor.COMMENT = CompoundDescriptor([SimpleDescriptor(type_='comment')])

@@ -50,7 +50,11 @@ class CommentMarker(CssMarker):
     pass
 
 
-class CommaMarker(CssMarker):
+class CsvCommaMarker(CssMarker):
+    pass
+
+
+class SelectorCommaMarker(CssMarker):
     pass
 
 

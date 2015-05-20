@@ -46,49 +46,49 @@ Sequence.NONE = Sequence([])
 
 class SequenceVariation(object):
 
-    def __init__(self, sequences, ignore_desc):
-        self.sequences = sequences
-        self.ignore_desc = ignore_desc
+    def __init__(self, match_sequences, ignore_sequences):
+        self.match_sequences = match_sequences
+        self.ignore_sequences = ignore_sequences
 
     def __iter__(self):
-        return iter(self.sequences)
+        return iter(self.match_sequences)
 
     def to_error_string(self):
         res = ''
-        for s in self.sequences:
+        for s in self.match_sequences:
             res = ''.join([res, ' or \'', s.to_error_string(), '\''])
         return res[4:]
 
     def is_part_of_variation(self, variation):
         for os in variation:
-            for ms in self.sequences:
+            for ms in self.match_sequences:
                 if ms.is_part_of_sequence(os):
                     return True
         return False
 
 
-SequenceVariation.NONE = SequenceVariation([], None)
+SequenceVariation.NONE = SequenceVariation([], [])
 
 
-class SequenceFinder(object):
-    """
-    The class is responsible for finding NodeSequences and SequenceOptions in a tree
-    """
+class TreeWalker(object):
+
     @staticmethod
-    def find_variation(tree, variation):
+    def find_variation_in_tree(tree, variation):
         for sequence in variation:
-            yield from SequenceFinder._find_sequence(tree, sequence, variation.ignore_desc)
+            yield from TreeWalker.find_sequence_in_tree(tree, sequence, variation.ignore_sequences)
 
     @staticmethod
-    def _find_sequence(tree, sequence, ignore_desc):
+    def find_sequence_in_tree(tree, sequence, ignore_sequences):
         """
         Traverses a tree and returns all occurrences of a given sequence
         """
         if not sequence.is_empty():
-            for start in SequenceFinder.find_node_in_tree(tree, sequence[0]):
-                success, nodes = SequenceFinder._is_sequence_present_from(start, sequence, ignore_desc)
-                if success:
-                    yield nodes
+            for node in TreeWalker.find_node_in_tree(tree, sequence[0]):
+                next_nodes = node.get_next_siblings_including()
+                sieved_nodes = TreeWalker.sieve_non_ignored_nodes(next_nodes, ignore_sequences)
+                sieved_nodes = sieved_nodes[:len(sequence)]
+                if TreeWalker.is_sequence_exact_match(sequence, sieved_nodes):
+                    yield sieved_nodes
 
     @staticmethod
     def find_node_in_tree(node, desc):
@@ -99,33 +99,118 @@ class SequenceFinder(object):
             yield node
         if node.has_children():
             for child in node.value:
-                yield from SequenceFinder.find_node_in_tree(child, desc)
+                yield from TreeWalker.find_node_in_tree(child, desc)
 
     @staticmethod
-    def _is_sequence_present_from(node, sequence, ignore_desc):
-        if sequence is Sequence.NONE:
-            return False, None
-        result = []
-        current = node
-        for desc in sequence:
-            if not current or not desc.is_match(current):
-                return False, None
-            result.append(current)
-            _, current = SequenceFinder._get_next_non_ignored_child(current, ignore_desc)
-        return True, result
+    def is_sequence_exact_match(sequence, nodes):
+        """
+        The method returns True if the given nodes match the given sequence.
+        No ignoring of nodes is performed
+        :param sequence: the sequence that needs to be matched
+        :param nodes: the nodes that need to be checked against the sequence
+        :return: a boolean value that indicates whether there is a match
+        """
+        if len(sequence) != len(nodes):
+            return False  # There is a mismatch in the length
+        for i, desc in enumerate(sequence):
+            if not desc.is_match(nodes[i]):
+                return False  # There is no match
+        return True
 
     @staticmethod
-    def _get_next_non_ignored_child(node, ignore_desc):
-        parent = node.parent
+    def is_variation_exact_match(variation, nodes):
+        """
+        The method returns True if the given nodes match a sequence in the given variation.
+        No ignoring of nodes is performed
+        :param variation: the variation that needs to be matched
+        :param nodes: the nodes that need to be checked against the variation
+        :return: a boolean value indicating if there is a match,
+        the sequence that was matched successfully,
+        the nodes that matched the sequence
+        """
+        for sequence in variation:
+            is_match = TreeWalker.is_sequence_exact_match(sequence, nodes)
+            if is_match:
+                return True, sequence, nodes
+        return False, Sequence.NONE, nodes
+
+    @staticmethod
+    def is_variation_present_btw_two_nodes(variation, node_start, node_end, ignored_sequences):
+        assert node_start.parent is node_end.parent
+        assert node_start.index < node_end.index
+        assert variation is not SequenceVariation.NONE
+
+        parent = node_start.parent
         if not parent:
-            return False, None
-        next_child_index = node.index + 1
-        number_of_children = len(parent.value)
+            raise NotImplementedError('Y is your parent None?!')
+        nodes = parent.value[node_start.index+1:node_end.index]
+        nodes = TreeWalker.sieve_non_ignored_nodes(nodes, ignored_sequences)
+        return TreeWalker.is_variation_exact_match(variation, nodes)
 
-        for i in range(next_child_index, number_of_children):
-            child = parent.value[i]
-            if not ignore_desc.is_match(child):
-                return True, child
+    @staticmethod
+    def sieve_non_ignored_nodes(nodes, ignore_sequences):
+        if not nodes:
+            return []
+        res = []
+        i = 0
+        while i < len(nodes):
+            child = nodes[i]
+            is_beginning_of_seq, seq = TreeWalker._sieve_helper(child, ignore_sequences)
+            if is_beginning_of_seq:
+                i += len(seq)
+            else:
+                res.append(child)
+                i += 1
+        return res
+
+    @staticmethod
+    def _sieve_helper(node, ignore_sequences):
+        for sequence in ignore_sequences:
+            if TreeWalker.is_node_beginning_of_sequence(node, sequence):
+                return True, sequence
         return False, None
 
+    @staticmethod
+    def is_node_beginning_of_sequence(node, sequence):
+        if not node.parent:
+            return False
+        nodes = node.parent.value[node.index:]
+        nodes = nodes[:len(sequence)]
+        return TreeWalker.is_sequence_exact_match(sequence, nodes)
+
+    @staticmethod
+    def get_non_ignored_nodes_before_node(node, cond_ignore_sequences, ignore_sequences):
+        from_node = TreeWalker.get_previous_non_ignored_node(node, cond_ignore_sequences)
+        if not from_node:
+            return []
+        nodes = node.parent.value[from_node.index+1:node.index]
+        return TreeWalker.sieve_non_ignored_nodes(nodes, ignore_sequences)
+
+    @staticmethod
+    def get_previous_non_ignored_node(node, ignore_sequences):
+        prev_nodes = node.get_previous_siblings_excluding()
+        if not prev_nodes:
+            return None
+        sieved_nodes = TreeWalker.sieve_non_ignored_nodes(prev_nodes, ignore_sequences)
+        if not sieved_nodes:
+            return None
+        return sieved_nodes[-1]
+
+    @staticmethod
+    def get_non_ignored_nodes_after_node(node, cond_ignore_sequences, ignore_sequences):
+        after_node = TreeWalker.get_next_non_ignored_node(node, cond_ignore_sequences)
+        if not after_node:
+            return []
+        nodes = node.parent.value[node.index+1:after_node.index]
+        return TreeWalker.sieve_non_ignored_nodes(nodes, ignore_sequences)
+
+    @staticmethod
+    def get_next_non_ignored_node(node, ignore_sequences):
+        next_nodes = node.get_next_siblings_excluding()
+        if not next_nodes:
+            return None
+        sieved_nodes = TreeWalker.sieve_non_ignored_nodes(next_nodes, ignore_sequences)
+        if not sieved_nodes:
+            return None
+        return sieved_nodes[0]
 

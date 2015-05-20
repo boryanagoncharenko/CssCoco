@@ -1,4 +1,5 @@
 import src.sequences as seqs
+from src.sequences import TreeWalker as walker
 
 
 class Requirement(object):
@@ -27,8 +28,9 @@ class Requirement(object):
     def is_before_variation_present(self, nodes, variation_ignore_desc, errs):
         if self.variation_list[0] is seqs.SequenceVariation.NONE:
             return True
-        before_nodes = self._get_nodes_before(nodes[0], variation_ignore_desc)
-        present, sequence, inner_nodes = self._is_variation_match(self.variation_list[0], before_nodes)
+
+        before_nodes = walker.get_non_ignored_nodes_before_node(nodes[0], variation_ignore_desc, self.ignore_desc)
+        present, sequence, inner_nodes = walker.is_variation_exact_match(self.variation_list[0], before_nodes)
         if self._is_present_error(present):
             errs.append(self._get_err(nodes[0], self.variation_list[0], inner_nodes))
         return present
@@ -40,7 +42,8 @@ class Requirement(object):
             if variation is not seqs.SequenceVariation.NONE:
                 start_node = nodes[i-1]
                 end_node = nodes[i]
-                present, sequence, inner_nodes = self._is_inner_two(variation, start_node, end_node)
+                present, sequence, inner_nodes = walker.is_variation_present_btw_two_nodes(variation, start_node,
+                                                                                           end_node, self.ignore_desc)
                 if self._is_present_error(present):
                     result = False
                     errs.append(self._get_err(start_node, variation, inner_nodes))
@@ -49,8 +52,8 @@ class Requirement(object):
     def is_after_variation_present(self, nodes, variation_ignore_desc, errs):
         if self.variation_list[-1] is seqs.SequenceVariation.NONE:
             return True
-        after_nodes = self._get_nodes_after(nodes[-1], variation_ignore_desc)
-        present, sequence, inner_nodes = self._is_variation_match(self.variation_list[-1], after_nodes)
+        after_nodes = walker.get_non_ignored_nodes_after_node(nodes[-1], variation_ignore_desc, self.ignore_desc)
+        present, sequence, inner_nodes = walker.is_variation_exact_match(self.variation_list[-1], after_nodes)
         if self._is_present_error(present):
             errs.append(self._get_err(nodes[-1], self.variation_list[-1], inner_nodes))
         return present
@@ -60,32 +63,38 @@ class Requirement(object):
                         variation.to_error_string(), ', found ', self.error_msg(inner_nodes),' instead.'])
 
     def _get_nodes_before(self, start_node, variation_ignore_desc):
-        parent = start_node.parent
-        if not parent or start_node.index == 0:
+        before_node = self._get_before_node(start_node, variation_ignore_desc)
+        if not before_node:
             return []
-        res = []
+        nodes = start_node.parent.value[before_node.index+1:start_node.index]
+        return self._sieve_the_non_ignored(nodes)
+
+    def _get_before_node(self, start_node, variation_ignore_desc):
+        parent = start_node.parent
+        if not parent or start_node == 0:
+            return None
         for i in range(start_node.index-1, 0, -1):
             prev_sibling = parent.value[i]
-            if variation_ignore_desc.is_match(prev_sibling):
-                if not self.ignore_desc.is_match(prev_sibling):
-                    res.insert(0, prev_sibling)
-            else:
-                break
-        return res
+            if not variation_ignore_desc.is_match(prev_sibling):
+                return prev_sibling
+        return None
 
     def _get_nodes_after(self, start_node, variation_ignore_desc):
+        after_node = self._get_after_node(start_node, variation_ignore_desc)
+        if not after_node:
+            return []
+        nodes = start_node.parent.value[start_node.index+1:after_node.index]
+        return self._sieve_the_non_ignored(nodes)
+
+    def _get_after_node(self, start_node, variation_ignore_desc):
         parent = start_node.parent
         if not parent or start_node.index == len(parent.value) - 1:
-            return []
-        res = []
+            return None
         for i in range(start_node.index + 1, len(parent.value)):
             next_sibling = parent.value[i]
-            if variation_ignore_desc.is_match(next_sibling):
-                if not self.ignore_desc.is_match(next_sibling):
-                    res.append(next_sibling)
-            else:
-                break
-        return res
+            if not variation_ignore_desc.is_match(next_sibling):
+                return next_sibling
+        return None
 
     def _is_inner_two(self, variation, node_start, node_end):
         assert node_start.parent is node_end.parent
@@ -215,8 +224,8 @@ class ConventionsMap(object):
         self._weak_matches = self.mark_weak_matches(css_tree)
         res = []
         for s in self.strong:
-            for nodes in seqs.SequenceFinder.find_variation(css_tree, s._cond_variation):
-                is_fulfilled, errs = s._requirement.is_fulfilled(nodes, s._cond_variation.ignore_desc)
+            for nodes in walker.find_variation_in_tree(css_tree, s._cond_variation):
+                is_fulfilled, errs = s._requirement.is_fulfilled(nodes, s._cond_variation.ignore_sequences)
                 if not is_fulfilled and not self._is_already_relaxed(s, nodes):
                     res = res + errs
         return res
@@ -224,12 +233,10 @@ class ConventionsMap(object):
     def mark_weak_matches(self, css_tree):
         res = {}
         for w in self.weak:
-            for nodes in seqs.SequenceFinder.find_variation(css_tree, w._cond_variation):
-                is_fulfilled, _ = w._requirement.is_fulfilled(nodes, w._cond_variation.ignore_desc)
+            for nodes in walker.find_variation_in_tree(css_tree, w._cond_variation):
+                is_fulfilled, _ = w._requirement.is_fulfilled(nodes, w._cond_variation.ignore_sequences)
                 if is_fulfilled:
                     self._add_to_map(w, nodes, res)
-                # if not is_fulfilled:
-                #     res = res + errs
         return res
 
     def _is_already_relaxed(self, s, nodes):

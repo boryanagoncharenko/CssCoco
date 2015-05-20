@@ -1,1 +1,7 @@
-a { color: red;  }
+.highlight .hll {
+    background-color: #ffffcc
+}
+
+.highlight {
+    background: #eeffcc;
+}

@@ -1,4 +1,5 @@
 import src.descriptors as descriptors
+import src.sequences as seqs
 import coco.ast.ast_node as ast
 import coco.ast.expressions as expr
 import coco.ast.markers as markers
@@ -21,13 +22,10 @@ class Context(ast.AstNode):
     def get_children(self):
         return self.statements
 
-    def get_cond_ignores(self):
+    def get_condition_ignore_sequences(self):
         pass
 
-    def get_requirement_ignores(self):
-        pass
-
-    def get_forbid_ignores(self):
+    def get_requirement_ignore_sequences(self):
         pass
 
 
@@ -36,11 +34,14 @@ class WhitespaceContext(Context):
     def __init__(self, statements):
         Context.__init__(self, statements)
 
-    def get_cond_ignores(self):
-        return descriptors.NodeDescriptor.WHITESPACE
+    def get_condition_ignore_sequences(self):
+        return self.get_requirement_ignore_sequences() + [seqs.Sequence([descriptors.NodeDescriptor.WHITESPACE])]
 
-    def get_requirement_ignores(self):
-        return descriptors.NodeDescriptor.INDENT
+    def get_requirement_ignore_sequences(self):
+        return [seqs.Sequence([descriptors.NodeDescriptor.INDENT]),
+                seqs.Sequence([descriptors.NodeDescriptor.COMMENT]),
+                seqs.Sequence([descriptors.SimpleDescriptor(type_='newline'),
+                               descriptors.SimpleDescriptor(type_='comment')])]
 
 
 class Statement(ast.AstNode):
@@ -249,8 +250,11 @@ class AstBuilder(object):
             return markers.EofMarker()
         if name == 'comment':
             return markers.CommentMarker()
-        if name == 'comma':
-            return markers.CommaMarker()
+        if name == 'csv-comma':
+            return markers.CsvCommaMarker()
+        if name == 'selector-comma':
+            return markers.SelectorCommaMarker()
+
 
         repetitions = self._get_repetition(ply_node)
         if name == 'whitespace':

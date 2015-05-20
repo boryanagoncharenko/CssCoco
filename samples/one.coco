@@ -1,21 +1,20 @@
 whitespace
 {
-	require "{" newline declaration
+	require rule newline{2} rule
+	require newline eof
+    require selector-comma space
+	require csv-comma space
+	forbid selector whitespace selector
+	require selector space "{"
 	require declaration newline "}"
-	allow "{" space declaration space "}"
-
-/*
+	require "{" newline declaration
 	require ":" space value
 	forbid property whitespace ":"
 	forbid space{*} newline
-	require declaration newline declaration
-	require rule (newline{2} or newline{3}) rule
-	require selector space block
-	require newline eof
-
-	require comma space
-	require newline eof
-	forbid selector whitespace selector
+	require declaration (newline or space) declaration
+/*
+	allow "{" space declaration space "}"
+    allow "{" space declaration space declaration space "}"
 
 */
 }

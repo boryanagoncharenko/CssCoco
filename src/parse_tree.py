@@ -35,6 +35,26 @@ class Node(object):
         parent_type = self.parent.type_ if self.has_parent() else 'none'
         return ''.join([' Node(type=', self.type_, ', parent=', parent_type, ' index=', str(self.index), ')'])
 
+    def get_next_siblings_including(self):
+        if not self.parent:
+            return [self]
+        return self.parent.value[self.index:]
+
+    def get_next_siblings_excluding(self):
+        if not self.parent:
+            return []
+        return self.parent.value[self.index+1:]
+
+    def get_previous_siblings_including(self):
+        if not self.parent:
+            return [self]
+        return self.parent.value[0:self.index+1]
+
+    def get_previous_siblings_excluding(self):
+        if not self.parent:
+            return []
+        return self.parent.value[0:self.index]
+
     def to_error_string(self):
         string = ''
         for child in self.value:

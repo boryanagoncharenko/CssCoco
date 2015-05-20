@@ -50,7 +50,8 @@ class ExpressionEvaluator(object):
 
     @vis.visitor(markers.SelectorMarker)
     def visit(self, node):
-        return descriptors.SimpleDescriptor(type_='selector')  # or simple selector
+        return descriptors.CompoundDescriptor([descriptors.SimpleDescriptor(type_='selector'),
+                                               descriptors.SimpleDescriptor(type_='simpleselector')])
 
     @vis.visitor(markers.DeclarationMarker)
     def visit(self, node):
@@ -58,7 +59,9 @@ class ExpressionEvaluator(object):
 
     @vis.visitor(markers.BlockMarker)
     def visit(self, node):
-        return descriptors.SimpleDescriptor(type_='block')
+        return descriptors.CompoundDescriptor([descriptors.SimpleDescriptor(type_='block'),
+                                               descriptors.SimpleDescriptor(value='{'),
+                                               descriptors.SimpleDescriptor(value='}')])
 
     @vis.visitor(markers.PropertyMarker)
     def visit(self, node):
@@ -78,15 +81,26 @@ class ExpressionEvaluator(object):
 
     @vis.visitor(markers.SymbolMarker)
     def visit(self, node):
+        if node.value == '{':
+            return descriptors.CompoundDescriptor([descriptors.SimpleDescriptor(type_='block'),
+                                                   descriptors.SimpleDescriptor(value='{')])
+        if node.value == '}':
+            return descriptors.CompoundDescriptor([descriptors.SimpleDescriptor(type_='block'),
+                                                   descriptors.SimpleDescriptor(value='}')])
+
         return descriptors.SimpleDescriptor(value=node.value)
 
-    @vis.visitor(markers.CommaMarker)
+    @vis.visitor(markers.CsvCommaMarker)
     def visit(self, node):
         return descriptors.SimpleDescriptor(type_='operator', value=',')
 
+    @vis.visitor(markers.SelectorCommaMarker)
+    def visit(self, node):
+        return descriptors.SimpleDescriptor(type_='delim', value=',')
+
     @vis.visitor(markers.WhitespaceMarker)
     def visit(self, node):
-        return matching.CompoundDescriptor.WHITESPACE
+        return descriptors.CompoundDescriptor.WHITESPACE
 
     @vis.visitor(markers.TabMarker)
     def visit(self, node):
@@ -147,29 +161,29 @@ class Evaluator():
     def visit(self, node):
         css_variation = self._get_cond(node)
         option_list = self._get_list_of_ws_variations(node.markers_list)
-        requirement = matching.ForbidRequirement(option_list, self._peek_context().get_requirement_ignores())
+        requirement = matching.ForbidRequirement(option_list, self._peek_context().get_requirement_ignore_sequences())
         return matching.ForbidConvention(css_variation, requirement)
 
     @vis.visitor(ast.RequireRule)
     def visit(self, node):
         css_variation = self._get_cond(node)
         option_list = self._get_list_of_ws_variations(node.markers_list)
-        requirement = matching.Requirement(option_list, self._peek_context().get_requirement_ignores())
+        requirement = matching.Requirement(option_list, self._peek_context().get_requirement_ignore_sequences())
         return matching.RequireConvention(css_variation, requirement)
 
     @vis.visitor(ast.AllowRule)
     def visit(self, node):
         css_variation = self._get_cond(node)
         option_list = self._get_list_of_ws_variations(node.markers_list)
-        requirement = matching.Requirement(option_list, self._peek_context().get_requirement_ignores())
+        requirement = matching.Requirement(option_list, self._peek_context().get_requirement_ignore_sequences())
         return matching.AllowConvention(css_variation, requirement)
 
     def _get_cond(self, node):
         css_expr_list = self._get_list_of_css_mark_expr(node.markers_list)
         css_sequences = ExpressionEvaluator().get_sequence_list(css_expr_list)
         if len(css_sequences) == 1 and css_sequences[0] is seqs.Sequence.NONE:
-            css_sequences = [seqs.Sequence([matching.NodeDescriptor.ANY])]
-        return seqs.SequenceVariation(css_sequences, self._peek_context().get_cond_ignores())
+            css_sequences = [seqs.Sequence([descriptors.NodeDescriptor.ANY])]
+        return seqs.SequenceVariation(css_sequences, self._peek_context().get_condition_ignore_sequences())
 
     def _get_list_of_css_mark_expr(self, expr_list):
         result = []
@@ -189,7 +203,7 @@ class Evaluator():
             sequences = ExpressionEvaluator().get_sequence_list(markers_list)
             variation = seqs.SequenceVariation.NONE
             if sequences[0] is not seqs.Sequence.NONE:
-                variation = seqs.SequenceVariation(sequences, self._peek_context().get_requirement_ignores())
+                variation = seqs.SequenceVariation(sequences, self._peek_context().get_requirement_ignore_sequences())
             result.append(variation)
         return result
 
@@ -218,7 +232,7 @@ class Evaluator():
         for sequence in node.marker_sequences:
             s = self.visit(sequence)
             res.append(s)
-        return seqs.SequenceVariation(res, descriptors.SimpleDescriptor(type_='indent'))
+        return seqs.SequenceVariation(res, [seqs.Sequence([descriptors.SimpleDescriptor(type_='indent')])])
 
     @vis.visitor(ast.MarkerSequence)
     def visit(self, node):
