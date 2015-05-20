@@ -1,22 +1,10 @@
-import src.tree_search as search
+import src.descriptors as descriptors
+import coco.ast.ast_node as ast
+import coco.ast.expressions as expr
+import coco.ast.markers as markers
 
 
-class AstNode(object):
-
-    def get_children(self):
-        return []
-
-    def get_title(self):
-        return self.__class__.__name__
-
-    def pretty_print(self, level=0, print_indent='  '):
-        s = ''.join(['\n', print_indent*level, self.get_title(), ':'])
-        for child in self.get_children():
-            s = ''.join([s, child.pretty_print(level + 1)])
-        return s
-
-
-class Sheet(AstNode):
+class Sheet(ast.AstNode):
 
     def __init__(self, contexts):
         self.contexts = contexts
@@ -25,7 +13,7 @@ class Sheet(AstNode):
         return self.contexts
 
 
-class Context(AstNode):
+class Context(ast.AstNode):
 
     def __init__(self, statements):
         self.statements = statements
@@ -49,16 +37,13 @@ class WhitespaceContext(Context):
         Context.__init__(self, statements)
 
     def get_cond_ignores(self):
-        return search.CompoundDescriptor.WHITESPACE
+        return descriptors.NodeDescriptor.WHITESPACE
 
     def get_requirement_ignores(self):
-        return search.CompoundDescriptor.INDENT
-
-    def get_forbid_ignores(self):
-        return search.CompoundDescriptor.INDENT
+        return descriptors.NodeDescriptor.INDENT
 
 
-class Statement(AstNode):
+class Statement(ast.AstNode):
     """
     Abstract class
     """
@@ -99,7 +84,7 @@ class AllowRule(Rule):
         Rule.__init__(self, markers_list)
 
 
-class MarkerSequence(AstNode):
+class MarkerSequence(ast.AstNode):
 
     def __init__(self, markers):
         self.markers = markers
@@ -117,7 +102,7 @@ class MarkerSequence(AstNode):
         return s
 
 
-class MarkerSequenceOption(AstNode):
+class MarkerSequenceOption(ast.AstNode):
 
     def __init__(self, marker_sequences):
         self.marker_sequences = marker_sequences
@@ -129,161 +114,6 @@ class MarkerSequenceOption(AstNode):
         return s
 
 MarkerSequenceOption.NONE = MarkerSequenceOption([])
-
-
-class Expression(AstNode):
-
-    def get_markers_expression(self):
-        pass
-
-
-class OrExpression(AstNode):
-
-    def __init__(self, markers_list):
-        self.markers_list = markers_list
-
-    def get_markers_expression(self):
-        return iter(self.markers_list)
-
-    def pretty_print(self, level=0, print_indent='  '):
-        s = ''.join(['\n', print_indent*level, self.get_title(), ':'])
-        for m in self.markers_list:
-            s = ''.join([s, m.pretty_print(level+1)])
-        return s
-
-
-class MarkersExpression(AstNode):
-
-    def __init__(self, marker_list):
-        self.marker_list = marker_list
-
-    def __iter__(self):
-        return iter(self.marker_list)
-
-    def get_markers_expression(self):
-        yield self
-
-    def pretty_print(self, level=0, print_indent='  '):
-        s = ''.join(['\n', print_indent*level, self.get_title(), ':'])
-        for m in self.marker_list:
-            s = ''.join([s, m.pretty_print(level+1)])
-        return s
-
-MarkersExpression.EMPTY = MarkersExpression([])
-
-
-class Marker(AstNode):
-
-    def is_css_marker(self):
-        return False
-
-    def is_ws_marker(self):
-        return False
-
-
-class CssMarker(Marker):
-
-    def is_css_marker(self):
-        return True
-
-
-class DeclarationMarker(CssMarker):
-    pass
-
-
-class SelectorMarker(CssMarker):
-    pass
-
-
-class RuleMarker(CssMarker):
-
-    def __init__(self):
-        pass
-
-
-class BlockMarker(CssMarker):
-    pass
-
-
-class PropertyMarker(CssMarker):
-    pass
-
-
-class ValueMarker(CssMarker):
-    pass
-
-
-class EofMarker(CssMarker):
-    pass
-
-
-class CommentMarker(CssMarker):
-    pass
-
-
-class CommaMarker(CssMarker):
-    pass
-
-
-class SymbolMarker(CssMarker):
-
-    def __init__(self, value):
-        self.value = value
-
-
-class WhitespaceMarker(Marker):
-
-    def __init__(self, repetitions):
-        self.repetitions = repetitions
-
-    def is_ws_marker(self):
-        return True
-
-    def is_repetitions_set(self):
-        return self.repetitions != -1
-
-    def get_value(self):
-        pass
-
-
-class SpaceMarker(WhitespaceMarker):
-
-    def __init__(self, repetitions):
-        WhitespaceMarker.__init__(self, repetitions)
-        self.__value = ' ' * self.repetitions
-
-    def get_value(self):
-        return self.__value
-
-
-class NewlineMarker(WhitespaceMarker):
-
-    def __init__(self, repetitions):
-        WhitespaceMarker.__init__(self, repetitions)
-        self.__value = '\n' * self.repetitions
-
-    def get_value(self):
-        return self.__value
-
-
-class TabMarker(WhitespaceMarker):
-
-    def __init__(self, repetitions):
-        WhitespaceMarker.__init__(self, repetitions)
-        self.__value = '\t' * self.repetitions
-
-    def get_value(self):
-        return self.__value
-
-
-class IndentMarker(WhitespaceMarker):
-
-    def __init__(self, repetitions):
-        WhitespaceMarker.__init__(self, repetitions)
-        self.__value = '?' * self.repetitions
-
-    def get_value(self):
-        return self.__value
 
 
 class AstBuilder(object):
@@ -363,17 +193,17 @@ class AstBuilder(object):
         right = self._build_marker(ply_node.tail[2])
 
         option_list = []
-        if type(left) is OrExpression:
+        if type(left) is expr.OrExpression:
             option_list = option_list + left.markers_list
         else:
             option_list.append(left)
 
-        if type(right) is OrExpression:
+        if type(right) is expr.OrExpression:
             option_list = option_list + right.markers_list
         else:
             option_list.append(right)
 
-        return OrExpression(option_list)
+        return expr.OrExpression(option_list)
 
 
     def _is_parenthesis_expr(self, ply_node):
@@ -385,52 +215,52 @@ class AstBuilder(object):
         markers = []
         if len(elements) == 1:
             result = self._build_marker(elements[0])
-            if type(result) in [OrExpression, MarkersExpression]:
+            if type(result) in [expr.OrExpression, expr.MarkersExpression]:
                 return result
 
         for element in elements:
             markers.append(self._build_marker_two(element))
-        return MarkersExpression(markers)
+        return expr.MarkersExpression(markers)
 
     def _is_terminal_expr(self, ply_node):
         return len(ply_node.tail) == 1
 
     def _handle_terminal_expr(self, ply_node):
         marker = self._build_marker_two(ply_node.tail[0])
-        return MarkersExpression([marker])
+        return expr.MarkersExpression([marker])
 
     def _build_marker_two(self, ply_node):
         name = ply_node.select('name > *')[0]
         if name == 'rule':
-            return RuleMarker()
+            return markers.RuleMarker()
         if name == 'declaration':
-            return DeclarationMarker()
+            return markers.DeclarationMarker()
         if name == 'selector':
-            return SelectorMarker()
+            return markers.SelectorMarker()
         if name == 'block':
-            return BlockMarker()
+            return markers.BlockMarker()
         if self._is_string(name):
-            return SymbolMarker(name[1:-1])
+            return markers.SymbolMarker(name[1:-1])
         if name == 'property':
-            return PropertyMarker()
+            return markers.PropertyMarker()
         if name == 'value':
-            return ValueMarker()
+            return markers.ValueMarker()
         if name == 'eof':
-            return EofMarker()
+            return markers.EofMarker()
         if name == 'comment':
-            return CommentMarker()
+            return markers.CommentMarker()
         if name == 'comma':
-            return CommaMarker()
+            return markers.CommaMarker()
 
         repetitions = self._get_repetition(ply_node)
         if name == 'whitespace':
-            return WhitespaceMarker(repetitions)
+            return markers.WhitespaceMarker(repetitions)
         if name == 'space':
-            return SpaceMarker(repetitions)
+            return markers.SpaceMarker(repetitions)
         if name == 'newline':
-            return NewlineMarker(repetitions)
+            return markers.NewlineMarker(repetitions)
         if name == 'tab':
-            return TabMarker(repetitions)
+            return markers.TabMarker(repetitions)
 
         raise NotImplementedError('Other css marker are not implemented yet')
 

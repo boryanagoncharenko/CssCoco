@@ -5,19 +5,17 @@ whitespace
 	allow "{" space declaration space "}"
 
 /*
+	require ":" space value
 	forbid property whitespace ":"
+	forbid space{*} newline
+	require declaration newline declaration
 	require rule (newline{2} or newline{3}) rule
 	require selector space block
-
-	require ":" space value
-	require declaration newline declaration
-
-
-	forbid selector whitespace selector
-	forbid space{*} newline
-	forbid space{*} eof
+	require newline eof
 
 	require comma space
 	require newline eof
+	forbid selector whitespace selector
+
 */
 }

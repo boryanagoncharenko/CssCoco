@@ -1,10 +1,11 @@
 import os
 import json
-import coco.grammar as grammar
-import coco.ast as cocoast
+import coco.syntax as grammar
+import coco.ast.ast as cocoast
 import coco.analysis as analysis
 import src.parser as parser
 import src.parse_tree as ast
+import src.conventions as matching
 
 
 def get_css_parse_tree():
@@ -38,7 +39,21 @@ if not error:
     coco_ast = get_coco_ast()
     map = analysis.Evaluator.evaluate(coco_ast)
 
-    for convention in map:
-        error = convention.is_violated(css_tree)
-        # print(error)
+    print(map.find_violations(css_tree))
 
+
+# a = matching.Sequence([matching.SimpleDescriptor(value='{'), matching.SimpleDescriptor(type_='decl')])
+# b = matching.Sequence([matching.SimpleDescriptor(type_='decl'), matching.SimpleDescriptor(value='}')])
+# c = matching.Sequence([matching.SimpleDescriptor(value='{'), matching.SimpleDescriptor(type_='decl'),
+#                        matching.SimpleDescriptor(value='}')])
+#
+# av = matching.SequenceVariation([a], matching.NodeDescriptor.ANY)
+# bv = matching.SequenceVariation([b], matching.NodeDescriptor.ANY)
+# cv = matching.SequenceVariation([c], matching.NodeDescriptor.ANY)
+#
+# print(av.is_part_of_variation(cv))
+# print(bv.is_part_of_variation(cv))
+
+
+    # You can have two consecutive \n nodes because they could be separated by an indent which is ignored
+    # There could be more symbols than in the sequence that are not checked for at all

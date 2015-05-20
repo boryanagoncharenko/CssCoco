@@ -1,4 +1,4 @@
-import src.tree_search as search
+import src.conventions as search
 
 
 def test():
