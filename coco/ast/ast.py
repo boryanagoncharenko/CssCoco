@@ -35,13 +35,33 @@ class WhitespaceContext(Context):
         Context.__init__(self, statements)
 
     def get_condition_ignore_sequences(self):
-        return self.get_requirement_ignore_sequences() + [seqs.Sequence([descriptors.NodeDescriptor.WHITESPACE])]
+        return self.get_requirement_ignore_sequences() + [seqs.SiblingSequence([descriptors.NodeDescriptor.WHITESPACE])]
 
     def get_requirement_ignore_sequences(self):
-        return [seqs.Sequence([descriptors.NodeDescriptor.INDENT]),
-                seqs.Sequence([descriptors.NodeDescriptor.COMMENT]),
-                seqs.Sequence([descriptors.SimpleDescriptor(type_='newline'),
+        return [seqs.SiblingSequence([descriptors.NodeDescriptor.INDENT]),
+                seqs.SiblingSequence([descriptors.NodeDescriptor.COMMENT]),
+                seqs.SiblingSequence([descriptors.SimpleDescriptor(type_='newline'),
                                descriptors.SimpleDescriptor(type_='comment')])]
+
+    def is_marker_in_condition(self, marker):
+        return marker.is_css_marker()
+
+
+class CommentsContext(Context):
+
+    def __init__(self, statements):
+        Context.__init__(self, statements)
+
+    def get_condition_ignore_sequences(self):
+        return self.get_requirement_ignore_sequences()
+               # [seqs.Sequence([descriptors.NegativeSimpleDescriptor(type_='comment')])]
+
+    def get_requirement_ignore_sequences(self):
+        return [seqs.SiblingSequence([descriptors.NodeDescriptor.INDENT])]
+
+    def is_marker_in_condition(self, marker):
+        return True
+        # return type(marker) is not markers.CommentMarker
 
 
 class Statement(ast.AstNode):
@@ -103,7 +123,7 @@ class MarkerSequence(ast.AstNode):
         return s
 
 
-class MarkerSequenceOption(ast.AstNode):
+class MarkerSequenceVariation(ast.AstNode):
 
     def __init__(self, marker_sequences):
         self.marker_sequences = marker_sequences
@@ -114,7 +134,7 @@ class MarkerSequenceOption(ast.AstNode):
             s = ''.join([s, sequence.pretty_print(level + 1)])
         return s
 
-MarkerSequenceOption.NONE = MarkerSequenceOption([])
+MarkerSequenceVariation.NONE = MarkerSequenceVariation([])
 
 
 class AstBuilder(object):
@@ -136,9 +156,12 @@ class AstBuilder(object):
             rule = self.__build_rule(stat)
             statements.append(rule)
 
-        name = ply_context.select('context > *')[0]
-        if name.lower() == 'whitespace':
+        name = ply_context.select('context > *')[0].lower()
+        if name == 'whitespace':
             return WhitespaceContext(statements)
+        if name == 'comments':
+            return CommentsContext(statements)
+
         raise NotImplementedError('Other contexts are not implemented yet')
 
     def __build_rule(self, ply_rule):
@@ -205,7 +228,6 @@ class AstBuilder(object):
             option_list.append(right)
 
         return expr.OrExpression(option_list)
-
 
     def _is_parenthesis_expr(self, ply_node):
         return ply_node.tail[0] == '(' and \

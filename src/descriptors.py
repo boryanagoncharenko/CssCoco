@@ -19,7 +19,7 @@ class SimpleDescriptor(NodeDescriptor):
 
     def __eq__(self, other):
         return (type(other) is type(self)
-            and self.__dict__ == other.__dict__)
+                and self.__dict__ == other.__dict__)
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -51,6 +51,17 @@ class SimpleDescriptor(NodeDescriptor):
 
     def to_error_string(self):
         return str(self.value)
+
+
+class NegativeSimpleDescriptor(SimpleDescriptor):
+
+    def __init__(self, type_=None, value=None):
+        super(NegativeSimpleDescriptor, self).__init__(type_, value)
+        # SimpleDescriptor.__init__(type_=type_, value=value)
+
+    def is_match(self, node):
+        is_match = super(NegativeSimpleDescriptor, self).is_match(node)
+        return not is_match
 
 
 class CompoundDescriptor(NodeDescriptor):

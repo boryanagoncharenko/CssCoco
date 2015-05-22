@@ -29,10 +29,14 @@ class ExpressionEvaluator(object):
         for markers_expr in markers_list:
             for marker in markers_expr.marker_list:
                 desc = self.visit(marker)
-                desc_list.append(desc)
+                if type(desc) is seqs.SiblingSequence:
+                    for d in desc:
+                        desc_list.append(d)
+                else:
+                    desc_list.append(desc)
         if desc_list:
-            return seqs.Sequence(desc_list)
-        return seqs.Sequence.NONE
+            return seqs.SiblingSequence(desc_list)
+        return seqs.SiblingSequence.NONE
 
     def _generate_possible_markers_lists(self, expr_list, result):
         if len(expr_list) == 0:
@@ -105,19 +109,28 @@ class ExpressionEvaluator(object):
     @vis.visitor(markers.TabMarker)
     def visit(self, node):
         if node.is_repetitions_set():
-            return descriptors.SimpleDescriptor(type_='tab', value=node.get_value())
+            ds = []
+            for i in range(0, node.repetitions):
+                ds.append(descriptors.SimpleDescriptor(type_='tab', value='\t'))
+            return seqs.SiblingSequence(ds)
         return descriptors.SimpleDescriptor(type_='tab')
 
     @vis.visitor(markers.SpaceMarker)
     def visit(self, node):
         if node.is_repetitions_set():
-            return descriptors.SimpleDescriptor(type_='space', value=node.get_value())
+            ds = []
+            for i in range(0, node.repetitions):
+                ds.append(descriptors.SimpleDescriptor(type_='space', value=' '))
+            return seqs.SiblingSequence(ds)
         return descriptors.SimpleDescriptor(type_='space')
 
     @vis.visitor(markers.NewlineMarker)
     def visit(self, node):
         if node.is_repetitions_set():
-            return descriptors.SimpleDescriptor(type_='newline', value=node.get_value())
+            ds = []
+            for i in range(0, node.repetitions):
+                ds.append(descriptors.SimpleDescriptor(type_='newline', value='\n'))
+            return seqs.SiblingSequence(ds)
         return descriptors.SimpleDescriptor(type_='newline')
 
 
@@ -157,6 +170,17 @@ class Evaluator():
 
         return matching.ConventionsMap(conventions)
 
+    @vis.visitor(ast.CommentsContext)
+    def visit(self, node):
+        self._add_context_to_stack(node)
+        conventions = []
+        for stat in node.statements:
+            c = self.visit(stat)
+            conventions.append(c)
+        self._pop_context_from_stack()
+
+        return matching.ConventionsMap(conventions)
+
     @vis.visitor(ast.ForbidRule)
     def visit(self, node):
         css_variation = self._get_cond(node)
@@ -181,9 +205,9 @@ class Evaluator():
     def _get_cond(self, node):
         css_expr_list = self._get_list_of_css_mark_expr(node.markers_list)
         css_sequences = ExpressionEvaluator().get_sequence_list(css_expr_list)
-        if len(css_sequences) == 1 and css_sequences[0] is seqs.Sequence.NONE:
-            css_sequences = [seqs.Sequence([descriptors.NodeDescriptor.ANY])]
-        return seqs.SequenceVariation(css_sequences, self._peek_context().get_condition_ignore_sequences())
+        if len(css_sequences) == 1 and css_sequences[0] is seqs.SiblingSequence.NONE:
+            css_sequences = [seqs.SiblingSequence([descriptors.NodeDescriptor.ANY])]
+        return seqs.SiblingsVariation(css_sequences, self._peek_context().get_condition_ignore_sequences())
 
     def _get_list_of_css_mark_expr(self, expr_list):
         result = []
@@ -195,15 +219,15 @@ class Evaluator():
     def _contains_css_marker_expr(self, expr):
         for markers_expr in expr.get_markers_expression():
             for marker in markers_expr:
-                return marker.is_css_marker()
+                return self._peek_context().is_marker_in_condition(marker)
 
     def _get_list_of_ws_variations(self, expr_list):
         result = []
         for markers_list in self._get_consecutive_ws_expr(expr_list):
             sequences = ExpressionEvaluator().get_sequence_list(markers_list)
-            variation = seqs.SequenceVariation.NONE
-            if sequences[0] is not seqs.Sequence.NONE:
-                variation = seqs.SequenceVariation(sequences, self._peek_context().get_requirement_ignore_sequences())
+            variation = seqs.SiblingsVariation.NONE
+            if sequences[0] is not seqs.SiblingSequence.NONE:
+                variation = seqs.SiblingsVariation(sequences, self._peek_context().get_requirement_ignore_sequences())
             result.append(variation)
         return result
 
@@ -224,15 +248,15 @@ class Evaluator():
             res.append(op)
         return res
 
-    @vis.visitor(ast.MarkerSequenceOption)
+    @vis.visitor(ast.MarkerSequenceVariation)
     def visit(self, node):
         if not node.marker_sequences:
-            return seqs.SequenceVariation.NONE
+            return seqs.SiblingsVariation.NONE
         res = []
         for sequence in node.marker_sequences:
             s = self.visit(sequence)
             res.append(s)
-        return seqs.SequenceVariation(res, [seqs.Sequence([descriptors.SimpleDescriptor(type_='indent')])])
+        return seqs.SiblingsVariation(res, [seqs.SiblingSequence([descriptors.SimpleDescriptor(type_='indent')])])
 
     @vis.visitor(ast.MarkerSequence)
     def visit(self, node):
@@ -240,5 +264,5 @@ class Evaluator():
         for m in node.markers:
             desc = self.visit(m)
             res.append(desc)
-        return seqs.Sequence(res)
+        return seqs.SiblingSequence(res)
 

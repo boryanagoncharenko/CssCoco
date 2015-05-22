@@ -1,6 +1,41 @@
 
 
-class Sequence(object):
+class ParentPatternChain(object):
+    def __iter__(self, patterns):
+        self.patterns = patterns
+
+
+class ParentPattern(object):
+
+    def is_deep_search(self):
+        pass
+
+
+class DescendantPattern(ParentPattern):
+    """
+    This pattern is for deep search, e.g. rule >> id
+    """
+    def __init__(self, parent_desc, child_desc):
+        self.parent_desc = parent_desc
+        self.child_desc = child_desc
+
+    def is_deep_search(self):
+        return True
+
+
+class ChildPattern(ParentPattern):
+    """
+    This pattern is for immediate children, block > declaration
+    """
+    def __init__(self, parent_desc, child_desc):
+        self.parent_desc = parent_desc
+        self.child_desc = child_desc
+
+    def is_deep_search(self):
+        return False
+
+
+class SiblingSequence(object):
     """
     The class contains a list of descriptors that describe sibling nodes that need to matched
     """
@@ -27,8 +62,8 @@ class Sequence(object):
         return s
 
     def is_part_of_sequence(self, sequence):
-        assert self is not Sequence.NONE
-        assert sequence is not Sequence.NONE
+        assert self is not SiblingSequence.NONE
+        assert sequence is not SiblingSequence.NONE
         if len(sequence) < len(self):
             return False
 
@@ -41,10 +76,10 @@ class Sequence(object):
         return False
 
 
-Sequence.NONE = Sequence([])
+SiblingSequence.NONE = SiblingSequence([])
 
 
-class SequenceVariation(object):
+class SiblingsVariation(object):
 
     def __init__(self, match_sequences, ignore_sequences):
         self.match_sequences = match_sequences
@@ -67,10 +102,18 @@ class SequenceVariation(object):
         return False
 
 
-SequenceVariation.NONE = SequenceVariation([], [])
+SiblingsVariation.NONE = SiblingsVariation([], [])
 
 
 class TreeWalker(object):
+
+    @staticmethod
+    def find_parent_child_pattern(tree, pc_pattern):
+        for node in TreeWalker.find_node_in_tree(tree, pc_pattern.parent_desc):
+            if node.has_children():
+                for child in node.value:
+                    if pc_pattern.child_desc.is_match(child):
+                        yield [node, child]
 
     @staticmethod
     def find_variation_in_tree(tree, variation):
@@ -132,13 +175,13 @@ class TreeWalker(object):
             is_match = TreeWalker.is_sequence_exact_match(sequence, nodes)
             if is_match:
                 return True, sequence, nodes
-        return False, Sequence.NONE, nodes
+        return False, SiblingSequence.NONE, nodes
 
     @staticmethod
     def is_variation_present_btw_two_nodes(variation, node_start, node_end, ignored_sequences):
         assert node_start.parent is node_end.parent
         assert node_start.index < node_end.index
-        assert variation is not SequenceVariation.NONE
+        assert variation is not SiblingsVariation.NONE
 
         parent = node_start.parent
         if not parent:

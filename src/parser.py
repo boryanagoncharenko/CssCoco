@@ -204,7 +204,11 @@ class SExprTransformer(object):
         for index, value in enumerate(values):
             prev_value = None if index == 0 else values[index-1]
             type_ = self._get_whitespace_type(value, prev_value)
-            result.append([type_, value])
+            if type_ == 'indent':
+                result.append([type_, value])
+            else:
+                for v in value:
+                    result.append([type_, v])
         return result
 
     def _split_whitespace_value(self, str):

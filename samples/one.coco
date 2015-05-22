@@ -1,20 +1,10 @@
-whitespace
-{
-	require rule newline{2} rule
-/*
-	require selector space "{"
-	require declaration newline "}"
-	require "{" newline declaration
-	require ":" space value
-	forbid property whitespace ":"
-	require declaration newline declaration
-	forbid selector whitespace selector
-	require newline eof
-    require selector-comma space
-	require csv-comma space
-	forbid space{*} newline
-	allow "{" space declaration space "}"
-    allow "{" space declaration space declaration space "}"
 
+if declaration
+where not declaration.is-vendor-specific
+require declaration.property match "^~[A-Z]+"
+
+/*
+if rule > block > declaration
+require rule.value.property in ["one", "two"]
 */
-}
+

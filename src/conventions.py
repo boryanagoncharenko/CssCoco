@@ -26,37 +26,39 @@ class Requirement(object):
         return (before_present and inner_present and after_present), errs
 
     def is_before_variation_present(self, nodes, variation_ignore_desc, errs):
-        if self.variation_list[0] is seqs.SequenceVariation.NONE:
+        if self.variation_list[0] is seqs.SiblingsVariation.NONE:
             return True
 
         before_nodes = walker.get_non_ignored_nodes_before_node(nodes[0], variation_ignore_desc, self.ignore_desc)
         present, sequence, inner_nodes = walker.is_variation_exact_match(self.variation_list[0], before_nodes)
-        if self._is_present_error(present):
+        is_error = self._is_present_error(present)
+        if is_error:
             errs.append(self._get_err(nodes[0], self.variation_list[0], inner_nodes))
-        return present
+        return not is_error
 
     def are_inner_variations_present(self, nodes, errs):
-        result = True
+        is_present = True
         for i in range(1, len(nodes)):
             variation = self.variation_list[i]
-            if variation is not seqs.SequenceVariation.NONE:
+            if variation is not seqs.SiblingsVariation.NONE:
                 start_node = nodes[i-1]
                 end_node = nodes[i]
                 present, sequence, inner_nodes = walker.is_variation_present_btw_two_nodes(variation, start_node,
                                                                                            end_node, self.ignore_desc)
                 if self._is_present_error(present):
-                    result = False
+                    is_present = False
                     errs.append(self._get_err(start_node, variation, inner_nodes))
-        return result
+        return is_present
 
     def is_after_variation_present(self, nodes, variation_ignore_desc, errs):
-        if self.variation_list[-1] is seqs.SequenceVariation.NONE:
+        if self.variation_list[-1] is seqs.SiblingsVariation.NONE:
             return True
         after_nodes = walker.get_non_ignored_nodes_after_node(nodes[-1], variation_ignore_desc, self.ignore_desc)
         present, sequence, inner_nodes = walker.is_variation_exact_match(self.variation_list[-1], after_nodes)
-        if self._is_present_error(present):
+        is_error = self._is_present_error(present)
+        if is_error:
             errs.append(self._get_err(nodes[-1], self.variation_list[-1], inner_nodes))
-        return present
+        return not is_error
 
     def _get_err(self, start_node, variation, inner_nodes):
         return ''.join(['Violation on line ', str(start_node.start_position.line), ': expected ',
@@ -99,7 +101,7 @@ class Requirement(object):
     def _is_inner_two(self, variation, node_start, node_end):
         assert node_start.parent is node_end.parent
         assert node_start.index < node_end.index
-        assert variation is not seqs.SequenceVariation.NONE
+        assert variation is not seqs.SiblingsVariation.NONE
 
         parent = node_start.parent
         nodes = parent.value[node_start.index+1:node_end.index]
@@ -111,7 +113,7 @@ class Requirement(object):
             is_match = self._is_sequence_match(sequence, nodes)
             if is_match:
                 return True, sequence, nodes
-        return False, seqs.Sequence.NONE, nodes
+        return False, seqs.SiblingSequence.NONE, nodes
 
     def _is_sequence_match(self, sequence, nodes):
         if len(sequence) != len(nodes):
@@ -140,12 +142,44 @@ class ForbidRequirement(Requirement):
     def __init__(self, variation_list, ignore_desc=None):
         Requirement.__init__(self, variation_list, ignore_desc)
 
+    def is_fulfilled(self, nodes, variation_ignore_desc):
+        errs = [self._get_err(nodes[0], None, nodes)]
+        return False, errs
+
     def _is_present_error(self, present):
         return present
 
     def _get_err(self, start_node, variation, inner_nodes):
         return ''.join(['Violation on line ', str(start_node.start_position.line),
                         ': found forbidden sequence ', self.error_msg(inner_nodes)])
+
+
+class NewCondition(object):
+    """
+    This class should know about the pattern it needs to seek (is it a sibling sequence or a child sequence)
+    and about the specific filters applied to the pattern (where declaration is vendor-specific etc.)
+    It should also know about the special ignores of the condition, e.g. when we say rule + rule (ignore whitespace)
+    """
+    pass
+    # For 'rule rule' example this should return [rule_node, rule_node]
+    # For 'rule >> id > word' this should return [rule, id, word]
+
+
+class NewRequirement(object):
+    """
+    This class determines whether the convention is violated or not
+    It either endures that there are sibling nodes ordered in the proper order
+    or that the condition evaluates to True
+    """
+    pass
+    # Contains a variation list to check the whitespacing
+    # Contains an expressing that should evaluate to boolean
+
+
+class NewConvention(object):
+
+    def __init__(self, condition):
+        self.condition = condition
 
 
 class Convention(object):
