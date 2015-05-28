@@ -87,6 +87,18 @@ class TerminalNode(Node):
         yield self
 
 
+class String(TerminalNode):
+
+    def __init__(self, type_, value):
+        super(String, self).__init__(type_, value)
+
+    def has_single_quotes(self):
+        return self.value[0] == '\''
+
+    def has_double_quotes(self):
+        return not self.has_single_quotes()
+
+
 class Position(object):
 
     def __init__(self, line, column):

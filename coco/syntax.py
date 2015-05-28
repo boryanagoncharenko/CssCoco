@@ -10,25 +10,19 @@ class Parser(object):
             | whitespace_rule
             ;
 
-        if_rule: IF selector (WHERE req_expr)? (REQUIRE | FORBID | ALLOW) req_expr ;
+        if_rule: IF simple_selector (REQUIRE | FORBID | ALLOW) ;
 
-        selector: marker '>' selector
-                | marker
-                ;
+        simple_selector: marker ('\{' attr_expr '\}')? ;
 
-        req_expr: '\(' req_expr '\)'
-                | req_expr MATCH (STRING | UPPERCASE | LOWERCASE)
-                | req_expr '=' req_expr
-                | req_expr IN list
-                | req_expr NOT IN list
-                | NOT req_expr
-                | req_expr AND req_expr
-                | req_atom
-                ;
-
-        list: '\[' STRING (',' STRING)* '\]' ;
-
-        req_atom: marker ('\.' WORD)+ ;
+        attr_expr: '\(' attr_expr '\)'
+                 | NOT attr_expr
+                 | attr_expr AND attr_expr
+                 | attr_expr OR attr_expr
+                 | attr_expr ('<'|'<='|'>'|'>='|'!='|'==') attr_expr
+                 | WORD '\(' simple_selector '\)'
+                 | WORD ('\.' WORD)*
+                 | NUMBER
+                 ;
 
         whitespace_rule: (REQUIRE | FORBID | ALLOW) sequence+ ;
 

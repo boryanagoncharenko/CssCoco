@@ -1,5 +1,6 @@
 import abc
 
+
 class NodeDescriptor(object):
 
     @abc.abstractmethod

@@ -21,7 +21,7 @@ def get_css_parse_tree():
         return None, '-----\nPlease check the validity of the css block!\n-----'
     tr = parser.SExprTransformer.transform(l)
     a = ast.ParseTreeBuilder.build(tr)
-    # print(a.pretty_print())
+    print(a.pretty_print())
     return a, ''
 
 
@@ -233,7 +233,7 @@ def get_coco_ast():
     cs = coco_file.read()
 
     res = grammar.Parser.parse(cs)
-    aha = AstBuilder().build_sheet(res)
+    # aha = AstBuilder().build_sheet(res)
     # tree = cocoast.AstBuilder.build(res)
     return None
 

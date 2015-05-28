@@ -1,7 +1,5 @@
 
-if declaration
-where not declaration.is-vendor-specific
-require declaration.property match "^~[A-Z]+"
+if rule{not (contains == 1)} require
 
 /*
 if rule > block > declaration
