@@ -1,6 +1,8 @@
 import os
 import json
-import coco.syntax as grammar
+import coco.coco_grammarLexer as coco_lexer
+import coco.coco_grammarParser as coco_parser
+import antlr4
 import coco.ast.ast as cocoast
 import coco.analysis as analysis
 import src.parser as parser
@@ -21,7 +23,7 @@ def get_css_parse_tree():
         return None, '-----\nPlease check the validity of the css block!\n-----'
     tr = parser.SExprTransformer.transform(l)
     a = ast.ParseTreeBuilder.build(tr)
-    print(a.pretty_print())
+    # print(a.pretty_print())
     return a, ''
 
 
@@ -232,9 +234,14 @@ def get_coco_ast():
     coco_file = open(coco_filename)
     cs = coco_file.read()
 
-    res = grammar.Parser.parse(cs)
-    # aha = AstBuilder().build_sheet(res)
-    # tree = cocoast.AstBuilder.build(res)
+    # res = grammar.Parser.parse(cs)
+
+    input = antlr4.FileStream(coco_filename)
+    lexer = coco_lexer.coco_grammarLexer(input)
+    stream = antlr4.CommonTokenStream(lexer)
+    parser = coco_parser.coco_grammarParser(stream)
+    tree = parser.start_rule()
+
     return None
 
 
@@ -253,3 +260,26 @@ for n in seqs.TreeWalker.find_parent_child_pattern(css_tree, pattern):
     pass
 
 
+# find w=(id or class)
+
+
+attr_expr1 = cocoast.IsOperator(cocoast.ImplicitVariableExpr('anything?'), cocoast.NodeTypeExpr(type_string='ruleset'))
+w1 = cocoast.NodeExprWrapper(attr_expr1, 'r')
+attr_expr2 = cocoast.IsOperator(cocoast.ImplicitVariableExpr('anything?'), cocoast.NodeTypeExpr(type_string='declaration'))
+w2 = cocoast.NodeExprWrapper(attr_expr2, 'd')
+rels = cocoast.Relations()
+rels.register_relation(w1, cocoast.IsParentOfRelation(w2))
+p = cocoast.PatternExpr(w1, [w1, w2], rels)
+
+# requirement = cocoast.EqualsAttrExpr(
+#     cocoast.CountExpr(cocoast.VariableExpr('r'), w2),
+#     cocoast.IntegerExpr(0))
+#
+# result = cocoast.PatternMatcher().start(css_tree, p)
+# print(result)
+#
+# for pattern in result:
+#     table = cocoast.IdentifierNodeTable()
+#     for desc in pattern:
+#         table.register(desc.identifier, pattern[desc])
+#     print(requirement.is_fulfilled(table))

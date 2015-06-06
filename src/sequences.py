@@ -1,4 +1,6 @@
 
+# OLD STUFF
+
 
 class ParentPatternChain(object):
     def __iter__(self, patterns):

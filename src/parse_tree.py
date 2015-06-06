@@ -1,4 +1,5 @@
-__author__ = 'boryana'
+import abc
+import coco.ast.ast as cocoast
 
 
 class Node(object):
@@ -12,6 +13,20 @@ class Node(object):
         self.index = -1
         self.start_position = None
         self.end_position = None
+        self._api = self._register_api()
+
+    @abc.abstractmethod
+    def _register_api(self):
+        pass
+
+    def has_method(self, property_name):
+        return property_name in self._api
+
+    def invoke_method_with_arg(self, property_name, argument):
+        return self._api[property_name](argument)
+
+    def invoke_method(self, property_name):
+        return self._api[property_name]()
 
     def has_children(self):
         return True
@@ -71,6 +86,9 @@ class TerminalNode(Node):
     def __init__(self, type_, value):
         Node.__init__(self, type_, value)
 
+    def _register_api(self):
+        return {}
+
     def has_children(self):
         return False
 
@@ -85,6 +103,22 @@ class TerminalNode(Node):
 
     def _get_terminal_nodes(self):
         yield self
+
+
+class Declaration(Node):
+
+    def __init__(self, value):
+        super(Declaration, self).__init__('declaration', value)
+
+    def _register_api(self):
+        return {'is-vendor-specific': self.is_vendor_specific,
+                'say': self.say}
+
+    def is_vendor_specific(self):
+        return cocoast.BoolValue(True)
+
+    def say(self, param):
+        return cocoast.StringValue(param.value)
 
 
 class String(TerminalNode):
@@ -137,6 +171,8 @@ class ParseTreeBuilder(object):
             child = self._build(l[i])
             children.append(child)
         node_type = l[0]
+        if node_type == 'declaration':
+            return Declaration(children)
         return Node(node_type, children)
 
     def _is_terminal(self, l):

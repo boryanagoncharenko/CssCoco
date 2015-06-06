@@ -4,23 +4,51 @@ from plyplus import Grammar
 class Parser(object):
 
     _grammar = """
-        start: rule* ;
 
-        rule: if_rule
-            | whitespace_rule
-            ;
+        start: statement* ;
 
-        if_rule: IF simple_selector (REQUIRE | FORBID | ALLOW) ;
+        statement: convention
+                 | convention_group
+                 | repeater
+                 ;
 
-        simple_selector: marker ('\{' attr_expr '\}')? ;
+        convention: find_clause (REQUIRE|FORBID) constraint except_clause?
+                  | (REQUIRE|FORBID) pattern except_clause?
+                  ;
+
+        convention_group: L_CURLY convention+ R_CURLY except_clause;
+
+        repeater: FOR ;
+
+        find_clause: FIND pattern;
+
+        pattern: assignment? node (IN assignment? node)* ;
+
+        node: type_expr attr_expr? ;
+
+        type_expr: L_PAREN type_expr R_PAREN
+                 | NOT type_expr
+                 | type_expr AND type_expr
+                 | type_expr OR type_expr
+                 | WORD
+                 ;
+
+        constraint: attr_expr
+                  ;
+
+        except_clause: EXCEPT convention ;
+
+        assignment: WORD '\=' ;
 
         attr_expr: '\(' attr_expr '\)'
                  | NOT attr_expr
                  | attr_expr AND attr_expr
                  | attr_expr OR attr_expr
                  | attr_expr ('<'|'<='|'>'|'>='|'!='|'==') attr_expr
-                 | WORD '\(' simple_selector '\)'
-                 | WORD ('\.' WORD)*
+                 | attr_expr IS node
+                 | attr_expr MATCH STRING
+                 | attr_expr '\.' WORD ('\(' node? '\)')?
+                 | WORD
                  | NUMBER
                  ;
 
@@ -44,22 +72,28 @@ class Parser(object):
 
         L_PAREN: '\(' ;
         R_PAREN: '\)' ;
+        L_CURLY: '{' ;
+        R_CURLY: '}' ;
         WORD: '[a-zA-Z\-]+' (%unless
-            IN: 'in';
-            IF: 'if' ;
-            OR: 'or' ;
-            NOT: 'not' ;
-            AND: 'and' ;
-            TARGET: 'target' ;
-            IGNORE: 'ignore' ;
-            WHERE: 'where' ;
-            REQUIRE: 'require' ;
-            FORBID: 'forbid' ;
-            ALLOW: 'allow' ;
-            MESSAGE: 'message' ;
-            MATCH: 'match' ;
-            UPPERCASE: 'uppercase' ;
-            LOWERCASE: 'lowercase' ;
+            ALLOW: '(?i)allow' ;
+            AND: '(?i)and' ;
+            EXCEPT: '(?i)except' ;
+            FIND: '(?i)find' ;
+            FOR: '(?i)for' ;
+            FORBID: '(?i)forbid' ;
+            IF: '(?i)if' ;
+            IGNORE: '(?i)ignore' ;
+            IN: '(?i)in';
+            IS: '(?i)is';
+            LOWERCASE: '(?i)lowercase' ;
+            MATCH: '(?i)match' ;
+            MESSAGE: '(?i)message' ;
+            NOT: '(?i)not' ;
+            OR: '(?i)or' ;
+            REQUIRE: '(?i)require' ;
+            TARGET: '(?i)target' ;
+            UPPERCASE: '(?i)uppercase' ;
+            WHERE: '(?i)where' ;
         );
         STRING: '"' '[^"]*' '"' ;
         NUMBER: '[1-9][0-9]*' ;

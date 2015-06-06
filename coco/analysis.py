@@ -185,21 +185,21 @@ class Evaluator():
     def visit(self, node):
         css_variation = self._get_cond(node)
         option_list = self._get_list_of_ws_variations(node.markers_list)
-        requirement = matching.ForbidRequirement(option_list, self._peek_context().get_requirement_ignore_sequences())
+        requirement = matching.ForbidRequirement(option_list, self._peek_context().get_ignored_patterns())
         return matching.ForbidConvention(css_variation, requirement)
 
     @vis.visitor(ast.RequireRule)
     def visit(self, node):
         css_variation = self._get_cond(node)
         option_list = self._get_list_of_ws_variations(node.markers_list)
-        requirement = matching.Requirement(option_list, self._peek_context().get_requirement_ignore_sequences())
+        requirement = matching.Requirement(option_list, self._peek_context().get_ignored_patterns())
         return matching.RequireConvention(css_variation, requirement)
 
     @vis.visitor(ast.AllowRule)
     def visit(self, node):
         css_variation = self._get_cond(node)
         option_list = self._get_list_of_ws_variations(node.markers_list)
-        requirement = matching.Requirement(option_list, self._peek_context().get_requirement_ignore_sequences())
+        requirement = matching.Requirement(option_list, self._peek_context().get_ignored_patterns())
         return matching.AllowConvention(css_variation, requirement)
 
     def _get_cond(self, node):
@@ -207,7 +207,7 @@ class Evaluator():
         css_sequences = ExpressionEvaluator().get_sequence_list(css_expr_list)
         if len(css_sequences) == 1 and css_sequences[0] is seqs.SiblingSequence.NONE:
             css_sequences = [seqs.SiblingSequence([descriptors.NodeDescriptor.ANY])]
-        return seqs.SiblingsVariation(css_sequences, self._peek_context().get_condition_ignore_sequences())
+        return seqs.SiblingsVariation(css_sequences, self._peek_context().get_target_patterns())
 
     def _get_list_of_css_mark_expr(self, expr_list):
         result = []
@@ -227,7 +227,7 @@ class Evaluator():
             sequences = ExpressionEvaluator().get_sequence_list(markers_list)
             variation = seqs.SiblingsVariation.NONE
             if sequences[0] is not seqs.SiblingSequence.NONE:
-                variation = seqs.SiblingsVariation(sequences, self._peek_context().get_requirement_ignore_sequences())
+                variation = seqs.SiblingsVariation(sequences, self._peek_context().get_ignored_patterns())
             result.append(variation)
         return result
 
