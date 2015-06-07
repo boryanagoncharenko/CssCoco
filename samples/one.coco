@@ -1,3 +1,1 @@
-
-find n=(id or class)
-require n match "^[a-z\-]+$"
+tra la la

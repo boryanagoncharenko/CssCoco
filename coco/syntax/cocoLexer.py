@@ -25,7 +25,7 @@ def serializedATN():
         return buf.getvalue()
 		
 
-class coco_grammarLexer(Lexer):
+class cocoLexer(Lexer):
 
     atn = ATNDeserializer().deserialize(serializedATN())
 
@@ -44,7 +44,7 @@ class coco_grammarLexer(Lexer):
 
     ruleNames = [ "Word", "Comment", "LineComment", "WS" ]
 
-    grammarFileName = "coco_grammar.g4"
+    grammarFileName = "coco.g4"
 
     def __init__(self, input=None):
         super().__init__(input)

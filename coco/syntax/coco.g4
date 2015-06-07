@@ -1,4 +1,4 @@
-grammar coco_grammar;
+grammar coco;
 
 start_rule : Word+ ;
 

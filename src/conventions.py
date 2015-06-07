@@ -259,7 +259,7 @@ class ConventionsMap(object):
         res = []
         for s in self.strong:
             for nodes in walker.find_variation_in_tree(css_tree, s._cond_variation):
-                is_fulfilled, errs = s._requirement.is_fulfilled(nodes, s._cond_variation.ignore_sequences)
+                is_fulfilled, errs = s._requirement.evaluate(nodes)
                 if not is_fulfilled and not self._is_already_relaxed(s, nodes):
                     res = res + errs
         return res
@@ -268,7 +268,7 @@ class ConventionsMap(object):
         res = {}
         for w in self.weak:
             for nodes in walker.find_variation_in_tree(css_tree, w._cond_variation):
-                is_fulfilled, _ = w._requirement.is_fulfilled(nodes, w._cond_variation.ignore_sequences)
+                is_fulfilled, _ = w._requirement.evaluate(nodes)
                 if is_fulfilled:
                     self._add_to_map(w, nodes, res)
         return res

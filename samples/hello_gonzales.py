@@ -1,16 +1,17 @@
 import os
 import json
-import coco.coco_grammarLexer as coco_lexer
-import coco.coco_grammarParser as coco_parser
+
 import antlr4
+
+import coco.syntax.cocoLexer as coco_lexer
+import coco.syntax.cocoParser as coco_parser
 import coco.ast.ast as cocoast
-import coco.analysis as analysis
 import src.parser as parser
 import src.parse_tree as ast
-import src.conventions as matching
 import src.sequences as seqs
 import src.descriptors as desc
 import coco.ast.markers as markers
+
 
 def get_css_parse_tree():
     filename = os.path.join('samples', 'tiny.css')
@@ -237,9 +238,9 @@ def get_coco_ast():
     # res = grammar.Parser.parse(cs)
 
     input = antlr4.FileStream(coco_filename)
-    lexer = coco_lexer.coco_grammarLexer(input)
+    lexer = coco_lexer.cocoLexer(input)
     stream = antlr4.CommonTokenStream(lexer)
-    parser = coco_parser.coco_grammarParser(stream)
+    parser = coco_parser.cocoParser(stream)
     tree = parser.start_rule()
 
     return None
@@ -263,9 +264,9 @@ for n in seqs.TreeWalker.find_parent_child_pattern(css_tree, pattern):
 # find w=(id or class)
 
 
-attr_expr1 = cocoast.IsOperator(cocoast.ImplicitVariableExpr('anything?'), cocoast.NodeTypeExpr(type_string='ruleset'))
+attr_expr1 = cocoast.IsExpr(cocoast.ImplicitVariableExpr('anything?'), cocoast.NodeTypeExpr(type_string='ruleset'))
 w1 = cocoast.NodeExprWrapper(attr_expr1, 'r')
-attr_expr2 = cocoast.IsOperator(cocoast.ImplicitVariableExpr('anything?'), cocoast.NodeTypeExpr(type_string='declaration'))
+attr_expr2 = cocoast.IsExpr(cocoast.ImplicitVariableExpr('anything?'), cocoast.NodeTypeExpr(type_string='declaration'))
 w2 = cocoast.NodeExprWrapper(attr_expr2, 'd')
 rels = cocoast.Relations()
 rels.register_relation(w1, cocoast.IsParentOfRelation(w2))

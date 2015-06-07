@@ -1,5 +1,3 @@
-import src.descriptors as descriptors
-import src.sequences as seqs
 import coco.ast.ast_node as ast
 import coco.ast.expressions as expr
 import coco.ast.markers as markers
@@ -13,11 +11,9 @@ class Sheet(ast.AstNode):
 
 class Context(ast.AstNode):
 
-    def __init__(self, statements):
-        self.statements = statements
-
-    def get_children(self):
-        return self.statements
+    def __init__(self, conventions, exceptions):
+        self.conventions = conventions
+        self.exceptions = exceptions
 
     def get_target_patterns(self):
         """
@@ -32,72 +28,75 @@ class Context(ast.AstNode):
         pass
 
 
-class SemanticContext(Context):
-    pass
-
-
 class WhitespaceContext(Context):
 
-    def __init__(self, statements):
-        Context.__init__(self, statements)
+    def __init__(self, conventions, exceptions):
+        super(WhitespaceContext, self).__init__(conventions, exceptions)
 
-    def get_target_patterns(self):
-        return self.get_ignored_patterns() + [seqs.SiblingSequence([descriptors.NodeDescriptor.WHITESPACE])]
+    # def get_target_patterns(self):
+    #     return self.get_ignored_patterns() + [seqs.SiblingSequence([descriptors.NodeDescriptor.WHITESPACE])]
+    #
+    # def get_ignored_patterns(self):
+    #     return [seqs.SiblingSequence([descriptors.NodeDescriptor.INDENT]),
+    #             seqs.SiblingSequence([descriptors.NodeDescriptor.COMMENT]),
+    #             seqs.SiblingSequence([descriptors.SimpleDescriptor(type_='newline'),
+    #                            descriptors.SimpleDescriptor(type_='comment')])]
 
-    def get_ignored_patterns(self):
-        return [seqs.SiblingSequence([descriptors.NodeDescriptor.INDENT]),
-                seqs.SiblingSequence([descriptors.NodeDescriptor.COMMENT]),
-                seqs.SiblingSequence([descriptors.SimpleDescriptor(type_='newline'),
-                               descriptors.SimpleDescriptor(type_='comment')])]
-
-    def is_marker_in_condition(self, marker):
-        return marker.is_css_marker()
+    # def is_marker_in_condition(self, marker):
+    #     return marker.is_css_marker()
 
 
 class CommentsContext(Context):
 
-    def __init__(self, statements):
-        Context.__init__(self, statements)
+    def __init__(self, conventions, exceptions):
+        super(CommentsContext, self).__init__(conventions, exceptions)
 
-    def get_target_patterns(self):
-        return self.get_ignored_patterns()
-               # [seqs.Sequence([descriptors.NegativeSimpleDescriptor(type_='comment')])]
-
-    def get_ignored_patterns(self):
-        return [seqs.SiblingSequence([descriptors.NodeDescriptor.INDENT])]
-
-    def is_marker_in_condition(self, marker):
-        return True
+    # def get_target_patterns(self):
+    #     return self.get_ignored_patterns()
+    #            # [seqs.Sequence([descriptors.NegativeSimpleDescriptor(type_='comment')])]
+    #
+    # def get_ignored_patterns(self):
+    #     return [seqs.SiblingSequence([descriptors.NodeDescriptor.INDENT])]
+    #
+    # def is_marker_in_condition(self, marker):
+    #     return True
         # return type(marker) is not markers.CommentMarker
 
 
+class SemanticContext(Context):
+    def __init__(self, conventions, exceptions):
+        super(SemanticContext, self).__init__(conventions, exceptions)
+
+
 class Statement(ast.AstNode):
-    """
-    Abstract class
-    """
     pass
 
 
 class Convention(Statement):
-    def __init__(self, target_pattern, requirement=None, exceptions=None):
+    def __init__(self, target_pattern):
         self.target_pattern = target_pattern
-        self.requirement = requirement
-        self.exceptions = exceptions
 
 
-class RequireConvention(Convention):
-    def __init__(self, target_pattern, requirement=None, exceptions=None):
-        super(RequireConvention).__init__(target_pattern, requirement, exceptions)
+class FindRequireConvention(Convention):
+    def __init__(self, target_pattern, constraint):
+        super(FindRequireConvention, self).__init__(target_pattern)
+        self.constraint = constraint
 
 
 class ForbidConvention(Convention):
-    def __init__(self, target_pattern, requirement=None, exceptions=None):
-        super(ForbidConvention).__init__(target_pattern, requirement, exceptions)
+    def __init__(self, target_pattern):
+        super(ForbidConvention, self).__init__(target_pattern)
+
+
+class FindForbidConvention(Convention):
+    def __init__(self, target_pattern, constraint):
+        super(FindForbidConvention, self).__init__(target_pattern)
+        self.constraint = constraint
 
 
 class PatternMatcher(object):
-    def __init__(self, filter):
-        self.filter = filter
+    def __init__(self, filters):
+        self.filters = filters
 
     def find_pattern_occurrences(self, tree, pattern_expr):
         result = []
@@ -121,7 +120,7 @@ class PatternMatcher(object):
                     result.append(current_pattern.copy())
                 else:
                     self.find_related_nodes(result, current_pattern, pattern_expr, relation.target_node, n)
-                self.register_match(current_pattern, relation.target_node)
+                self.unregister_match(current_pattern, relation.target_node)
 
     def find_descendant(self, node, desc):
         """
@@ -148,6 +147,14 @@ class PatternMatcher(object):
     def unregister_match(self, result, node_desc):
         assert node_desc in result
         result.pop(node_desc.identifier)
+
+
+class Filter(object):
+    def __init__(self, patterns):
+        self.patterns = patterns
+
+    # def filter(self, tree):
+    #     for index, child in enumerate(tree.value):
 
 
 class PatternExpr(ast.AstNode):
@@ -205,22 +212,22 @@ class NodeExprWrapper(ast.AstNode):
         """
         This is like eval
         """
-        table = self._build_identifier_table(node)
-        bool_value = self.attr_expr.is_fulfilled(table)
+        context = self._build_evaluation_context(node, )
+        bool_value = self.attr_expr.evaluate(context)
         return bool_value.value
 
-
-    def _build_identifier_table(self, node):
-        table = IdentifierNodeTable()
+    def _build_evaluation_context(self, node, matcher):
+        context = EvaluationContext(matcher)
         id_ = self.identifier if self.identifier else "current"
-        table.register(id_, node)
-        return table
+        context.register(id_, node)
+        return context
 
 
-class IdentifierNodeTable():
-    def __init__(self):
+class EvaluationContext():
+    def __init__(self, matcher):
         self.inner = {}
         self.default = None
+        self.pattern_matcher = matcher
 
     def register(self, identifier, node):
         assert identifier not in self.inner.keys()
@@ -233,65 +240,47 @@ class IdentifierNodeTable():
         return self.inner[identifier]
 
 
-class AttrExpr(ast.AstNode):
-    def is_fulfilled(self, table):
-        pass
+class Expr(ast.AstNode):
+    pass
 
 
-class UnaryAttrExpr(AttrExpr):
+class UnaryExpr(Expr):
     def __init__(self, operand):
         self.operand = operand
 
 
-class NotAttrExpr(UnaryAttrExpr):
+class NotExpr(UnaryExpr):
     def __init__(self, operand):
-        super(NotAttrExpr).__init__(operand)
-
-    def is_fulfilled(self, table):
-        return not self.operand.is_fulfilled(table)
+        super(NotExpr, self).__init__(operand)
 
 
-class BinaryAttrExpr(AttrExpr):
+class BinaryExpr(Expr):
     def __init__(self, left, right):
         self.left = left
         self.right = right
 
 
-class OrAttrExpr(BinaryAttrExpr):
+class OrExpr(BinaryExpr):
     def __init__(self, left, right):
-        super(OrAttrExpr).__init__(left, right)
-
-    def is_fulfilled(self, table):
-        return self.left.is_fulfilled(table) or self.right.is_fulfilled(table)
+        super(OrExpr, self).__init__(left, right)
 
 
-class AndAttrExpr(BinaryAttrExpr):
+class AndExpr(BinaryExpr):
     def __init__(self, left, right):
-        super(AndAttrExpr).__init__(left, right)
-
-    def is_fulfilled(self, table):
-        return self.left.is_fulfilled(table) and self.right.is_fulfilled(table)
+        super(AndExpr, self).__init__(left, right)
 
 
-class EqualsAttrExpr(BinaryAttrExpr):
+class EqualsExpr(BinaryExpr):
     def __init__(self, left, right):
-        super(EqualsAttrExpr, self).__init__(left, right)
-
-    def is_fulfilled(self, table):
-        left = self.left.is_fulfilled(table)
-        right = self.right.is_fulfilled(table)
-        return left.value == right.value
+        super(EqualsExpr, self).__init__(left, right)
 
 
-class GreaterThanAttrExpr(BinaryAttrExpr):
+class GreaterThanExpr(BinaryExpr):
     def __init__(self, left, right):
-        super(GreaterThanAttrExpr).__init__(left, right)
-
-    def is_fulfilled(self, table):
-        return self.left.is_fulfilled(table) > self.right.is_fulfilled(table)
+        super(GreaterThanExpr).__init__(left, right)
 
 
-class ConstantExpr(AttrExpr):
+class ConstantExpr(Expr):
     pass
 
 
@@ -299,34 +288,20 @@ class VariableExpr(ConstantExpr):
     def __init__(self, value):
         self.value_string = value
 
-    def is_fulfilled(self, table):
-        node = table.retrieve_node(self.value_string)
-        return NodeValue(node)
-
 
 class ImplicitVariableExpr(VariableExpr):
     def __init__(self, value):
         super(ImplicitVariableExpr, self).__init__(value)
-
-    def is_fulfilled(self, table):
-        node = table.retrieve_node('current')
-        return NodeValue(node)
 
 
 class IntegerExpr(ConstantExpr):
     def __init__(self, value):
         self.value = value
 
-    def is_fulfilled(self, table):
-        return IntValue(self.value)
-
 
 class StringExpr(ConstantExpr):
     def __init__(self, value):
         self.value = value
-
-    def is_fulfilled(self, table):
-        return StringValue(self.value)
 
 
 class BooleanExpr(ConstantExpr):
@@ -334,50 +309,30 @@ class BooleanExpr(ConstantExpr):
     def __init__(self, value):
         self.value = value
 
-    def is_fulfilled(self, table):
-        return BoolValue(self.value)
-
 
 class NodeTypeExpr(ConstantExpr):
     def __init__(self, type_string=None, value_string=None):
         self.type = type_string
         self.value = value_string
 
-    def is_fulfilled(self, table):
-        return NodeTypeValue(self.type, self.value)
-
 
 class ListExpr(ConstantExpr):
     def __init__(self, value):
         self.value = value
 
-    def is_fulfilled(self, table):
-        return ListValue(self.value)
-
 # Type match is a nothing else but an expression about type
 # No need for special Or, Not expressions, they are the same as attr
 
 
-class IsOperator(BinaryAttrExpr):
+class IsExpr(BinaryExpr):
     def __init__(self, left, right):
-        super(IsOperator, self).__init__(left, right)
-
-    def is_fulfilled(self, table):
-        node_value = self.left.is_fulfilled(table)
-        node_type_value = self.right.is_fulfilled(table)
-        real_bool = node_type_value.is_node_of_type(node_value)
-        return BoolValue(real_bool)
+        super(IsExpr, self).__init__(left, right)
 
 
-class ApiCallExpr(AttrExpr):
+class ApiCallExpr(Expr):
     def __init__(self, operand, property_string):
         self.operand = operand
         self.property_string = property_string
-
-    def is_fulfilled(self, table):
-        node_value = self.operand.is_fulfilled(table)
-        property_value = node_value.value.invoke_method(self.property_string)
-        return property_value
 
 
 class ApiCallExprWithArg(ApiCallExpr):
@@ -385,100 +340,28 @@ class ApiCallExprWithArg(ApiCallExpr):
         super(ApiCallExprWithArg, self).__init__(operand, property_string)
         self.argument = argument
 
-    def is_fulfilled(self, table):
-        node_value = self.operand.is_fulfilled(table)
-        property_value = node_value.value.invoke_method_with_arg(self.property_string, self.argument)
-        return property_value
+
+# class NodeQueryExpr(Expr):
+#     def __init__(self, operand):
+#         self.operand = operand
 
 
-class NodeQueryExpr(AttrExpr):
-    def __init__(self, operand):
-        self.operand = operand
-
-
-class ContainsExpr(NodeQueryExpr):
-    def __init__(self, operand, argument):
-        super(ContainsExpr, self).__init__(operand)
-        self.argument = argument
-
-    def is_fulfilled(self, table):
-        node_value = self.operand.is_fulfilled(table)
-        node_value_type = self.argument.is_fulfilled(table)
-        for d in Matcher.find_descendant(node_value.value, node_value_type):
-            return True
-        return False
-
-
-class CountExpr(NodeQueryExpr):
-    def __init__(self, operand, argument):
-        super(CountExpr, self).__init__(operand)
-        self.argument = argument
-
-    def is_fulfilled(self, table):
-        node_value = self.operand.is_fulfilled(table)
-        count = sum(1 for _ in Matcher.find_descendant(node_value.value, self.argument))
-        return IntValue(count)
+# class ContainsExpr(NodeQueryExpr):
+#     def __init__(self, operand, argument):
+#         super(ContainsExpr, self).__init__(operand)
+#         self.argument = argument
+#
+#
+# class CountExpr(NodeQueryExpr):
+#     def __init__(self, operand, argument):
+#         super(CountExpr, self).__init__(operand)
+#         self.argument = argument
 
 
 class Repetition(Statement):
     def __init__(self, repeat_list, convention):
         self.repeat_list = repeat_list
         self.convention = convention
-
-
-# ----- Values are not part of the AST, they are what evaluation returns ---------
-
-
-class Value(object):
-    pass
-
-
-class IntValue(Value):
-    def __init__(self, value):
-        self.value = value
-
-
-class StringValue(Value):
-    def __init__(self, value):
-        self.value = value
-
-
-class BoolValue(Value):
-    def __init__(self, value):
-        self.value = value
-
-
-class NodeTypeValue(Value):
-    def __init__(self, type_, value):
-        self.type_ = type_
-        self.value = value
-        self.search_by_type = self.type_
-        self.search_by_value = self.value
-
-    def is_node_of_type(self, node_value):
-        node = node_value.value
-        return self._is_type_match(node) and self._is_value_match(node)
-
-    def _is_type_match(self, node):
-        if self.search_by_type:
-            return self.type_ == node.type_
-        return True
-
-    def _is_value_match(self, node):
-        if self.search_by_value:
-            return self.value == node.value
-        return True
-
-
-class NodeValue(Value):
-    # Only wraps the node
-    def __init__(self, node):
-        self.value = node
-
-
-class ListValue(Value):
-    def __init__(self, value):
-        self.value = value
 
 # -------------- OLD STUFF --------------
 

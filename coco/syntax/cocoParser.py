@@ -4,9 +4,9 @@ from io import StringIO
 package = globals().get("__package__", None)
 ischild = len(package)>0 if package is not None else False
 if ischild:
-    from .coco_grammarListener import coco_grammarListener
+    from .cocoListener import cocoListener
 else:
-    from coco_grammarListener import coco_grammarListener
+    from cocoListener import cocoListener
 def serializedATN():
     with StringIO() as buf:
         buf.write("\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\6")
@@ -16,7 +16,7 @@ def serializedATN():
         return buf.getvalue()
 		
 
-class coco_grammarParser ( Parser ):
+class cocoParser ( Parser ):
 
     grammarFileName = "java-escape"
 
@@ -54,19 +54,19 @@ class coco_grammarParser ( Parser ):
 
         def Word(self, i:int=None):
             if i is None:
-                return self.getTokens(coco_grammarParser.Word)
+                return self.getTokens(cocoParser.Word)
             else:
-                return self.getToken(coco_grammarParser.Word, i)
+                return self.getToken(cocoParser.Word, i)
 
         def getRuleIndex(self):
-            return coco_grammarParser.RULE_start_rule
+            return cocoParser.RULE_start_rule
 
         def enterRule(self, listener:ParseTreeListener):
-            if isinstance( listener, coco_grammarListener ):
+            if isinstance( listener, cocoListener ):
                 listener.enterStart_rule(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if isinstance( listener, coco_grammarListener ):
+            if isinstance( listener, cocoListener ):
                 listener.exitStart_rule(self)
 
 
@@ -74,7 +74,7 @@ class coco_grammarParser ( Parser ):
 
     def start_rule(self):
 
-        localctx = coco_grammarParser.Start_ruleContext(self, self._ctx, self.state)
+        localctx = cocoParser.Start_ruleContext(self, self._ctx, self.state)
         self.enterRule(localctx, 0, self.RULE_start_rule)
         self._la = 0 # Token type
         try:
@@ -88,7 +88,7 @@ class coco_grammarParser ( Parser ):
                 self.state = 5 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if not (_la==coco_grammarParser.Word):
+                if not (_la==cocoParser.Word):
                     break
 
         except RecognitionException as re:
