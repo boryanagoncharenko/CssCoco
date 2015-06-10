@@ -11,7 +11,8 @@ import src.parse_tree as ast
 import src.sequences as seqs
 import src.descriptors as desc
 import coco.ast.markers as markers
-
+import coco.analysis.violations as violations
+import coco.analysis.values as values
 
 def get_css_parse_tree():
     filename = os.path.join('samples', 'tiny.css')
@@ -24,7 +25,7 @@ def get_css_parse_tree():
         return None, '-----\nPlease check the validity of the css block!\n-----'
     tr = parser.SExprTransformer.transform(l)
     a = ast.ParseTreeBuilder.build(tr)
-    # print(a.pretty_print())
+    print(a.pretty_print())
     return a, ''
 
 
@@ -263,14 +264,47 @@ for n in seqs.TreeWalker.find_parent_child_pattern(css_tree, pattern):
 
 # find w=(id or class)
 
+is_stylesheet = cocoast.IsExpr(cocoast.ImplicitVariableExpr.DEFAULT, cocoast.NodeTypeExpr(type_string='stylesheet'))
+is_rule = cocoast.IsExpr(cocoast.ImplicitVariableExpr.DEFAULT, cocoast.NodeTypeExpr(type_string='ruleset'))
+is_declaration = cocoast.IsExpr(cocoast.ImplicitVariableExpr.DEFAULT, cocoast.NodeTypeExpr(type_string='declaration'))
+# is_next_rule = cocoast.IsExpr(cocoast.ImplicitVariableExpr.DEFAULT, cocoast.NodeTypeExpr(type_string='ruleset'))
+# is_tag = cocoast.IsExpr(cocoast.ImplicitVariableExpr.DEFAULT, cocoast.NodeTypeExpr(type_string='ident'))
+# is_child = cocoast.IsExpr(cocoast.ImplicitVariableExpr.DEFAULT,
+#                           cocoast.NodeTypeExpr(type_string='combinator', value_string='>'))
+# contains_tag = cocoast.ContainsExpr(cocoast.ImplicitVariableExpr.DEFAULT, is_tag)
 
-attr_expr1 = cocoast.IsExpr(cocoast.ImplicitVariableExpr('anything?'), cocoast.NodeTypeExpr(type_string='ruleset'))
-w1 = cocoast.NodeExprWrapper(attr_expr1, 'r')
-attr_expr2 = cocoast.IsExpr(cocoast.ImplicitVariableExpr('anything?'), cocoast.NodeTypeExpr(type_string='declaration'))
-w2 = cocoast.NodeExprWrapper(attr_expr2, 'd')
-rels = cocoast.Relations()
-rels.register_relation(w1, cocoast.IsParentOfRelation(w2))
-p = cocoast.PatternExpr(w1, [w1, w2], rels)
+stylesheet = cocoast.NodeExprWrapper(is_stylesheet)
+rule = cocoast.NodeExprWrapper(is_rule)
+declaration1 = cocoast.NodeExprWrapper(is_declaration, identifier='a')
+declaration2 = cocoast.NodeExprWrapper(is_declaration, identifier='b')
+declaration3 = cocoast.NodeExprWrapper(is_declaration, identifier='c')
+
+is_newline = cocoast.IsExpr(cocoast.ImplicitVariableExpr.DEFAULT, cocoast.NodeTypeExpr(type_string='newline'))
+is_space = cocoast.IsExpr(cocoast.ImplicitVariableExpr.DEFAULT, cocoast.NodeTypeExpr(type_string='space'))
+# requirement = cocoast.BetweenExpr(cocoast.VariableExpr('r1'),
+#                                   cocoast.WhitespaceVariation([
+#                                       cocoast.SequencePatternExpr([cocoast.NodeSequenceExprWrapper(is_newline, cocoast.Repeater(2, 3))]),
+#                                       # cocoast.SequencePatternExpr([cocoast.NodeSequenceExprWrapper(is_space, cocoast.Repeater(lower=1, upper=10))])
+#                                       ]),
+#                                   cocoast.VariableExpr('r2')
+#                                   )
+
+requirement = cocoast.BeforeExpr(cocoast.VariableExpr('d1'), cocoast.WhitespaceVariation([
+    cocoast.SequencePatternExpr([cocoast.NodeExprWrapper(is_newline)])
+]))
+
+relations = cocoast.Relations()
+relations.register_relation(stylesheet, cocoast.IsParentOfRelation(rule))
+relations.register_relation(rule, cocoast.IsParentOfRelation(declaration1))
+relations.register_relation(rule, cocoast.IsParentOfRelation(declaration2))
+relations.register_relation(rule, cocoast.IsParentOfRelation(declaration3))
+pattern = cocoast.PatternExpr(stylesheet, [stylesheet, rule, declaration1, declaration2, declaration3], relations)
+
+convention = cocoast.ForbidConvention(pattern, "Forbid pattern found")
+context = cocoast.SemanticContext([convention], None)
+sheet = cocoast.Sheet([context])
+
+violations.ViolationsFinder.find(sheet, css_tree)
 
 # requirement = cocoast.EqualsAttrExpr(
 #     cocoast.CountExpr(cocoast.VariableExpr('r'), w2),

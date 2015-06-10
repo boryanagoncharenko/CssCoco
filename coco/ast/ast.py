@@ -1,16 +1,15 @@
+import abc
 import coco.ast.ast_node as ast
 import coco.ast.expressions as expr
 import coco.ast.markers as markers
 
 
 class Sheet(ast.AstNode):
-
     def __init__(self, contexts):
         self.contexts = contexts
 
 
 class Context(ast.AstNode):
-
     def __init__(self, conventions, exceptions):
         self.conventions = conventions
         self.exceptions = exceptions
@@ -29,37 +28,35 @@ class Context(ast.AstNode):
 
 
 class WhitespaceContext(Context):
-
     def __init__(self, conventions, exceptions):
         super(WhitespaceContext, self).__init__(conventions, exceptions)
 
-    # def get_target_patterns(self):
-    #     return self.get_ignored_patterns() + [seqs.SiblingSequence([descriptors.NodeDescriptor.WHITESPACE])]
-    #
-    # def get_ignored_patterns(self):
-    #     return [seqs.SiblingSequence([descriptors.NodeDescriptor.INDENT]),
-    #             seqs.SiblingSequence([descriptors.NodeDescriptor.COMMENT]),
-    #             seqs.SiblingSequence([descriptors.SimpleDescriptor(type_='newline'),
-    #                            descriptors.SimpleDescriptor(type_='comment')])]
+        # def get_target_patterns(self):
+        # return self.get_ignored_patterns() + [seqs.SiblingSequence([descriptors.NodeDescriptor.WHITESPACE])]
+        #
+        # def get_ignored_patterns(self):
+        #     return [seqs.SiblingSequence([descriptors.NodeDescriptor.INDENT]),
+        #             seqs.SiblingSequence([descriptors.NodeDescriptor.COMMENT]),
+        #             seqs.SiblingSequence([descriptors.SimpleDescriptor(type_='newline'),
+        #                            descriptors.SimpleDescriptor(type_='comment')])]
 
-    # def is_marker_in_condition(self, marker):
-    #     return marker.is_css_marker()
+        # def is_marker_in_condition(self, marker):
+        #     return marker.is_css_marker()
 
 
 class CommentsContext(Context):
-
     def __init__(self, conventions, exceptions):
         super(CommentsContext, self).__init__(conventions, exceptions)
 
-    # def get_target_patterns(self):
-    #     return self.get_ignored_patterns()
-    #            # [seqs.Sequence([descriptors.NegativeSimpleDescriptor(type_='comment')])]
-    #
-    # def get_ignored_patterns(self):
-    #     return [seqs.SiblingSequence([descriptors.NodeDescriptor.INDENT])]
-    #
-    # def is_marker_in_condition(self, marker):
-    #     return True
+        # def get_target_patterns(self):
+        # return self.get_ignored_patterns()
+        #            # [seqs.Sequence([descriptors.NegativeSimpleDescriptor(type_='comment')])]
+        #
+        # def get_ignored_patterns(self):
+        #     return [seqs.SiblingSequence([descriptors.NodeDescriptor.INDENT])]
+        #
+        # def is_marker_in_condition(self, marker):
+        #     return True
         # return type(marker) is not markers.CommentMarker
 
 
@@ -67,111 +64,111 @@ class SemanticContext(Context):
     def __init__(self, conventions, exceptions):
         super(SemanticContext, self).__init__(conventions, exceptions)
 
+    # TODO: filters must be separated and applied sequentially: first the indent, then everything else
+    def get_ignored_patterns(self):
+        return [SequencePatternExpr([NodeExprWrapper(IsExpr(ImplicitVariableExpr.DEFAULT, NodeTypeExpr(type_string='newline'))),
+                                     NodeSequenceExprWrapper(IsExpr(ImplicitVariableExpr.DEFAULT, NodeTypeExpr(type_string='indent')),Repeater(1, 1)),
+                                     NodeExprWrapper(IsExpr(ImplicitVariableExpr.DEFAULT, NodeTypeExpr(type_string='comment')))]),
+                SequencePatternExpr.build_simple_seq(NodeTypeExpr(type_string='newline'), NodeTypeExpr(type_string='comment')),
+                SequencePatternExpr.build_simple_seq(NodeTypeExpr(type_string='indent')),
+                SequencePatternExpr.build_simple_seq(NodeTypeExpr(type_string='comment'))]
+
+    def get_ignored_and_target_patterns(self):
+        return self.get_ignored_patterns() + \
+            [SequencePatternExpr.build_simple_seq(NodeTypeExpr(type_string='space')),
+             SequencePatternExpr.build_simple_seq(NodeTypeExpr(type_string='newline')),
+             SequencePatternExpr.build_simple_seq(NodeTypeExpr(type_string='tab'))]
+
 
 class Statement(ast.AstNode):
     pass
 
 
 class Convention(Statement):
-    def __init__(self, target_pattern):
+    def __init__(self, target_pattern, message):
         self.target_pattern = target_pattern
+        self.message = message
 
 
 class FindRequireConvention(Convention):
-    def __init__(self, target_pattern, constraint):
-        super(FindRequireConvention, self).__init__(target_pattern)
+    def __init__(self, target_pattern, message, constraint):
+        super(FindRequireConvention, self).__init__(target_pattern, message)
         self.constraint = constraint
 
 
 class ForbidConvention(Convention):
-    def __init__(self, target_pattern):
-        super(ForbidConvention, self).__init__(target_pattern)
+    def __init__(self, target_pattern, message):
+        super(ForbidConvention, self).__init__(target_pattern, message)
 
 
 class FindForbidConvention(Convention):
-    def __init__(self, target_pattern, constraint):
-        super(FindForbidConvention, self).__init__(target_pattern)
+    def __init__(self, target_pattern, message, constraint):
+        super(FindForbidConvention, self).__init__(target_pattern, message)
         self.constraint = constraint
-
-
-class PatternMatcher(object):
-    def __init__(self, filters):
-        self.filters = filters
-
-    def find_pattern_occurrences(self, tree, pattern_expr):
-        result = []
-        current_pattern = {}
-        root_desc = pattern_expr.root_node
-        for n in self._find_in_current_and_descendants(tree, root_desc):
-            self.register_match(current_pattern, root_desc, n)
-            # Revisit this logic
-            if self.is_anchor(pattern_expr, root_desc):
-                result.append(current_pattern.copy())
-            self.find_related_nodes(result, current_pattern, pattern_expr, root_desc, n)
-            self.unregister_match(current_pattern, root_desc)
-        return result
-
-    def find_related_nodes(self, result, current_pattern, pattern_expr, desc, node):
-        for relation in pattern_expr.get_node_relations(desc):
-            nodes = relation.find_target(node, self)
-            for n in nodes:
-                self.register_match(current_pattern, relation.target_node, n)
-                if self.is_anchor(pattern_expr, relation.target_node):
-                    result.append(current_pattern.copy())
-                else:
-                    self.find_related_nodes(result, current_pattern, pattern_expr, relation.target_node, n)
-                self.unregister_match(current_pattern, relation.target_node)
-
-    def find_descendant(self, node, desc):
-        """
-        Returns all nodes that match a given pattern
-        """
-        if node.has_children():
-            for child in node.value:
-                yield from self._find_in_current_and_descendants(child, desc)
-
-    def _find_in_current_and_descendants(self, node, desc):
-        if desc.is_match(node):
-            yield node
-        if node.has_children():
-            for child in node.value:
-                yield from self._find_in_current_and_descendants(child, desc)
-
-    def is_anchor(self, pattern_expr, node_desc):
-        return not pattern_expr.get_node_relations(node_desc)
-
-    def register_match(self, result, node_desc, node):
-        assert node_desc not in result
-        result[node_desc.identifier] = node
-
-    def unregister_match(self, result, node_desc):
-        assert node_desc in result
-        result.pop(node_desc.identifier)
-
-
-class Filter(object):
-    def __init__(self, patterns):
-        self.patterns = patterns
-
-    # def filter(self, tree):
-    #     for index, child in enumerate(tree.value):
 
 
 class PatternExpr(ast.AstNode):
     def __init__(self, root_node, all_nodes, relations):
-        # this is of type NodeExprWrapper
-        self.root_node = root_node
-        self.all_nodes = all_nodes
-        # this is of type Relations
+        self.root_desc = root_node
+        self.all_descs = all_nodes
         self.relations = relations
 
     def get_node_relations(self, node_desc):
         return self.relations.get_relations(node_desc)
 
+    def get_anchors(self):
+        return self.relations.get_anchors()
+
+
+class HierarchicalPatternExpr(PatternExpr):
+    def __init__(self, root_desc, all_desc, relations):
+        super(HierarchicalPatternExpr, self).__init__(root_desc, all_desc, relations)
+
+
+class SequencePatternExpr(PatternExpr):
+    """
+    A Sequence is a specific type of pattern with nodes that are only adjacent siblings
+    """
+    # TODO: Sequences should be able to describe an arbitrary number of repeating node, e.g. newline{2,}
+    def __init__(self, node_desc_list):
+        """
+        The descriptors are of type NodeExprBase, they can be regular NodeWrappers or WeirdGreedyCreatures
+        """
+        super(SequencePatternExpr, self).__init__(node_desc_list[0],
+                                           node_desc_list,
+                                           Relations.build_sequence_relations(node_desc_list))
+
+    @staticmethod
+    def build_simple_seq(*node_type_expr):
+        res = []
+        for node_type in node_type_expr:
+            is_expr = IsExpr(ImplicitVariableExpr.DEFAULT, node_type)
+            res.append(NodeExprWrapper(is_expr))
+        return SequencePatternExpr(res)
+
+
+class WhitespaceVariation(ast.AstNode):
+    """
+    Contains all available sequences, e.g.
+    (a space b) or (a space newline b)
+    """
+    def __init__(self, sequences):
+        self.sequences = sequences
+
+
+
 
 class Relations(object):
     def __init__(self):
         self.inner = {}
+
+    @staticmethod
+    def build_sequence_relations(node_desc_list):
+        result = Relations()
+        for i in range(0, len(node_desc_list) - 1):
+            rel = IsPreviousSiblingOfRelation(node_desc_list[i + 1])
+            result.register_relation(node_desc_list[i], rel)
+        return result
 
     def register_relation(self, source_node_desc, r):
         if source_node_desc not in self.inner:
@@ -179,65 +176,84 @@ class Relations(object):
         self.inner[source_node_desc].append(r)
 
     def get_relations(self, node_desc):
-        return self.inner[node_desc] if node_desc in self.inner else None
+        return self.inner[node_desc] if node_desc in self.inner else []
+
+    def get_anchors(self):
+        anchors = []
+        for key in self.inner:
+            relatives = self.inner[key]
+            for r in relatives:
+                if r.target_node not in self.inner:
+                    anchors.append(r.target_node)
+        return anchors
 
 
 class NodeRelation(object):
     def __init__(self, target_node):
         self.target_node = target_node
 
-    def find_target(self, node, matcher):
-        pass
+
+class VerticalRelation(NodeRelation):
+    def __init__(self, target_node):
+        super(VerticalRelation, self).__init__(target_node)
 
 
-class IsParentOfRelation(NodeRelation):
-    def __init(self, target_node):
-        super(IsParentOfRelation).__init__(target_node)
-
-    def find_target(self, node, matcher):
-        return matcher.find_descendant(node, self.target_node)
+class IsParentOfRelation(VerticalRelation):
+    def __init__(self, target_node):
+        super(IsParentOfRelation, self).__init__(target_node)
 
 
-class IsPreviousSiblingOfRelation(NodeRelation):
-    def __init(self, target_node):
-        super(IsPreviousSiblingOfRelation).__init__(target_node)
+class IsAncestorOfRelation(VerticalRelation):
+    def __init__(self, target_node):
+        super(IsAncestorOfRelation, self).__init__(target_node)
 
 
-class NodeExprWrapper(ast.AstNode):
-    def __init__(self, attr_expr, identifier):
+class HorizontalRelation(NodeRelation):
+    def __init__(self, target_node):
+        super(HorizontalRelation, self).__init__(target_node)
+
+
+class IsPreviousSiblingOfRelation(HorizontalRelation):
+    def __init__(self, target_node):
+        super(IsPreviousSiblingOfRelation, self).__init__(target_node)
+
+
+class Repeater(object):
+    def __init__(self, lower=1, upper=-1):
+        self.lower = lower
+        self.upper = upper
+
+    def is_exact(self):
+        return self.lower == self.upper
+
+    def is_range(self):
+        return self.lower != -1 and self.upper != -1
+
+    def is_max(self):
+        return self.lower == -1 and self.upper != -1
+
+    def is_min(self):
+        return self.lower != -1 and self.upper == -1
+
+
+class NodeExprBase(ast.AstNode):
+    def __init__(self, attr_expr):
         self.attr_expr = attr_expr
+
+
+class NodeSequenceExprWrapper(NodeExprBase):
+    def __init__(self, attr_expr, repeater):
+        super(NodeSequenceExprWrapper, self).__init__(attr_expr)
+        self.repeater = repeater
+
+
+class NodeExprWrapper(NodeExprBase):
+    def __init__(self, attr_expr, identifier=None):
+        super(NodeExprWrapper, self).__init__(attr_expr)
         self.identifier = identifier
 
-    def is_match(self, node):
-        """
-        This is like eval
-        """
-        context = self._build_evaluation_context(node, )
-        bool_value = self.attr_expr.evaluate(context)
-        return bool_value.value
-
-    def _build_evaluation_context(self, node, matcher):
-        context = EvaluationContext(matcher)
-        id_ = self.identifier if self.identifier else "current"
-        context.register(id_, node)
-        return context
-
-
-class EvaluationContext():
-    def __init__(self, matcher):
-        self.inner = {}
-        self.default = None
-        self.pattern_matcher = matcher
-
-    def register(self, identifier, node):
-        assert identifier not in self.inner.keys()
-        self.inner[identifier] = node
-        self.default = node
-
-    def retrieve_node(self, identifier):
-        if identifier not in self.inner.keys():
-            return self.default
-        return self.inner[identifier]
+    def has_identifier(self):
+        return self.identifier is not None
 
 
 class Expr(ast.AstNode):
@@ -290,8 +306,11 @@ class VariableExpr(ConstantExpr):
 
 
 class ImplicitVariableExpr(VariableExpr):
-    def __init__(self, value):
-        super(ImplicitVariableExpr, self).__init__(value)
+    def __init__(self):
+        super(ImplicitVariableExpr, self).__init__('implicit')
+
+
+ImplicitVariableExpr.DEFAULT = ImplicitVariableExpr()
 
 
 class IntegerExpr(ConstantExpr):
@@ -305,9 +324,15 @@ class StringExpr(ConstantExpr):
 
 
 class BooleanExpr(ConstantExpr):
-    # value is real bool value True / False
     def __init__(self, value):
         self.value = value
+
+    def build(self, bool_value):
+        return BooleanExpr.TRUE if bool_value else BooleanExpr.FALSE
+
+
+BooleanExpr.TRUE = BooleanExpr(True)
+BooleanExpr.FALSE = BooleanExpr(False)
 
 
 class NodeTypeExpr(ConstantExpr):
@@ -319,6 +344,7 @@ class NodeTypeExpr(ConstantExpr):
 class ListExpr(ConstantExpr):
     def __init__(self, value):
         self.value = value
+
 
 # Type match is a nothing else but an expression about type
 # No need for special Or, Not expressions, they are the same as attr
@@ -341,21 +367,48 @@ class ApiCallExprWithArg(ApiCallExpr):
         self.argument = argument
 
 
-# class NodeQueryExpr(Expr):
-#     def __init__(self, operand):
-#         self.operand = operand
+class NodeQueryExpr(Expr):
+    def __init__(self, operand):
+        self.operand = operand
 
 
-# class ContainsExpr(NodeQueryExpr):
-#     def __init__(self, operand, argument):
-#         super(ContainsExpr, self).__init__(operand)
-#         self.argument = argument
-#
-#
-# class CountExpr(NodeQueryExpr):
-#     def __init__(self, operand, argument):
-#         super(CountExpr, self).__init__(operand)
-#         self.argument = argument
+class ContainsExpr(NodeQueryExpr):
+    def __init__(self, operand, argument):
+        super(ContainsExpr, self).__init__(operand)
+        self.argument = argument
+
+
+class CountExpr(NodeQueryExpr):
+    def __init__(self, operand, argument):
+        super(CountExpr, self).__init__(operand)
+        self.argument = argument
+
+
+class NextSiblingExpr(NodeQueryExpr):
+    def __init__(self, operand):
+        super(NextSiblingExpr, self).__init__(operand)
+
+
+class WhitespaceExpr(NodeQueryExpr):
+    def __init__(self, operand, variation):
+        super(WhitespaceExpr, self).__init__(operand)
+        self.variation = variation
+
+
+class BeforeExpr(WhitespaceExpr):
+    def __init__(self, operand, variation):
+        super(BeforeExpr, self).__init__(operand, variation)
+
+
+class BetweenExpr(WhitespaceExpr):
+    def __init__(self, operand, variation, second_operand):
+        super(BetweenExpr, self).__init__(operand, variation)
+        self.second_operand = second_operand
+
+
+class AfterExpr(WhitespaceExpr):
+    def __init__(self, operand, variation):
+        super(AfterExpr, self).__init__(operand, variation)
 
 
 class Repetition(Statement):
@@ -363,44 +416,41 @@ class Repetition(Statement):
         self.repeat_list = repeat_list
         self.convention = convention
 
+
 # -------------- OLD STUFF --------------
 
 
 class Rule(Statement):
-
     def __init__(self, markers_list):
         self.markers_list = markers_list
 
     def pretty_print(self, level=0, print_indent='  '):
-        s = ''.join(['\n', print_indent*level, self.get_title(), ':'])
+        s = ''.join(['\n', print_indent * level, self.get_title(), ':'])
         for m in self.markers_list:
-            s = ''.join([s, m.pretty_print(level+1)])
+            s = ''.join([s, m.pretty_print(level + 1)])
         return s
+
 
 # for word=(id-word or class-word)
 # require word.value in dictionary
 
 
 class RequireRule(Rule):
-
     def __init__(self, markers_list):
         Rule.__init__(self, markers_list)
 
 
 class ForbidRule(Rule):
-
     def __init__(self, markers_list):
         Rule.__init__(self, markers_list)
 
 
 class AllowRule(Rule):
-
     def __init__(self, markers_list):
         Rule.__init__(self, markers_list)
 
 
 class MarkerSequence(ast.AstNode):
-
     def __init__(self, markers):
         self.markers = markers
 
@@ -411,28 +461,27 @@ class MarkerSequence(ast.AstNode):
         return iter(self.markers)
 
     def pretty_print(self, level=0, print_indent='  '):
-        s = ''.join(['\n', print_indent*level, self.get_title(), ':'])
+        s = ''.join(['\n', print_indent * level, self.get_title(), ':'])
         for m in self.markers:
             s = ''.join([s, m.pretty_print(level + 1)])
         return s
 
 
 class MarkerSequenceVariation(ast.AstNode):
-
     def __init__(self, marker_sequences):
         self.marker_sequences = marker_sequences
 
     def pretty_print(self, level=0, print_indent='  '):
-        s = ''.join(['\n', print_indent*level, self.get_title(), ':'])
+        s = ''.join(['\n', print_indent * level, self.get_title(), ':'])
         for sequence in self.marker_sequences:
             s = ''.join([s, sequence.pretty_print(level + 1)])
         return s
+
 
 MarkerSequenceVariation.NONE = MarkerSequenceVariation([])
 
 
 class AstBuilder(object):
-
     @staticmethod
     def build(ply_tree):
         builder = AstBuilder()
@@ -504,7 +553,7 @@ class AstBuilder(object):
 
     def _is_or_expr(self, ply_node):
         return len(ply_node.tail) == 3 and \
-            ply_node.tail[1] == 'or'
+               ply_node.tail[1] == 'or'
 
     def _handle_or_expr(self, ply_node):
         left = self._build_marker(ply_node.tail[0])
@@ -525,7 +574,7 @@ class AstBuilder(object):
 
     def _is_parenthesis_expr(self, ply_node):
         return ply_node.tail[0] == '(' and \
-            ply_node.tail[-1] == ')'
+               ply_node.tail[-1] == ')'
 
     def _handle_parenthesis_expr(self, ply_node):
         elements = ply_node.tail[1:-1]

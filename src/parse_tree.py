@@ -1,8 +1,20 @@
 import abc
-import coco.ast.ast as cocoast
+import coco.analysis.values as values
 
 
-class Node(object):
+class NodeAbstract(object):
+    pass
+
+
+class NodeFilter(NodeAbstract):
+    def __init__(self, node, filter_seqs):
+        self._node = node
+        self._filter_seqs = filter_seqs
+        self.type_ = self._node.type
+
+
+
+class Node(NodeAbstract):
 
     _print_indent = '  '
 
@@ -84,7 +96,7 @@ class Node(object):
 class TerminalNode(Node):
 
     def __init__(self, type_, value):
-        Node.__init__(self, type_, value)
+        super(TerminalNode, self).__init__(type_, value)
 
     def _register_api(self):
         return {}
@@ -115,10 +127,63 @@ class Declaration(Node):
                 'say': self.say}
 
     def is_vendor_specific(self):
-        return cocoast.BoolValue(True)
+        return values.Boolean.TRUE
 
     def say(self, param):
-        return cocoast.StringValue(param.value)
+        return values.String(param.value)
+
+
+class CombinatorSelector(Node):
+    pass
+
+
+class ChildSelector(CombinatorSelector):
+    pass
+
+
+class DescendantSelector(CombinatorSelector):
+    pass
+
+
+class AdjacentSiblingSelector(CombinatorSelector):
+    pass
+
+
+class GeneralSiblingSelector(CombinatorSelector):
+    pass
+
+
+class SimpleSelector(Node):
+    pass
+
+
+class ElementSelector(SimpleSelector):
+    def __init__(self, name):
+        super(ElementSelector, self).__init__()
+        self.name = name
+
+    def _register_api(self):
+        return {'name': self.name}
+
+
+class IdSelector(SimpleSelector):
+    pass
+
+
+class ClassSelector(SimpleSelector):
+    pass
+
+
+class AttributeSelector(SimpleSelector):
+    pass
+
+
+class UniversalSelector(SimpleSelector):
+    pass
+
+
+class PseudoSelector(SimpleSelector):
+    pass
 
 
 class String(TerminalNode):

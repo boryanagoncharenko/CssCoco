@@ -4,7 +4,6 @@ GONZO_PATH = 'src/gonzales_parser.js'
 
 
 class Parser(object):
-
     @staticmethod
     def parse_css(css):
         encoded_css = css.encode('utf8')
@@ -20,7 +19,6 @@ class Parser(object):
 
 
 class SExprTransformer(object):
-
     _type_to_value = {'decldelim': ';', 'delim': ','}
 
     @staticmethod
@@ -30,6 +28,7 @@ class SExprTransformer(object):
         transformer._add_eof(s_expr)
         transformer._push_down(s_expr)
         transformer._pull_up_whitespace(s_expr)
+        transformer._replace_descendant_selectors(s_expr)
         transformer._split_up_whitespace(s_expr)
         return s_expr
 
@@ -108,6 +107,7 @@ class SExprTransformer(object):
             self._push_down(s_expr)
 
     def _push_down_declaration_delimiter(self, current):
+        # TODO: extract a method that takes a transformation as a param and applies it
         if self._has_no_children(current):
             return False
         i = 1
@@ -124,7 +124,7 @@ class SExprTransformer(object):
 
     def _try_push_down(self, child, current, index):
         if current[0] == 'block' and child[0] == 'decldelim':
-            previous_child = current[index-1]
+            previous_child = current[index - 1]
             if previous_child and previous_child[0] == 'declaration':
                 current.pop(index)
                 previous_child.append(child)
@@ -193,16 +193,44 @@ class SExprTransformer(object):
                 del s_expr[index]
                 spaces = self._get_whitespace_expr(child)
                 for offset, s in enumerate(spaces):
-                    s_expr.insert(index+offset, s)
+                    s_expr.insert(index + offset, s)
             else:
                 self._split_up_whitespace(child)
             index += 1
+
+    def _replace_descendant_selectors(self, s_expr):
+        """
+        This method transforms space in selectors into descendant selectors
+        """
+        self._node_transform(self._is_descendant_selector, self._descendant_transformer, s_expr)
+
+    def _node_transform(self, selector, transformer, s_expr):
+        if self._has_no_children(s_expr):
+            return
+        index = 1
+        while index < len(s_expr):
+            child = s_expr[index]
+            if selector(s_expr, child, index):
+                transformer(child)
+            else:
+                self._node_transform(selector, transformer, child)
+            index += 1
+
+    def _is_descendant_selector(self, s_expr, child, index):
+        return s_expr[0] == 'simpleselector' and \
+               child[0] == 's' and ' ' in child[1] and \
+               index > 1 and index < len(s_expr) - 1 and \
+               s_expr[index - 1][0] != 'combinator' and \
+               s_expr[index + 1][0] != 'combinator'
+
+    def _descendant_transformer(self, child):
+        child[0] = 'descendant-selector'
 
     def _get_whitespace_expr(self, s_expr):
         result = []
         values = self._split_whitespace_value(s_expr[1])
         for index, value in enumerate(values):
-            prev_value = None if index == 0 else values[index-1]
+            prev_value = None if index == 0 else values[index - 1]
             type_ = self._get_whitespace_type(value, prev_value)
             if type_ == 'indent':
                 result.append([type_, value])

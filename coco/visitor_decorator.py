@@ -19,12 +19,12 @@ def _declaring_class(obj):
 _methods = {}
 
 
-def _visitor_impl(self, arg):
+def _visitor_impl(self, *arg):
     """
     Actual visitor method implementation.
     """
-    method = _methods[(_qualname(type(self)), type(arg))]
-    return method(self, arg)
+    method = _methods[(_qualname(type(self)), type(arg[0]))]
+    return method(self, *arg)
 
 
 def visitor(arg_type):
