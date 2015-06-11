@@ -18,6 +18,7 @@ class EvaluationContext(object):
 class ExprContext(EvaluationContext):
     def __init__(self, pattern_matcher, node):
         super(ExprContext, self).__init__(pattern_matcher)
+        assert node
         self._node = node
 
     def get_node_by_id(self, identifier):

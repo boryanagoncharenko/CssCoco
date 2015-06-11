@@ -31,6 +31,7 @@ class Violation(object):
 class ViolationsFinder(object):
 
     def __init__(self, tree):
+        assert tree
         self._violations = Violations()
         self._tree = tree
         self._context = None

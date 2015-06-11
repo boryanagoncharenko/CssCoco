@@ -105,6 +105,7 @@ class NodeType(Value):
 class Node(Value):
     # TODO: this value should not be here
     def __init__(self, node):
+        assert node
         self.value = node
 
     def is_(self, value):

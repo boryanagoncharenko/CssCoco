@@ -1,6 +1,6 @@
 from subprocess import Popen, PIPE
 
-GONZO_PATH = 'src/gonzales_parser.js'
+GONZO_PATH = 'css/gonzales_parser.js'
 
 
 class Parser(object):
