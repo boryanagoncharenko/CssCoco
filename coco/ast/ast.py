@@ -235,6 +235,12 @@ class Repeater(object):
     def is_min(self):
         return self.lower != -1 and self.upper == -1
 
+    def is_in_range(self, i):
+        assert i >= 0
+        if self.is_min():
+            return True
+        return i < self.upper - self.lower
+
 
 class NodeExprBase(ast.AstNode):
     def __init__(self, attr_expr):
@@ -327,7 +333,8 @@ class BooleanExpr(ConstantExpr):
     def __init__(self, value):
         self.value = value
 
-    def build(self, bool_value):
+    @staticmethod
+    def build(bool_value):
         return BooleanExpr.TRUE if bool_value else BooleanExpr.FALSE
 
 

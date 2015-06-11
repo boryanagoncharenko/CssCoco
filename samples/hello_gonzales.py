@@ -294,10 +294,10 @@ requirement = cocoast.BeforeExpr(cocoast.VariableExpr('d1'), cocoast.WhitespaceV
 ]))
 
 relations = cocoast.Relations()
-relations.register_relation(stylesheet, cocoast.IsParentOfRelation(rule))
-relations.register_relation(rule, cocoast.IsParentOfRelation(declaration1))
-relations.register_relation(rule, cocoast.IsParentOfRelation(declaration2))
-relations.register_relation(rule, cocoast.IsParentOfRelation(declaration3))
+relations.register_relation(stylesheet, cocoast.IsAncestorOfRelation(rule))
+relations.register_relation(rule, cocoast.IsAncestorOfRelation(declaration1))
+relations.register_relation(rule, cocoast.IsAncestorOfRelation(declaration2))
+relations.register_relation(rule, cocoast.IsAncestorOfRelation(declaration3))
 pattern = cocoast.PatternExpr(stylesheet, [stylesheet, rule, declaration1, declaration2, declaration3], relations)
 
 convention = cocoast.ForbidConvention(pattern, "Forbid pattern found")

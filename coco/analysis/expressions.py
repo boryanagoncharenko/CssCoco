@@ -127,7 +127,7 @@ class ExprEvaluator(object):
     @vis.visitor(ast.ContainsExpr)
     def visit(self, contains_expr):
         node_value = self.visit(contains_expr.operand)
-        for d in self._context.matcher.find_descendant(node_value.value, ast.NodeExprWrapper(contains_expr.argument)):
+        for d in self._context.matcher.find_descendants_that_match(node_value.value, ast.NodeExprWrapper(contains_expr.argument)):
             return values.Boolean.TRUE
         return values.Boolean.FALSE
 
@@ -135,7 +135,7 @@ class ExprEvaluator(object):
     def visit(self, count_expr):
         node_value = self.visit(count_expr.operand)
         count = 0
-        for _ in self._context.matcher.find_descendant(node_value.value, ast.NodeExprWrapper(count_expr.argument)):
+        for _ in self._context.matcher.find_descendants_that_match(node_value.value, ast.NodeExprWrapper(count_expr.argument)):
             count += 1
         return values.Integer(count)
 

@@ -68,7 +68,7 @@ class ViolationsFinder(object):
     def visit(self, find_require):
         filter_ = p_matcher.Filter(self._get_current_context().get_ignored_and_target_patterns())
         matcher = p_matcher.PatternMatcher(filter_)
-        for id_node_table in matcher.find_pattern_occurrences(self._tree, find_require.target_pattern):
+        for id_node_table in matcher.find_pattern_in_tree(self._tree, find_require.target_pattern):
             constraint_filter = p_matcher.Filter(self._get_current_context().get_ignored_patterns())
             eval_context = expr.ConstraintContext(p_matcher.PatternMatcher(constraint_filter), id_node_table)
             is_fulfilled = expr.ExprEvaluator.evaluate(find_require.constraint, eval_context)
@@ -81,7 +81,7 @@ class ViolationsFinder(object):
     def visit(self, forbid):
         filter_seq = p_matcher.Filter(self._get_current_context().get_ignored_and_target_patterns())
         matcher = p_matcher.PatternMatcher(filter_seq)
-        for id_node_table in matcher.find_pattern_occurrences(self._tree, forbid.target_pattern):
+        for id_node_table in matcher.find_pattern_in_tree(self._tree, forbid.target_pattern):
             # eval_context = expr.ConstraintContext(matcher, id_node_table)
             # id_node_table = self._context[0]
             anchor_desc = forbid.target_pattern.get_anchors()[0]
