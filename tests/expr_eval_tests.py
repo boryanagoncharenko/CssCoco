@@ -1,7 +1,4 @@
 import coco.ast.ast as ast
-import coco.analysis.expressions as expr
-import coco.analysis.values as values
-import coco.analysis.violations as violations
 
 
 # def test_eval_integer_expr():
