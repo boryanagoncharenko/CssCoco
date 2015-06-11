@@ -1,4 +1,3 @@
-__author__ = 'boryana'
 
 
 class Value(object):

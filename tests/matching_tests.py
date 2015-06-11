@@ -1,7 +1,9 @@
+from unittest import TestCase
+from tests.helpers import ParseTreeConstructor
+from tests.helpers import PatternConstructor
 import src.parse_tree as parse
 import coco.ast.ast as ast
 import coco.analysis.pattern_matcher as matching
-from unittest import TestCase
 
 
 class WhitespaceMatcher(TestCase):
@@ -16,166 +18,146 @@ class WhitespaceMatcher(TestCase):
         self.nodes = [self.node0, self.node1, self.node2, self.node3, self.node4]
         self.matcher = matching.WhitespaceVariationMatcher(matching.Filter.EMPTY)
 
-    def get_desc(self, type_):
-        return ast.NodeExprWrapper(ast.IsExpr(ast.ImplicitVariableExpr.DEFAULT, ast.NodeTypeExpr(type_string=type_)))
-
-    def get_seq_desc(self, repeater):
-        return ast.NodeSequenceExprWrapper(self.attr_expr, repeater)
-
-    def get_seq_desc_(self, type_, repeater):
-        return ast.NodeSequenceExprWrapper(
-            ast.IsExpr(ast.ImplicitVariableExpr.DEFAULT, ast.NodeTypeExpr(type_string=type_)), repeater)
-
-    def construct_tree(self, *type_list):
-        nodes = []
-        for i, type_ in enumerate(type_list):
-            nodes.append(parse.TerminalNode(type_, '    '))
-        root = parse.Node('root', nodes)
-        for i, child in enumerate(root.value):
-            child.index = i
-            child.parent = root
-        return root
-
     def test_is_lower_matched(self):
-        desc = self.get_seq_desc(ast.Repeater(lower=2, upper=2))
+        desc = PatternConstructor.build_seq_desc(ast.Repeater(lower=2, upper=2))
         is_matched, rem_nodes = self.matcher._is_lower_matched(desc, [self.node0, self.node1, self.node2])
         assert is_matched
         assert len(rem_nodes) == 1
         assert rem_nodes[0] == self.node2
 
     def test_not_is_lower_matched(self):
-        desc = self.get_seq_desc(ast.Repeater(lower=2, upper=2))
+        desc = PatternConstructor.build_seq_desc(ast.Repeater(lower=2, upper=2))
         is_matched, rem_nodes = self.matcher._is_lower_matched(desc, [self.node0])
         assert not is_matched
 
     def test_handle_range_more(self):
-        desc = self.get_seq_desc(ast.Repeater(2, 3))
+        desc = PatternConstructor.build_seq_desc(ast.Repeater(2, 3))
         is_matched, rem_nodes = self.matcher._handle_range(desc, [self.node0, self.node1, self.node2, self.node3])
         assert is_matched
         assert len(rem_nodes) == 1
 
     def test_handle_range_split(self):
-        desc = self.get_seq_desc_('newline', ast.Repeater(1, 3))
+        desc = PatternConstructor.build_seq_desc_type('newline', ast.Repeater(1, 3))
         is_matched, rem_nodes = self.matcher._handle_range(desc, [self.node0, self.node0, self.node1])
         assert is_matched
         assert len(rem_nodes) == 1
 
     def test_handle_range_less(self):
-        desc = self.get_seq_desc(ast.Repeater(1, 2))
+        desc = PatternConstructor.build_seq_desc(ast.Repeater(1, 2))
         is_matched, rem_nodes = self.matcher._handle_range(desc, [])
         assert not is_matched
 
     def test_handle_max_less(self):
-        desc = self.get_seq_desc(ast.Repeater(upper=3))
+        desc = PatternConstructor.build_seq_desc(ast.Repeater(upper=3))
         is_matched, rem_nodes = self.matcher._handle_range(desc, [self.node0])
         assert is_matched
         assert not rem_nodes
 
     def test_handle_max_exact(self):
-        desc = self.get_seq_desc(ast.Repeater(upper=3))
+        desc = PatternConstructor.build_seq_desc(ast.Repeater(upper=3))
         is_matched, rem_nodes = self.matcher._handle_range(desc, [self.node0, self.node1, self.node2])
         assert is_matched
         assert not rem_nodes
 
     def test_handle_max_more(self):
-        desc = self.get_seq_desc(ast.Repeater(upper=3))
+        desc = PatternConstructor.build_seq_desc(ast.Repeater(upper=3))
         is_matched, rem_nodes = self.matcher._handle_range(desc, [self.node0, self.node1, self.node2, self.node3])
         assert is_matched
         assert len(rem_nodes) == 1
         assert rem_nodes[0] == self.node3
 
     def test_handle_min_less(self):
-        desc = self.get_seq_desc(ast.Repeater(lower=2))
+        desc = PatternConstructor.build_seq_desc(ast.Repeater(lower=2))
         is_matched, rem_nodes = self.matcher._handle_range(desc, [self.node0])
         assert not is_matched
 
     def test_handle_min_exact(self):
-        desc = self.get_seq_desc(ast.Repeater(lower=2))
+        desc = PatternConstructor.build_seq_desc(ast.Repeater(lower=2))
         is_matched, rem_nodes = self.matcher._handle_range(desc, [self.node0, self.node1])
         assert is_matched
         assert not rem_nodes
 
     def test_handle_min_split(self):
-        desc = self.get_seq_desc_('newline', ast.Repeater(lower=2))
+        desc = PatternConstructor.build_seq_desc_type('newline', ast.Repeater(lower=2))
         is_matched, rem_nodes = self.matcher._handle_range(desc, [self.node0, self.node0, self.node1])
         assert is_matched
         assert len(rem_nodes) == 1
 
     def test_handle_min_more(self):
-        desc = self.get_seq_desc(ast.Repeater(lower=2))
+        desc = PatternConstructor.build_seq_desc(ast.Repeater(lower=2))
         is_matched, rem_nodes = self.matcher._handle_range(desc, [self.node0, self.node1, self.node3])
         assert is_matched
         assert not rem_nodes
 
     def test_is_sequence_exact_nodes_match(self):
-        node_list = [self.get_desc('newline'), self.get_desc('space')]
+        node_list = [PatternConstructor.build_node_desc('newline'), PatternConstructor.build_node_desc('space')]
         seq = ast.SequencePatternExpr(node_list)
         is_match = self.matcher._is_sequence_exact_nodes_match(seq, [self.node0, self.node1])
         assert is_match
 
     def test_is_sequence_exact_nodes_match_more(self):
-        node_list = [self.get_desc('newline'), self.get_desc('space')]
+        node_list = [PatternConstructor.build_node_desc('newline'), PatternConstructor.build_node_desc('space')]
         seq = ast.SequencePatternExpr(node_list)
         is_match = self.matcher._is_sequence_exact_nodes_match(seq, [self.node0, self.node1, self.node1])
         assert not is_match
 
     def test_is_sequence_exact_nodes_match_multi_one(self):
-        rep_node = self.get_seq_desc_('newline', ast.Repeater(lower=3, upper=3))
+        rep_node = PatternConstructor.build_seq_desc_type('newline', ast.Repeater(lower=3, upper=3))
         node_list = [rep_node]
         seq = ast.SequencePatternExpr(node_list)
         is_match = self.matcher._is_sequence_exact_nodes_match(seq, [self.node0, self.node0, self.node0])
         assert is_match
 
     def test_is_sequence_exact_nodes_match_multi_two(self):
-        rep_node = self.get_seq_desc_('newline', ast.Repeater(lower=2, upper=3))
-        node_list = [self.get_desc('space'), rep_node]
+        rep_node = PatternConstructor.build_seq_desc_type('newline', ast.Repeater(lower=2, upper=3))
+        node_list = [PatternConstructor.build_node_desc('space'), rep_node]
         seq = ast.SequencePatternExpr(node_list)
         is_match = self.matcher._is_sequence_exact_nodes_match(seq, [self.node1, self.node0, self.node0])
         assert is_match
 
     def test_is_start_of_sequence(self):
-        node_list = [self.get_desc('newline'), self.get_desc('space')]
+        node_list = [PatternConstructor.build_node_desc('newline'), PatternConstructor.build_node_desc('space')]
         seq = ast.SequencePatternExpr(node_list)
-        root = self.construct_tree('newline', 'space', 'space')
+        root = ParseTreeConstructor.add_root_to_siblings('newline', 'space', 'space')
         is_match, nodes = self.matcher.is_start_of_sequence(seq, root.value[0])
         assert is_match
         assert len(nodes) == 1
 
     def test_is_start_of_sequence_not(self):
-        node_list = [self.get_desc('newline'), self.get_desc('space')]
+        node_list = [PatternConstructor.build_node_desc('newline'), PatternConstructor.build_node_desc('space')]
         seq = ast.SequencePatternExpr(node_list)
-        root = self.construct_tree('newline', 'tab', 'space')
+        root = ParseTreeConstructor.add_root_to_siblings('newline', 'tab', 'space')
         is_match, nodes = self.matcher.is_start_of_sequence(seq, root)
         assert not is_match
 
     def test_is_start_of_sequence_less(self):
-        node_list = [self.get_desc('newline'), self.get_desc('space')]
+        node_list = [PatternConstructor.build_node_desc('newline'), PatternConstructor.build_node_desc('space')]
         seq = ast.SequencePatternExpr(node_list)
-        root = self.construct_tree('newline')
+        root = ParseTreeConstructor.add_root_to_siblings('newline')
         is_match, nodes = self.matcher.is_start_of_sequence(seq, root)
         assert not is_match
 
     def test_is_variation_before_node(self):
-        variation = ast.WhitespaceVariation([ast.SequencePatternExpr([self.get_desc('newline')])])
-        root = self.construct_tree('newline', 'comment')
+        variation = ast.WhitespaceVariation([ast.SequencePatternExpr([PatternConstructor.build_node_desc('newline')])])
+        root = ParseTreeConstructor.add_root_to_siblings('newline', 'comment')
         present = self.matcher.is_variation_before_node(variation, root.value[1])
         assert present
 
     def test_is_variation_after_node(self):
-        variation = ast.WhitespaceVariation([ast.SequencePatternExpr([self.get_desc('newline')])])
-        root = self.construct_tree('comment', 'newline')
+        variation = ast.WhitespaceVariation([ast.SequencePatternExpr([PatternConstructor.build_node_desc('newline')])])
+        root = ParseTreeConstructor.add_root_to_siblings('comment', 'newline')
         present = self.matcher.is_variation_after_node(variation, root.value[0])
         assert present
 
     def test_is_variation_between_nodes(self):
         variation = ast.WhitespaceVariation([
-            ast.SequencePatternExpr([self.get_desc('newline')]),
-            ast.SequencePatternExpr([self.get_desc('space'), self.get_desc('newline')])])
-        root = self.construct_tree('comment', 'newline', 'comment')
+            ast.SequencePatternExpr([PatternConstructor.build_node_desc('newline')]),
+            ast.SequencePatternExpr([PatternConstructor.build_node_desc('space'), PatternConstructor.build_node_desc('newline')])])
+        root = ParseTreeConstructor.add_root_to_siblings('comment', 'newline', 'comment')
         present = self.matcher.is_variation_between_nodes(variation, root.value[0], root.value[2])
         assert present
 
-        root = self.construct_tree('comment', 'space', 'newline', 'comment')
+        root = ParseTreeConstructor.add_root_to_siblings('comment', 'space', 'newline', 'comment')
         present = self.matcher.is_variation_between_nodes(variation, root.value[0], root.value[3])
         assert present
 
@@ -183,7 +165,66 @@ class WhitespaceMatcher(TestCase):
 class HierarchicalMatcher(TestCase):
 
     def setUp(self):
+        self.matcher = matching.PatternMatcher(matching.Filter.EMPTY)
+        self.tree = ParseTreeConstructor.add_root_to_siblings('ruleset', 'newline')
+        ParseTreeConstructor.add_children_to_node('declaration', 'newline', 'declaration', 'space', 'declaration',
+                                                  node=self.tree.value[0])
         pass
 
-    def test_handle_min_more(self):
-        pass
+    def test_find_single_pattern_in_children(self):
+        pattern = PatternConstructor.single_node('declaration')
+        result = self.matcher.find_pattern_in_tree(self.tree, pattern)
+        assert len(result) == 3
+
+    def test_find_single_pattern_in_descendants(self):
+        pattern = PatternConstructor.single_node('declaration')
+        result = self.matcher.find_pattern_in_tree(self.tree, pattern)
+        assert len(result) == 3
+
+    def test_find_parent_child_pattern(self):
+        parent = PatternConstructor.build_node_desc('root')
+        child = PatternConstructor.build_node_desc('ruleset')
+        relations = ast.Relations()
+        relations.register_relation(parent, ast.IsParentOfRelation(child))
+        pattern = ast.PatternExpr(parent, [parent, child], relations)
+
+        result = self.matcher.find_pattern_in_tree(self.tree, pattern)
+        assert len(result) == 1
+
+    def test_find_parent_child_pattern_ancestor(self):
+        parent = PatternConstructor.build_node_desc('root')
+        child = PatternConstructor.build_node_desc('newline')
+        relations = ast.Relations()
+        relations.register_relation(parent, ast.IsAncestorOfRelation(child))
+        pattern = ast.PatternExpr(parent, [parent, child], relations)
+
+        result = self.matcher.find_pattern_in_tree(self.tree, pattern)
+        assert len(result) == 2
+
+    def test_find_double_pattern(self):
+        parent = PatternConstructor.build_node_desc('ruleset')
+        child1 = PatternConstructor.build_node_desc('declaration')
+        child2 = PatternConstructor.build_node_desc('declaration')
+        relations = ast.Relations()
+        relations.register_relation(parent, ast.IsParentOfRelation(child1))
+        relations.register_relation(parent, ast.IsParentOfRelation(child2))
+        pattern = ast.PatternExpr(parent, [parent, child1, child2], relations)
+
+        result = self.matcher.find_pattern_in_tree(self.tree, pattern)
+        assert len(result) == 3
+
+    def test_find_fork_pattern(self):
+        root = PatternConstructor.build_node_desc('root')
+        parent = PatternConstructor.build_node_desc('ruleset')
+        child1 = PatternConstructor.build_node_desc('declaration')
+        child2 = PatternConstructor.build_node_desc('declaration')
+        child3 = PatternConstructor.build_node_desc('declaration')
+        relations = ast.Relations()
+        relations.register_relation(root, ast.IsParentOfRelation(parent))
+        relations.register_relation(parent, ast.IsParentOfRelation(child1))
+        relations.register_relation(parent, ast.IsParentOfRelation(child2))
+        relations.register_relation(parent, ast.IsParentOfRelation(child3))
+        pattern = ast.PatternExpr(root, [root, parent, child1, child2, child3], relations)
+
+        result = self.matcher.find_pattern_in_tree(self.tree, pattern)
+        assert len(result) == 1
