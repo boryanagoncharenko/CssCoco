@@ -1,5 +1,5 @@
 import coco.ast.ast as ast
-import src.parse_tree as parse
+import css.parse_tree as parse
 
 
 class ParseTreeConstructor(object):

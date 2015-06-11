@@ -1,7 +1,7 @@
 from unittest import TestCase
 from tests.helpers import ParseTreeConstructor
 from tests.helpers import PatternConstructor
-import src.parse_tree as parse
+import css.parse_tree as parse
 import coco.ast.ast as ast
 import coco.analysis.pattern_matcher as matching
 

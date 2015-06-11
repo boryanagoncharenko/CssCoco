@@ -1,4 +1,4 @@
-import src.parser as parser
+import css.parser as parser
 
 
 def test_add_value_transformation_delim():
