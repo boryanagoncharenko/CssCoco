@@ -1,1 +1,7 @@
-tra la la
+
+Semantic {
+  forbid a=(tag or h1)
+  forbid h2
+}
+
+Whitespace{}

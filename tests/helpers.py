@@ -51,16 +51,3 @@ class PatternConstructor(object):
     def single_node(type_):
         node_expr = PatternConstructor.build_node_desc(type_)
         return ast.PatternExpr(node_expr, [node_expr], ast.Relations())
-
-    @staticmethod
-    def parent_child_nodes(parent_type, child_type, relation_type):
-        is_parent = ast.IsExpr(ast.ImplicitVariableExpr.DEFAULT, ast.NodeTypeExpr(type_string=parent_type))
-        is_child = ast.IsExpr(ast.ImplicitVariableExpr.DEFAULT, ast.NodeTypeExpr(type_string=child_type))
-        parent = ast.NodeExprWrapper(is_parent)
-        child = ast.NodeExprWrapper(is_child)
-        relations = ast.Relations()
-        if relation_type == 'parent':
-            relations.register_relation(parent, ast.IsParentOfRelation(child))
-        if relation_type == 'ancestor':
-            relations.register_relation(parent, ast.IsAncestorOfRelation(child))
-        return ast.PatternExpr(parent, [parent, child], relations)

@@ -21,6 +21,6 @@ def real_case_expr():
 
     convention = ast.ForbidConvention(pattern, "Do leave empty ruleset")
     context = ast.SemanticContext([convention], None)
-    sheet = ast.Sheet([context])
+    sheet = ast.ConventionSet([context])
 
     # violations.ViolationsFinder.find(sheet, css_tree)

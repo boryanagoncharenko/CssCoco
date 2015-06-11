@@ -3,6 +3,7 @@ import json
 
 import antlr4
 
+import coco.syntax.listener as customListener
 import coco.syntax.cocoLexer as cocoLexer
 import coco.syntax.cocoParser as cocoParser
 import coco.ast.ast as ast
@@ -37,7 +38,14 @@ def get_coco_ast():
     lexer = cocoLexer.cocoLexer(input)
     stream = antlr4.CommonTokenStream(lexer)
     parser = cocoParser.cocoParser(stream)
-    tree = parser.start_rule()
+    walker = antlr4.ParseTreeWalker()
+
+    tree = parser.stylesheet()
+    # listener = customListener.CocoCustomListener()
+    # walker.walk(listener, tree)
+
+    visitor = customListener.CocoCustomVisitor()
+    visitor.visitStylesheet(tree)
 
     return None
 
@@ -86,6 +94,6 @@ pattern = ast.PatternExpr(stylesheet, [stylesheet, rule, declaration1, declarati
 
 convention = ast.ForbidConvention(pattern, "Forbid pattern found")
 context = ast.SemanticContext([convention], None)
-sheet = ast.Sheet([context])
+sheet = ast.ConventionSet([context])
 
 violations.ViolationsFinder.find(sheet, css_tree)

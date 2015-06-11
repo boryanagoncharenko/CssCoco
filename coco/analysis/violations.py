@@ -42,7 +42,7 @@ class ViolationsFinder(object):
         finder.visit(sheet)
         print(finder._violations.to_string())
 
-    @vis.visitor(ast.Sheet)
+    @vis.visitor(ast.ConventionSet)
     def visit(self, sheet):
         for c in sheet.contexts:
             # self._set_current_context(c)

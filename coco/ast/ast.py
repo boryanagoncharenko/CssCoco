@@ -4,7 +4,7 @@ import coco.ast.expressions as expr
 import coco.ast.markers as markers
 
 
-class Sheet(ast.AstNode):
+class ConventionSet(ast.AstNode):
     def __init__(self, contexts):
         self.contexts = contexts
 
@@ -498,7 +498,7 @@ class AstBuilder(object):
         contexts = []
         for c in ply_sheet.select('context'):
             contexts.append(self.__build_context(c))
-        return Sheet(contexts)
+        return ConventionSet(contexts)
 
     def __build_context(self, ply_context):
         statements = []
