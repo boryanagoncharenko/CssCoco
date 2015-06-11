@@ -4,11 +4,11 @@ import coco.analysis.values as values
 import coco.analysis.violations as violations
 
 
-def test_eval_integer_expr():
-    e = ast.IntegerExpr(1)
-    context = expr.ExprContext(None, None)
-    res_value = expr.ExprEvaluator.evaluate(e, context)
-    assert type(res_value) is values.Integer and res_value.value == 1
+# def test_eval_integer_expr():
+#     e = ast.IntegerExpr(1)
+#     context = expr.ExprContext(None, None)
+#     res_value = expr.ExprEvaluator.evaluate(e, context)
+#     assert type(res_value) is values.Integer and res_value.value == 1
 
 
 def real_case_expr():
