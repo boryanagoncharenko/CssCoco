@@ -1,5 +1,5 @@
 import coco.ast.ast as ast
-import coco.analysis.values as values
+import coco.coco_values as values
 import coco.visitor_decorator as vis
 import coco
 
