@@ -1,5 +1,4 @@
 import abc
-
 import coco.analysis.values as values
 
 
