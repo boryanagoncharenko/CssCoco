@@ -1,5 +1,5 @@
 import abc
-import coco.analysis.values as values
+# import coco.analysis.values as values
 
 
 class NodeAbstract(object):
@@ -126,11 +126,11 @@ class Declaration(Node):
         return {'is-vendor-specific': self.is_vendor_specific,
                 'say': self.say}
 
-    def is_vendor_specific(self):
-        return values.Boolean.TRUE
-
-    def say(self, param):
-        return values.String(param.value)
+    # def is_vendor_specific(self):
+    #     return values.Boolean.TRUE
+    #
+    # def say(self, param):
+    #     return values.String(param.value)
 
 
 class CombinatorSelector(Node):
