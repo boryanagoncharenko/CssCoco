@@ -1,5 +1,5 @@
 import abc
-import coco.coco_values as values
+import coco.values as values
 
 
 class NodeAbstract(object):
