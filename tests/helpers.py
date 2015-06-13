@@ -36,16 +36,15 @@ class PatternConstructor(object):
 
     @staticmethod
     def build_node_desc(type_):
-        return ast.NodeExprWrapper(ast.IsExpr(ast.ImplicitVariableExpr.DEFAULT, ast.NodeTypeExpr(type_string=type_)))
+        return ast.NodeExprWrapper(ast.NodeDescriptor(type_=type_))
 
     @staticmethod
     def build_seq_desc(repeater):
-        return ast.NodeSequenceExprWrapper(ast.BooleanExpr.TRUE, repeater)
+        return ast.NodeSequenceExprWrapper(ast.NodeDescriptor(), repeater)
 
     @staticmethod
     def build_seq_desc_type(type_, repeater):
-        return ast.NodeSequenceExprWrapper(
-            ast.IsExpr(ast.ImplicitVariableExpr.DEFAULT, ast.NodeTypeExpr(type_string=type_)), repeater)
+        return ast.NodeSequenceExprWrapper(ast.NodeDescriptor(type_=type_), repeater)
 
     @staticmethod
     def single_node(type_):

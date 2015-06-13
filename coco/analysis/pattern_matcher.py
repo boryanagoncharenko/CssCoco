@@ -2,7 +2,7 @@ import coco.ast.ast as ast
 import coco.analysis.expressions as expr
 import coco.visitor_decorator as vis
 import itertools
-
+import queue
 
 class Filter():
     def __init__(self, sequences):
@@ -33,45 +33,44 @@ Filter.EMPTY = Filter([])
 class TreeWalker(object):
 
     @staticmethod
-    def traverse_current_and_descendants(desc, node):
-        yield node
-        if node.has_children():
-            for child in TreeWalker._traverse_heuristic(desc, node):
-                yield from TreeWalker.traverse_current_and_descendants(desc, child)
+    def traverse_current_and_descendants(desc, node, f):
+        if f(desc, node):
+            yield node
+        else:
+            yield from TreeWalker.traverse_descendants(desc, node, f)
 
     @staticmethod
-    def traverse_descendants(desc, node):
-        if node.has_children():
-            for child in TreeWalker._traverse_heuristic(desc, node):
-                yield child
-                yield from TreeWalker.traverse_descendants(desc, child)
+    def traverse_descendants(desc, node, f):
+        frontier = [node]
+        while frontier:
+            current = frontier.pop()
+            if current.has_children():
+                for child in current.value:
+                    if f(desc, child):
+                        yield child
+                    else:
+                        frontier.append(child)
 
     @staticmethod
-    def traverse_children(desc, node):
-        if node.has_children():
-            for child in TreeWalker._traverse_heuristic(desc, node):
-                yield child
-
-    @staticmethod
-    def _traverse_heuristic(desc, node):
+    def traverse_children(desc, node, f):
         for child in node.value:
-            if TreeWalker.pass_test(child.type_, desc):
+            if f(desc, child):
                 yield child
 
-    @staticmethod
-    def pass_test(child_type, desc):
-        d = desc.type_desc.type1
-        if child_type in ['indent', 'newline', 'comment', 'space', 'tab']:
-            return False
-        if child_type == 'block' and d in TreeWalker.selectors:
-            return False
-        if child_type == 'selector' and d in TreeWalker.blocks:
-            return False
-        return True
-
-    selectors = { 'id', 'class', 'selector', 'simple-selector', 'tag' }
-
-    blocks = { 'important', 'property', 'value' }
+    # @staticmethod
+    # def pass_test(child_type, desc):
+    #     d = desc.type_desc.type1
+    #     if child_type in ['indent', 'newline', 'comment', 'space', 'tab']:
+    #         return False
+    #     if child_type == 'block' and d in TreeWalker.selectors:
+    #         return False
+    #     if child_type == 'selector' and d in TreeWalker.blocks:
+    #         return False
+    #     return True
+    #
+    # selectors = {'id', 'class', 'selector', 'simple-selector', 'tag'}
+    #
+    # blocks = {'important', 'property', 'value'}
 
     @staticmethod
     def get_next_siblings_including(node):
@@ -305,11 +304,7 @@ class PatternMatcher(Matcher):
         return self._filter_by(node, desc, TreeWalker.traverse_children)
 
     def _filter_by(self, node, desc, func):
-        result = []
-        for n in func(desc, node):
-            if self._is_node_desc_match(desc, n):
-                result.append(n)
-        return result
+        return func(desc, node, self._is_node_desc_match)
 
     @vis.visitor(ast.IsParentOfRelation)
     def _find_target_nodes(self, relation, node):
@@ -334,15 +329,5 @@ class PatternMatcher(Matcher):
     def _unregister_multi_node_match(self, result, relations):
         for r in relations:
             result.pop(r.target_node)
-    #
-    # def _is_anchor_element(self, relations):
-    #     return len(relations) == 0
-    #
-    # def _has_single_relation(self, relations):
-    #     return len(relations) == 1
-    #
-    # def _has_multiple_relations(self, relations):
-    #     return len(relations) > 1
-
 
 PatternMatcher.DEFAULT = PatternMatcher(Filter.EMPTY)

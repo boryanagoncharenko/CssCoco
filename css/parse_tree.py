@@ -1,20 +1,7 @@
-import abc
 import coco.analysis.values as values
 
 
-class NodeAbstract(object):
-    pass
-
-
-class NodeFilter(NodeAbstract):
-    def __init__(self, node, filter_seqs):
-        self._node = node
-        self._filter_seqs = filter_seqs
-        self.type_ = self._node.type
-
-
-
-class Node(NodeAbstract):
+class Node(object):
 
     _print_indent = '  '
 
