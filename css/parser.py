@@ -26,8 +26,8 @@ class SExprTransformer(object):
         transformer = SExprTransformer()
         transformer._add_missing_tokens(s_expr)
         transformer._add_eof(s_expr)
-        # transformer._push_down(s_expr)
-        # transformer._pull_up_whitespace(s_expr)
+        transformer._push_down(s_expr)
+        transformer._pull_up_whitespace([s_expr])
         transformer._replace_descendant_selectors(s_expr)
         transformer._split_up_whitespace(s_expr)
         return s_expr
@@ -102,25 +102,28 @@ class SExprTransformer(object):
             s_expr.insert(2, ['symbol', ':'])
 
     def _push_down(self, s_expr):
-        has_transformed = self._push_down_declaration_delimiter(s_expr)
+        """
+        Gonzales puts the declaration delimiter ';' outside the declaration
+        The method pushes the delimiter as the last child of the declaration
+        """
+        has_transformed, current = self._push_down_declaration_delimiter(s_expr)
         if has_transformed:
-            self._push_down(s_expr)
+            self._push_down(current)
 
     def _push_down_declaration_delimiter(self, current):
-        # TODO: extract a method that takes a transformation as a param and applies it
         if self._has_no_children(current):
-            return False
-        i = 1
-        while i < len(current):
+            return False, None
+
+        for i in range(1, len(current)):
             child = current[i]
             if self._try_push_down(child, current, i):
-                return True
+                return True, current
 
-            transformed = self._push_down_declaration_delimiter(child)
+            transformed, expr = self._push_down_declaration_delimiter(child)
             if transformed:
-                return True
-            i += 1
-        return False
+                return True, expr
+
+        return False, None
 
     def _try_push_down(self, child, current, index):
         if current[0] == 'block' and child[0] == 'decldelim':
@@ -130,39 +133,48 @@ class SExprTransformer(object):
                 previous_child.append(child)
                 return True
             else:
-                raise NotImplementedError('Y U write ";" without declaration?')
+                raise NotImplementedError('There is a delimiter without declaration')
         return False
 
     # Whitespace nodes should not be the first of the last child of a node, except it if is the root node
     # Moreover spaces should bubble up until the condition above is met
     # The method relies on the assumption that gonzales does not produce two sibling spaces
-    def _pull_up_whitespace(self, s_expr):
+    def _pull_up_whitespace(self, path):
         """
         Whenever a transformation is made the method aborts and starts traversing from the root
         """
-        has_transformed = self._try_pull_up_whitespace(s_expr, None, -1)
-        if has_transformed:
-            self._pull_up_whitespace(s_expr)
+        return self._pull_up_ws_r([(path, -1)])
 
-    def _try_pull_up_whitespace(self, current, parent, position_in_parent):
+    def _pull_up_ws_r(self, path):
+        has_transformed, cur_path = self._try_pull_up_whitespace(path)
+        if has_transformed:
+            dim_path = cur_path if len(cur_path) == 1 else cur_path[:-1]
+            self._pull_up_ws_r(dim_path)
+
+    def _try_pull_up_whitespace(self, path):
         """
         Returns True right after it performs a whitespace pull up.
         If no transformations are made, returns False
         """
+        current = path[-1][0]
         if self._has_no_children(current):
-            return False
-        i = 1
-        while i < len(current):
+            return False, path
+        for i in range(1, len(current)):
             child = current[i]
+
+            parent = path[-2][0] if len(path) > 1 else None
+            position_in_parent = path[-1][1]
             if self._should_pull_up_child(child, current, parent, i):
                 self._pull_up_child(current, parent, i, position_in_parent)
-                return True
+                return True, path
 
-            transformed = self._try_pull_up_whitespace(child, current, i)
+            path.append((child, i))
+            transformed, expr = self._try_pull_up_whitespace(path)
             if transformed:
-                return True
-            i += 1
-        return False
+                return True, expr
+            path.pop()
+
+        return False, path
 
     def _should_pull_up_child(self, child, current, parent, i):
         if parent is not None and child[0] == 's':

@@ -66,7 +66,7 @@ def test_whitespace_pull_up_last():
     s_expr = ['root', ['ch1', ['ch2', ['ch3', ['p', 'p'], ['s', ' ']]]]]
     expected = ['root', ['ch1', ['ch2', ['ch3', ['p', 'p']]]],['s', ' ']]
 
-    parser.SExprTransformer()._pull_up_whitespace(s_expr)
+    parser.SExprTransformer()._pull_up_whitespace(s_expr, )
 
     assert s_expr == expected
 

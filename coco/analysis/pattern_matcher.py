@@ -2,7 +2,7 @@ import coco.ast.ast as ast
 import coco.analysis.expressions as expr
 import coco.visitor_decorator as vis
 import itertools
-import queue
+
 
 class Filter():
     def __init__(self, sequences):
