@@ -53,6 +53,63 @@ class ExprEvaluator(object):
         evaluator = ExprEvaluator(context)
         return evaluator.visit(expr)
 
+    def visit_new(self, thing):
+        return values.Boolean.FALSE
+        # if type(thing) is ast.AndExpr:
+        #     return self.visitAnd(thing)
+        # if type(thing) is ast.ApiCallExpr:
+        #     return self.visitApi(thing)
+        # if type(thing) is ast.StringExpr:
+        #     return self.visitStr(thing)
+        # if type(thing) is ast.EqualsExpr:
+        #     return self.visitEq(thing)
+        # if type(thing) is ast.IsExpr:
+        #     return self.visitIs(thing)
+        # if type(thing) is ast.VariableExpr:
+        #     return self.visitVar(thing)
+        # if type(thing) is ast.ImplicitVariableExpr:
+        #     return self.visitImpl(thing)
+        # if type(thing) is ast.NodeTypeExpr:
+        #     return self.visitNType(thing)
+
+    # def visitAnd(self, and_expr):
+    #     left = self.visit_new(and_expr.left)
+    #     if left.is_false():
+    #         return values.Boolean.FALSE
+    #     right = self.visit_new(and_expr.right)
+    #     return left.and_(right)
+    #
+    # def visitEq(self, equals_expr):
+    #     left = self.visit_new(equals_expr.left)
+    #     right = self.visit_new(equals_expr.right)
+    #     return left.equals(right)
+    #
+    # def visitVar(self, variable_expr):
+    #     node = self._context.get_node_by_id(variable_expr.value_string)
+    #     return values.Node(node)
+    #
+    # def visitImpl(self, implicit_variable_expr):
+    #     node = self._context.get_node_by_id('current')
+    #     return values.Node(node)
+    #
+    # def visitStr(self, string_expr):
+    #     return values.String(string_expr.value)
+    #
+    # def visitIs(self, is_expr):
+    #     node_value = self.visit_new(is_expr.left)
+    #     node_type_value = self.visit_new(is_expr.right)
+    #     real_bool = node_value.is_(node_type_value)
+    #     return values.Boolean.build(real_bool)
+    #
+    # def visitApi(self, api_call_expr):
+    #     node_value = self.visit_new(api_call_expr.operand)
+    #     property_value = node_value.value.invoke_method(api_call_expr.property_string)
+    #     return property_value
+    #
+    # def visitNType(self, node_type_expr):
+    #     return values.NodeType(node_type_expr.type, node_type_expr.value)
+
+
     @vis.visitor(ast.OrExpr)
     def visit(self, or_expr):
         return self.visit(or_expr.left) or self.visit(or_expr.right)
@@ -75,15 +132,15 @@ class ExprEvaluator(object):
     def visit(self, greater_than_expr):
         return self.visit(greater_than_expr.left) > self.visit(greater_than_expr.right)
 
-    @vis.visitor(ast.VariableExpr)
-    def visit(self, variable_expr):
-        node = self._context.get_node_by_id(variable_expr.value_string)
-        return values.Node(node)
-
-    @vis.visitor(ast.ImplicitVariableExpr)
-    def visit(self, implicit_variable_expr):
-        node = self._context.get_node_by_id('current')
-        return values.Node(node)
+    # @vis.visitor(ast.VariableExpr)
+    # def visit(self, variable_expr):
+    #     node = self._context.get_node_by_id(variable_expr.value_string)
+    #     return values.Node(node)
+    #
+    # @vis.visitor(ast.ImplicitVariableExpr)
+    # def visit(self, implicit_variable_expr):
+    #     node = self._context.get_node_by_id('current')
+    #     return values.Node(node)
 
     @vis.visitor(ast.IntegerExpr)
     def visit(self, integer_expr):
@@ -97,32 +154,33 @@ class ExprEvaluator(object):
     def visit(self, boolean_expr):
         return values.Boolean.build(boolean_expr.value)
 
-    @vis.visitor(ast.NodeTypeExpr)
-    def visit(self, node_type_expr):
-        return values.NodeType(node_type_expr.type, node_type_expr.value)
+    # @vis.visitor(ast.NodeTypeExpr)
+    # def visit(self, node_type_expr):
+    #     return values.NodeType(node_type_expr.type, node_type_expr.value)
 
     @vis.visitor(ast.ListExpr)
     def visit(self, list_expr):
         return values.List(list_expr.value)
-
-    @vis.visitor(ast.IsExpr)
-    def visit(self, is_expr):
-        node_value = self.visit(is_expr.left)
-        node_type_value = self.visit(is_expr.right)
-        real_bool = node_value.is_(node_type_value)
-        return values.Boolean.build(real_bool)
+    #
+    # @vis.visitor(ast.IsExpr)
+    # def visit(self, is_expr):
+    #     node_value = self.visit(is_expr.left)
+    #     node_type_value = self.visit(is_expr.right)
+    #     real_bool = node_value.is_(node_type_value)
+    #     return values.Boolean.build(real_bool)
 
     @vis.visitor(ast.ApiCallExpr)
     def visit(self, api_call_expr):
-        node_value = self.visit(api_call_expr.operand)
-        property_value = node_value.value.invoke_method(api_call_expr.property_string)
+        # node_value = self.visit(api_call_expr.operand)
+        node = self._context.get_node_by_id(api_call_expr.variable_name)
+        property_value = node.invoke_method(api_call_expr.property_string)
         return property_value
 
     @vis.visitor(ast.ApiCallExprWithArg)
     def visit(self, api_call_args_expr):
-        node_value = self.visit(api_call_args_expr.operand)
-        property_value = node_value.value.invoke_method_with_arg(api_call_args_expr.property_string,
-                                                                 api_call_args_expr.argument)
+        # node_value = self.visit(api_call_args_expr.operand)
+        node = self._context.get_node_by_id(api_call_args_expr.variable_name)
+        property_value = node.invoke_method_with_arg(api_call_args_expr.property_string, api_call_args_expr.argument)
         return property_value
 
     @vis.visitor(ast.ContainsExpr)

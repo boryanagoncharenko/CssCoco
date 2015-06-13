@@ -26,8 +26,8 @@ class SExprTransformer(object):
         transformer = SExprTransformer()
         transformer._add_missing_tokens(s_expr)
         transformer._add_eof(s_expr)
-        transformer._push_down(s_expr)
-        transformer._pull_up_whitespace(s_expr)
+        # transformer._push_down(s_expr)
+        # transformer._pull_up_whitespace(s_expr)
         transformer._replace_descendant_selectors(s_expr)
         transformer._split_up_whitespace(s_expr)
         return s_expr

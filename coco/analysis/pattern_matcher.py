@@ -33,24 +33,45 @@ Filter.EMPTY = Filter([])
 class TreeWalker(object):
 
     @staticmethod
-    def traverse_current_and_descendants(node):
+    def traverse_current_and_descendants(desc, node):
         yield node
         if node.has_children():
-            for child in node.value:
-                yield from TreeWalker.traverse_current_and_descendants(child)
+            for child in TreeWalker._traverse_heuristic(desc, node):
+                yield from TreeWalker.traverse_current_and_descendants(desc, child)
 
     @staticmethod
-    def traverse_descendants(node):
+    def traverse_descendants(desc, node):
         if node.has_children():
-            for child in node.value:
+            for child in TreeWalker._traverse_heuristic(desc, node):
                 yield child
-                yield from TreeWalker.traverse_descendants(child)
+                yield from TreeWalker.traverse_descendants(desc, child)
 
     @staticmethod
-    def traverse_children(node):
+    def traverse_children(desc, node):
         if node.has_children():
-            for child in node.value:
+            for child in TreeWalker._traverse_heuristic(desc, node):
                 yield child
+
+    @staticmethod
+    def _traverse_heuristic(desc, node):
+        for child in node.value:
+            if TreeWalker.pass_test(child.type_, desc):
+                yield child
+
+    @staticmethod
+    def pass_test(child_type, desc):
+        d = desc.type_desc.type1
+        if child_type in ['indent', 'newline', 'comment', 'space', 'tab']:
+            return False
+        if child_type == 'block' and d in TreeWalker.selectors:
+            return False
+        if child_type == 'selector' and d in TreeWalker.blocks:
+            return False
+        return True
+
+    selectors = { 'id', 'class', 'selector', 'simple-selector', 'tag' }
+
+    blocks = { 'important', 'property', 'value' }
 
     @staticmethod
     def get_next_siblings_including(node):
@@ -90,9 +111,13 @@ class Matcher(object):
         self._filter = filter_
 
     def _is_node_desc_match(self, desc, node):
-        context = expr.ExprContext(self, node)
-        result = expr.ExprEvaluator.evaluate(desc.attr_expr, context)
-        return result.value
+        type_ = desc.type_desc.is_node_match(node)
+        if type_ and desc.has_add_constraints():
+            context = expr.ExprContext(self, node)
+            result = expr.ExprEvaluator.evaluate(desc.attr_expr, context)
+            return result.value
+
+        return type_
 
 
 class WhitespaceVariationMatcher(Matcher):
@@ -243,12 +268,13 @@ class PatternMatcher(Matcher):
             self._register_node_match(current_result, desc, node)
 
             relations = pattern.get_node_relations(desc)
-            if self._is_anchor_element(relations):
+            rs = len(relations)
+            if rs == 0:
                 result.append(current_result.copy())
-            if self._has_single_relation(relations):
+            if rs == 1:
                 target_desc, new_nodes = self._process_relation(pattern, desc, node)
-                return self._process_nodes(new_nodes, target_desc, pattern, current_result, result)
-            if self._has_multiple_relations(relations):
+                self._process_nodes(new_nodes, target_desc, pattern, current_result, result)
+            if rs > 1:
                 self._process_fork(node, relations, desc, pattern, current_result, result)
 
             self._unregister_node_match(current_result, desc)
@@ -280,7 +306,7 @@ class PatternMatcher(Matcher):
 
     def _filter_by(self, node, desc, func):
         result = []
-        for n in func(node):
+        for n in func(desc, node):
             if self._is_node_desc_match(desc, n):
                 result.append(n)
         return result
@@ -308,15 +334,15 @@ class PatternMatcher(Matcher):
     def _unregister_multi_node_match(self, result, relations):
         for r in relations:
             result.pop(r.target_node)
-
-    def _is_anchor_element(self, relations):
-        return len(relations) == 0
-
-    def _has_single_relation(self, relations):
-        return len(relations) == 1
-
-    def _has_multiple_relations(self, relations):
-        return len(relations) > 1
+    #
+    # def _is_anchor_element(self, relations):
+    #     return len(relations) == 0
+    #
+    # def _has_single_relation(self, relations):
+    #     return len(relations) == 1
+    #
+    # def _has_multiple_relations(self, relations):
+    #     return len(relations) > 1
 
 
 PatternMatcher.DEFAULT = PatternMatcher(Filter.EMPTY)

@@ -25,9 +25,9 @@ class Node(NodeAbstract):
         self.index = -1
         self.start_position = None
         self.end_position = None
-        self._api = self._register_api()
+        self._api = {}
+        self._register_api()
 
-    @abc.abstractmethod
     def _register_api(self):
         pass
 
@@ -62,26 +62,6 @@ class Node(NodeAbstract):
         parent_type = self.parent.type_ if self.has_parent() else 'none'
         return ''.join([' Node(type=', self.type_, ', parent=', parent_type, ' index=', str(self.index), ')'])
 
-    def get_next_siblings_including(self):
-        if not self.parent:
-            return [self]
-        return self.parent.value[self.index:]
-
-    def get_next_siblings_excluding(self):
-        if not self.parent:
-            return []
-        return self.parent.value[self.index+1:]
-
-    def get_previous_siblings_including(self):
-        if not self.parent:
-            return [self]
-        return self.parent.value[0:self.index+1]
-
-    def get_previous_siblings_excluding(self):
-        if not self.parent:
-            return []
-        return self.parent.value[0:self.index]
-
     def to_error_string(self):
         string = ''
         for child in self.value:
@@ -99,7 +79,7 @@ class TerminalNode(Node):
         super(TerminalNode, self).__init__(type_, value)
 
     def _register_api(self):
-        return {}
+        self._api['value'] = self._get_value
 
     def has_children(self):
         return False
@@ -116,6 +96,9 @@ class TerminalNode(Node):
     def _get_terminal_nodes(self):
         yield self
 
+    def _get_value(self):
+        return values.String(self.value)
+
 
 class Declaration(Node):
 
@@ -123,14 +106,26 @@ class Declaration(Node):
         super(Declaration, self).__init__('declaration', value)
 
     def _register_api(self):
-        return {'is-vendor-specific': self.is_vendor_specific,
-                'say': self.say}
+        self._api['is-vendor-specific'] = self.is_vendor_specific
+        self._api['say'] = self.say
 
     def is_vendor_specific(self):
         return values.Boolean.TRUE
 
     def say(self, param):
         return values.String(param.value)
+
+
+class Property(Node):
+
+    def __init__(self, value):
+        super(Property, self).__init__('property', value)
+
+    def _register_api(self):
+        self._api['name'] = self._name
+
+    def _name(self):
+        return values.String(self.value[0].value)
 
 
 class CombinatorSelector(Node):
@@ -234,10 +229,13 @@ class ParseTreeBuilder(object):
         children = []
         for i in range(1, len(l)):
             child = self._build(l[i])
+            child.index = i - 1
             children.append(child)
         node_type = l[0]
         if node_type == 'declaration':
             return Declaration(children)
+        if node_type == 'property':
+            return Property(children)
         return Node(node_type, children)
 
     def _is_terminal(self, l):
@@ -253,7 +251,7 @@ class ParseTreeBuilder(object):
             return
         for index, child in enumerate(node.value):
             child.parent = node
-            child.index = index
+            # child.index = index
             self._annotate_ast(child)
 
     def _add_position_to_terminal_nodes(self, node):

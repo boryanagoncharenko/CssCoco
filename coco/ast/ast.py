@@ -66,18 +66,20 @@ class SemanticContext(Context):
 
     # TODO: filters must be separated and applied sequentially: first the indent, then everything else
     def get_ignored_patterns(self):
-        return [SequencePatternExpr([NodeExprWrapper(IsExpr(ImplicitVariableExpr.DEFAULT, NodeTypeExpr(type_string='newline'))),
-                                     NodeSequenceExprWrapper(IsExpr(ImplicitVariableExpr.DEFAULT, NodeTypeExpr(type_string='indent')),Repeater(1, 1)),
-                                     NodeExprWrapper(IsExpr(ImplicitVariableExpr.DEFAULT, NodeTypeExpr(type_string='comment')))]),
-                SequencePatternExpr.build_simple_seq(NodeTypeExpr(type_string='newline'), NodeTypeExpr(type_string='comment')),
-                SequencePatternExpr.build_simple_seq(NodeTypeExpr(type_string='indent')),
-                SequencePatternExpr.build_simple_seq(NodeTypeExpr(type_string='comment'))]
+        # return []
+        return [SequencePatternExpr([NodeExprWrapper('newline'),
+                                     NodeSequenceExprWrapper('indent',Repeater(1, 1)),
+                                     NodeExprWrapper('comment')]),
+                SequencePatternExpr.build_simple_seq('newline', 'comment'),
+                SequencePatternExpr.build_simple_seq('indent'),
+                SequencePatternExpr.build_simple_seq('comment')]
 
     def get_ignored_and_target_patterns(self):
+        # return []
         return self.get_ignored_patterns() + \
-            [SequencePatternExpr.build_simple_seq(NodeTypeExpr(type_string='space')),
-             SequencePatternExpr.build_simple_seq(NodeTypeExpr(type_string='newline')),
-             SequencePatternExpr.build_simple_seq(NodeTypeExpr(type_string='tab'))]
+            [SequencePatternExpr.build_simple_seq('space'),
+             SequencePatternExpr.build_simple_seq('newline'),
+             SequencePatternExpr.build_simple_seq('tab')]
 
 
 class Statement(ast.AstNode):
@@ -117,6 +119,8 @@ class PatternExpr(ast.AstNode):
         return self.relations.get_relations(node_desc)
 
     def get_anchors(self):
+        if self.relations.is_empty():
+            return [self.root_desc]
         return self.relations.get_anchors()
 
 
@@ -142,8 +146,8 @@ class SequencePatternExpr(PatternExpr):
     def build_simple_seq(*node_type_expr):
         res = []
         for node_type in node_type_expr:
-            is_expr = IsExpr(ImplicitVariableExpr.DEFAULT, node_type)
-            res.append(NodeExprWrapper(is_expr))
+            # is_expr = IsExpr(ImplicitVariableExpr.DEFAULT, node_type)
+            res.append(NodeExprWrapper(node_type))
         return SequencePatternExpr(res)
 
 
@@ -154,8 +158,6 @@ class WhitespaceVariation(ast.AstNode):
     """
     def __init__(self, sequences):
         self.sequences = sequences
-
-
 
 
 class Relations(object):
@@ -169,6 +171,9 @@ class Relations(object):
             rel = IsPreviousSiblingOfRelation(node_desc_list[i + 1])
             result.register_relation(node_desc_list[i], rel)
         return result
+
+    def is_empty(self):
+        return len(self.inner) == 0
 
     def register_relation(self, source_node_desc, r):
         if source_node_desc not in self.inner:
@@ -243,20 +248,27 @@ class Repeater(object):
 
 
 class NodeExprBase(ast.AstNode):
-    def __init__(self, attr_expr):
-        self.attr_expr = attr_expr
+    def __init__(self, type_desc):
+        self.type_desc = type_desc
+
+    def has_add_constraints(self):
+        return False
 
 
 class NodeSequenceExprWrapper(NodeExprBase):
-    def __init__(self, attr_expr, repeater):
-        super(NodeSequenceExprWrapper, self).__init__(attr_expr)
+    def __init__(self, type_desc, repeater):
+        super(NodeSequenceExprWrapper, self).__init__(type_desc)
         self.repeater = repeater
 
 
 class NodeExprWrapper(NodeExprBase):
-    def __init__(self, attr_expr, identifier=None):
-        super(NodeExprWrapper, self).__init__(attr_expr)
+    def __init__(self, type_desc, attr_expr=None, identifier=None):
+        super(NodeExprWrapper, self).__init__(type_desc)
+        self.attr_expr = attr_expr
         self.identifier = identifier
+
+    def has_add_constraints(self):
+        return self.attr_expr is not None
 
     def has_identifier(self):
         return self.identifier is not None
@@ -304,19 +316,19 @@ class GreaterThanExpr(BinaryExpr):
 
 class ConstantExpr(Expr):
     pass
+#
+#
+# class VariableExpr(ConstantExpr):
+#     def __init__(self, value):
+#         self.value_string = value
+#
+#
+# class ImplicitVariableExpr(VariableExpr):
+#     def __init__(self):
+#         super(ImplicitVariableExpr, self).__init__('implicit')
 
 
-class VariableExpr(ConstantExpr):
-    def __init__(self, value):
-        self.value_string = value
-
-
-class ImplicitVariableExpr(VariableExpr):
-    def __init__(self):
-        super(ImplicitVariableExpr, self).__init__('implicit')
-
-
-ImplicitVariableExpr.DEFAULT = ImplicitVariableExpr()
+# ImplicitVariableExpr.DEFAULT = ImplicitVariableExpr()
 
 
 class IntegerExpr(ConstantExpr):
@@ -342,10 +354,10 @@ BooleanExpr.TRUE = BooleanExpr(True)
 BooleanExpr.FALSE = BooleanExpr(False)
 
 
-class NodeTypeExpr(ConstantExpr):
-    def __init__(self, type_string=None, value_string=None):
-        self.type = type_string
-        self.value = value_string
+# class NodeTypeExpr(ConstantExpr):
+#     def __init__(self, type_string=None, value_string=None):
+#         self.type = type_string
+#         self.value = value_string
 
 
 class ListExpr(ConstantExpr):
@@ -357,20 +369,29 @@ class ListExpr(ConstantExpr):
 # No need for special Or, Not expressions, they are the same as attr
 
 
-class IsExpr(BinaryExpr):
-    def __init__(self, left, right):
-        super(IsExpr, self).__init__(left, right)
+class NodeDescriptor(ast.AstNode):
+    def __init__(self, type1, type2=None):
+        self.type1 = type1
+        self.type2 = type2
+
+    def is_node_match(self, node):
+        return node.type_ == self.type1 or node.type_ == self.type2
+
+
+# class IsExpr(BinaryExpr):
+#     def __init__(self, left, right):
+#         super(IsExpr, self).__init__(left, right)
 
 
 class ApiCallExpr(Expr):
-    def __init__(self, operand, property_string):
-        self.operand = operand
+    def __init__(self, variable_name, property_string):
+        self.variable_name = variable_name
         self.property_string = property_string
 
 
 class ApiCallExprWithArg(ApiCallExpr):
-    def __init__(self, operand, property_string, argument):
-        super(ApiCallExprWithArg, self).__init__(operand, property_string)
+    def __init__(self, variable_name, property_string, argument):
+        super(ApiCallExprWithArg, self).__init__(variable_name, property_string)
         self.argument = argument
 
 

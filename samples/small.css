@@ -5,7 +5,7 @@
  * Based (more or less) on the Twilight theme originally of Textmate fame.
  * @author Remy Bach
  */
-code[class*="language-"],
+#code[class*="language-"],
 pre[class*="language-"] {
     color: white;
     direction: ltr;
@@ -160,7 +160,7 @@ pre[data-line] {
     white-space: pre;
     z-index:0;
 }
-.line-highlight:before,
+#line-highlight:before,
 .line-highlight[data-end]:after {
     background-color: hsl(215, 15%, 59%); /* #8794A6 */
     border-radius: 999px;

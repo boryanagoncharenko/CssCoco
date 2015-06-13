@@ -1,5 +1,35 @@
 # This implementation is taken from http://tavianator.com/the-visitor-pattern-in-python/
 
+# registry = {}
+#
+#
+# class MultiMethod(object):
+#     def __init__(self, name):
+#         self.name = name
+#         self.type_map = {}
+#
+#     def __call__(self, *args):
+#         types = tuple(arg.__class__ for arg in args) # a generator expression!
+#         function = self.type_map.get(types)
+#         if function is None:
+#             raise TypeError("no match")
+#         return function(*args)
+#
+#     def register(self, types, function):
+#         if types in self.type_map:
+#             raise TypeError("duplicate registration")
+#         self.type_map[types] = function
+#
+#
+# def visitor(*types):
+#     def register(function):
+#         name = function.__name__
+#         mm = registry.get(name)
+#         if mm is None:
+#             mm = registry[name] = MultiMethod(name)
+#         mm.register(types, function)
+#         return mm
+#     return register
 
 def _qualname(obj):
     """
