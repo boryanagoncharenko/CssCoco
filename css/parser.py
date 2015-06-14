@@ -27,7 +27,7 @@ class SExprTransformer(object):
         transformer._add_missing_tokens(s_expr)
         transformer._add_eof(s_expr)
         transformer._push_down(s_expr)
-        transformer._pull_up_whitespace([s_expr])
+        transformer._pull_up_whitespace(s_expr)
         transformer._replace_descendant_selectors(s_expr)
         transformer._split_up_whitespace(s_expr)
         return s_expr
@@ -51,8 +51,8 @@ class SExprTransformer(object):
     def _add_eof(self, s_expr):
         s_expr.append(['eof', ''])
 
-    def _has_no_children(self, s_expr):
-        return type(s_expr[1]) is not list
+    def _has_children(self, s_expr):
+        return type(s_expr[1]) is list
 
     def _is_terminal_expr(self, s_expr):
         s = type(s_expr) is not list
@@ -106,75 +106,79 @@ class SExprTransformer(object):
         Gonzales puts the declaration delimiter ';' outside the declaration
         The method pushes the delimiter as the last child of the declaration
         """
-        has_transformed, current = self._push_down_declaration_delimiter(s_expr)
-        if has_transformed:
-            self._push_down(current)
+        stack = [s_expr]
+        while stack:
+            current = stack.pop()
+            if current[0] == 'selector' or not self._has_children(current):
+                continue
+            # The transformation does not require to reset the traversal
+            # However, because the s_expr is transformed, there is no way to use a for loop below
+            i = 1
+            while i < len(current):
+                child = current[i]
+                if self._should_push_down(child, current, i):
+                    self._perform_push_down(child, current, i)
+                else:
+                    stack.append(child)
+                i += 1
 
-    def _push_down_declaration_delimiter(self, current):
-        if self._has_no_children(current):
-            return False, None
-
-        for i in range(1, len(current)):
-            child = current[i]
-            if self._try_push_down(child, current, i):
-                return True, current
-
-            transformed, expr = self._push_down_declaration_delimiter(child)
-            if transformed:
-                return True, expr
-
-        return False, None
-
-    def _try_push_down(self, child, current, index):
+    def _should_push_down(self, child, current, index):
+        """
+        Checks if a push down should be performed
+        """
         if current[0] == 'block' and child[0] == 'decldelim':
             previous_child = current[index - 1]
             if previous_child and previous_child[0] == 'declaration':
-                current.pop(index)
-                previous_child.append(child)
                 return True
-            else:
-                raise NotImplementedError('There is a delimiter without declaration')
         return False
+
+    def _perform_push_down(self, child, current, index):
+        """
+        Makes the push down transformation
+        """
+        current.pop(index)
+        current[index - 1].append(child)
 
     # Whitespace nodes should not be the first of the last child of a node, except it if is the root node
     # Moreover spaces should bubble up until the condition above is met
     # The method relies on the assumption that gonzales does not produce two sibling spaces
-    def _pull_up_whitespace(self, path):
+    def _pull_up_whitespace(self, s_expr):
         """
         Whenever a transformation is made the method aborts and starts traversing from the root
         """
-        return self._pull_up_ws_r([(path, -1)])
+        stack = NodePositionStack()
+        stack.append(s_expr, -1)
+        return self._pull_up_ws_recursively(stack)
 
-    def _pull_up_ws_r(self, path):
-        has_transformed, cur_path = self._try_pull_up_whitespace(path)
+    def _pull_up_ws_recursively(self, stack):
+        has_transformed, new_stack = self._try_pull_up_whitespace(stack)
         if has_transformed:
-            dim_path = cur_path if len(cur_path) == 1 else cur_path[:-1]
-            self._pull_up_ws_r(dim_path)
+            self._pull_up_ws_recursively(new_stack.trim_last_element())
 
-    def _try_pull_up_whitespace(self, path):
+    def _try_pull_up_whitespace(self, stack):
         """
         Returns True right after it performs a whitespace pull up.
         If no transformations are made, returns False
         """
-        current = path[-1][0]
-        if self._has_no_children(current):
-            return False, path
+        current = stack.get_current()
+        if not self._has_children(current):
+            return False, stack
         for i in range(1, len(current)):
             child = current[i]
 
-            parent = path[-2][0] if len(path) > 1 else None
-            position_in_parent = path[-1][1]
+            parent = stack.get_parent()
+            position_in_parent = stack.get_position_in_parent()
             if self._should_pull_up_child(child, current, parent, i):
                 self._pull_up_child(current, parent, i, position_in_parent)
-                return True, path
+                return True, stack
 
-            path.append((child, i))
-            transformed, expr = self._try_pull_up_whitespace(path)
+            stack.append(child, i)
+            transformed, new_stack = self._try_pull_up_whitespace(stack)
             if transformed:
-                return True, expr
-            path.pop()
+                return True, new_stack
+            stack.pop()
 
-        return False, path
+        return False, stack
 
     def _should_pull_up_child(self, child, current, parent, i):
         if parent is not None and child[0] == 's':
@@ -196,7 +200,7 @@ class SExprTransformer(object):
         """
         The method breaks space token into \n, tab, space, indent
         """
-        if self._has_no_children(s_expr):
+        if not self._has_children(s_expr):
             return
         index = 1
         while index < len(s_expr):
@@ -217,7 +221,7 @@ class SExprTransformer(object):
         self._node_transform(self._is_descendant_selector, self._descendant_transformer, s_expr)
 
     def _node_transform(self, selector, transformer, s_expr):
-        if self._has_no_children(s_expr):
+        if not self._has_children(s_expr):
             return
         index = 1
         while index < len(s_expr):
@@ -229,11 +233,8 @@ class SExprTransformer(object):
             index += 1
 
     def _is_descendant_selector(self, s_expr, child, index):
-        return s_expr[0] == 'simpleselector' and \
-               child[0] == 's' and ' ' in child[1] and \
-               index > 1 and index < len(s_expr) - 1 and \
-               s_expr[index - 1][0] != 'combinator' and \
-               s_expr[index + 1][0] != 'combinator'
+        return s_expr[0] == 'simpleselector' and child[0] == 's' and ' ' in child[1] and 1 < index < len(s_expr) - 1 \
+            and s_expr[index - 1][0] != 'combinator' and s_expr[index + 1][0] != 'combinator'
 
     def _descendant_transformer(self, child):
         child[0] = 'descendant-selector'
@@ -251,15 +252,15 @@ class SExprTransformer(object):
                     result.append([type_, v])
         return result
 
-    def _split_whitespace_value(self, str):
+    def _split_whitespace_value(self, string):
         result = []
-        for value in self._get_whitespace_values(str):
+        for value in self._get_whitespace_values(string):
             result.append(''.join(value))
         return result
 
-    def _get_whitespace_values(self, str):
+    def _get_whitespace_values(self, string):
         buffer = []
-        for s in str:
+        for s in string:
             if len(buffer) == 0 or s == buffer[-1]:
                 buffer.append(s)
             else:
@@ -280,3 +281,29 @@ class SExprTransformer(object):
             return 'tab'
         raise NotImplementedError('Whitespace token with unknown value')
 
+
+class NodePositionStack(object):
+    def __init__(self):
+        self.inner = []
+
+    def append(self, node, position):
+        self.inner.append((node, position))
+
+    def pop(self):
+        self.inner.pop()
+
+    def get_current(self):
+        return self.inner[-1][0]
+
+    def get_parent(self):
+        if len(self.inner) > 1:
+            return self.inner[-2][0]
+        return None
+
+    def get_position_in_parent(self):
+        return self.inner[-1][1]
+
+    def trim_last_element(self):
+        if len(self.inner) > 1:
+            self.inner = self.inner[:-1]
+        return self

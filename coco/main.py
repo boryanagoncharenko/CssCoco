@@ -27,7 +27,7 @@ def get_css_parse_tree():
         return None, '-----\nPlease check the validity of the css block!\n-----'
     tr = parser.SExprTransformer.transform(l)
     a = css.ParseTreeBuilder.build(tr)
-    print(a.pretty_print())
+    # print(a.pretty_print())
     return a, ''
     # return tr
 
