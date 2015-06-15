@@ -26,13 +26,13 @@ pre[class*="language-"] {
     hyphens: none;
 }
 
-pre[class*="language-"],
+PRE[class*="language-"],
 :not(pre) > code[class*="language-"] {
     background:hsl(0, 0%, 8%); /* #141414 */
 }
 
 /* Code blocks */
-pre[class*="language-"] {
+#PRE[class*="language-"] {
     border-radius: .5em;
     border: .3em solid hsl(0,0%,33%); /* #282A2B */
     box-shadow: 1px 1px .5em black inset;
@@ -89,7 +89,7 @@ code[class*="language-"]::selection, code[class*="language-"] ::selection {
     color: hsl(14, 58%, 55%); /* #CF6A4C */
 }
 
-.token.keyword,
+#Token.keyword,
 .token.property,
 .token.selector,
 .token.constant,

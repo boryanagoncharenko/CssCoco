@@ -1,7 +1,8 @@
+import abc
+import itertools
 import coco.ast.ast as ast
 import coco.analysis.expressions as expr
 import coco.visitor_decorator as vis
-import itertools
 
 
 class Filter():
@@ -109,19 +110,39 @@ class Matcher(object):
     def __init__(self, filter_):
         self._filter = filter_
 
+    @abc.abstractmethod
+    def find_pattern_in_tree(self, tree, pattern):
+        pass
+
+    # @staticmethod
+    # def build(pattern, filter_):
+    #     if type(pattern) is ast.WhitespaceVariation:
+    #         return WhitespaceVariationMatcher(filter_)
+    #     return PatternMatcher(filter_)
+
     def _is_node_desc_match(self, desc, node):
         type_ = desc.type_desc.is_node_match(node)
         if type_ and desc.has_add_constraints():
             context = expr.ExprContext(self, node)
             result = expr.ExprEvaluator.evaluate(desc.attr_expr, context)
             return result.value
-
         return type_
+
+    def _filter_by(self, node, desc, func):
+        return func(desc, node, self._is_node_desc_match)
 
 
 class WhitespaceVariationMatcher(Matcher):
     def __init__(self, filter_):
         super(WhitespaceVariationMatcher, self).__init__(filter_)
+
+    # def find_pattern_in_tree(self, tree, pattern):
+    #     nodes = self._filter_by(tree, pattern.root_desc, TreeWalker.traverse_current_and_descendants)
+    #     if len(pattern.all_descs) == 1:
+    #         return nodes
+    #     for n in nodes:
+    #         if self.is_start_of_variation(pattern, n):
+    #             yield n
 
     def is_variation_before_node(self, variation, node):
         """
@@ -183,6 +204,8 @@ class WhitespaceVariationMatcher(Matcher):
         Checks whether a the given nodes match exactly a given variation
         Returns boolean
         """
+        if not nodes:
+            return False
         for s in variation.sequences:
             if self._is_sequence_exact_nodes_match(s, nodes):
                 return True
@@ -193,6 +216,7 @@ class WhitespaceVariationMatcher(Matcher):
         The method checks whether the given nodes match exactly the given sequence
         Returns boolean
         """
+        assert nodes
         is_match, rem_nodes = self._get_match_and_remainder(sequence.root_desc, nodes)
         if not is_match:
             return False
@@ -303,8 +327,23 @@ class PatternMatcher(Matcher):
         """
         return self._filter_by(node, desc, TreeWalker.traverse_children)
 
-    def _filter_by(self, node, desc, func):
-        return func(desc, node, self._is_node_desc_match)
+    def find_if_next_sibling_matches(self, node, desc):
+        nodes = self._filter.apply(TreeWalker.get_next_siblings_excluding(node))
+        for n in nodes:
+            if self._is_node_desc_match(desc, n):
+                yield n
+            break
+
+    def find_all(self, node, descriptors):
+        # TODO: provide efficient implementation
+        for desc in descriptors:
+            should_exit = True
+            for d in self.find_descendants_that_match(node, desc):
+                should_exit = False
+                break
+            if should_exit:
+                return False
+        return True
 
     @vis.visitor(ast.IsParentOfRelation)
     def _find_target_nodes(self, relation, node):
@@ -313,6 +352,10 @@ class PatternMatcher(Matcher):
     @vis.visitor(ast.IsAncestorOfRelation)
     def _find_target_nodes(self, relation, node):
         return self.find_descendants_that_match(node, relation.target_node)
+
+    @vis.visitor(ast.IsPreviousSiblingOfRelation)
+    def _find_target_nodes(self, relation, node):
+        return self.find_if_next_sibling_matches(node, relation.target_node)
 
     def _register_node_match(self, result, node_desc, node):
         assert node_desc not in result

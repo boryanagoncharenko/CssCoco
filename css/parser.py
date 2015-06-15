@@ -99,7 +99,7 @@ class SExprTransformer(object):
         The method adds the missing value to the declaration s-expr
         """
         if s_expr[0] == 'declaration':
-            s_expr.insert(2, ['symbol', ':'])
+            s_expr.insert(2, ['colon', ':'])
 
     def _push_down(self, s_expr):
         """
@@ -181,7 +181,7 @@ class SExprTransformer(object):
         return False, stack
 
     def _should_pull_up_child(self, child, current, parent, i):
-        if parent is not None and child[0] == 's':
+        if parent and child[0] == 's':
             return self._is_first_child(i) or self._is_last_child(i, current)
         return False
 
@@ -226,6 +226,8 @@ class SExprTransformer(object):
         index = 1
         while index < len(s_expr):
             child = s_expr[index]
+            if s_expr[0] == 'simpleselector' and child[0] == 'ident':
+                child[0] = 'tag'
             if selector(s_expr, child, index):
                 transformer(child)
             else:

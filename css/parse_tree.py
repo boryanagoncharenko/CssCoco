@@ -5,9 +5,10 @@ class Node(object):
 
     _print_indent = '  '
 
-    def __init__(self, type_, value):
-        self.type_ = type_
+    def __init__(self, type_, value, categories=None):
+        self._type = type_
         self.value = value
+        self.search_labels = self.initialize_labels(type_, categories)
         self.parent = None
         self.index = -1
         self.start_position = None
@@ -15,8 +16,23 @@ class Node(object):
         self._api = {}
         self._register_api()
 
+    def initialize_labels(self, _type, categories):
+        if not categories:
+            return [_type]
+        return [_type] + categories
+
+    def matches(self, value):
+        return value in self.search_labels
+
     def _register_api(self):
-        pass
+        self._api['string'] = self._to_string
+        self._api['child'] = self._get_child
+
+    def _to_string(self):
+        return values.String.EMPTY
+
+    def _get_child(self, i):
+        return values.Node(self.value[i])
 
     def has_method(self, property_name):
         return property_name in self._api
@@ -34,7 +50,7 @@ class Node(object):
         return self.parent is not None
 
     def pretty_print(self, level=0, verbose=False):
-        s = ''.join(['\n', Node._print_indent*level, self.type_, ':'])
+        s = ''.join(['\n', Node._print_indent*level, self._type, ':'])
         if verbose:
             s = ''.join([s, self.get_position_str()])
         for child in self.value:
@@ -47,7 +63,7 @@ class Node(object):
 
     def __repr__(self):
         parent_type = self.parent.type_ if self.has_parent() else 'none'
-        return ''.join([' Node(type=', self.type_, ', parent=', parent_type, ' index=', str(self.index), ')'])
+        return ''.join([' Node(type=', self._type, ', parent=', parent_type, ' index=', str(self.index), ')'])
 
     def to_error_string(self):
         string = ''
@@ -66,13 +82,17 @@ class TerminalNode(Node):
         super(TerminalNode, self).__init__(type_, value)
 
     def _register_api(self):
+        super(TerminalNode, self)._register_api()
         self._api['value'] = self._get_value
+
+    def _to_string(self):
+        return values.String(self.value)
 
     def has_children(self):
         return False
 
     def pretty_print(self, level=0, verbose=False):
-        s = ''.join(['\n', Node._print_indent*level, self.type_, ': \'', self.value, '\''])
+        s = ''.join(['\n', Node._print_indent*level, self._type, ': \'', self.value, '\''])
         if verbose:
             s = ''.join([s, self.get_position_str()])
         return s
@@ -93,6 +113,7 @@ class Declaration(Node):
         super(Declaration, self).__init__('declaration', value)
 
     def _register_api(self):
+        super(Declaration, self)._register_api()
         self._api['is-vendor-specific'] = self.is_vendor_specific
         self._api['say'] = self.say
 
@@ -103,16 +124,37 @@ class Declaration(Node):
         return values.String(param.value)
 
 
-class Property(Node):
+class Property(TerminalNode):
 
-    def __init__(self, value):
-        super(Property, self).__init__('property', value)
+    _vendor_prefixes = {'-ms-', 'mso-', '-moz-', '-o-', '-atsc-', '-wap-', '-webkit-', '-khtml-'}
+
+    def __init__(self, name):
+        super(Property, self).__init__('property', name)
+        self._name = name
+        self._is_vendor = None
 
     def _register_api(self):
+        super(Property, self)._register_api()
         self._api['name'] = self._name
+        self._api['is-vendor-specific'] = self._is_vendor_specific
+
+    def _to_string(self):
+        return values.String(self._name)
 
     def _name(self):
-        return values.String(self.value[0].value)
+        return values.String(self._name)
+
+    def _is_vendor_specific(self):
+        if not self._is_vendor:
+            self._is_vendor = self._check_is_vendor()
+        return self._is_vendor
+
+    def _check_is_vendor(self):
+        for p in self._vendor_prefixes:
+            prefix_slice = self._name[:len(p)].lower()
+            if prefix_slice.startswith(p):
+                return values.Boolean.TRUE
+        return values.Boolean.FALSE
 
 
 class CombinatorSelector(Node):
@@ -141,23 +183,90 @@ class SimpleSelector(Node):
 
 class ElementSelector(SimpleSelector):
     def __init__(self, name):
-        super(ElementSelector, self).__init__()
-        self.name = name
+        super(ElementSelector, self).__init__('tag', name)
+        self._name = name
 
     def _register_api(self):
-        return {'name': self.name}
+        super(ElementSelector, self)._register_api()
+        self._api['name'] = self._get_name
+
+    def _to_string(self):
+        return values.String(self._name)
+
+    def _get_name(self):
+        return values.String(self._name)
+
+    def has_children(self):
+        return False
+
+    def _get_terminal_nodes(self):
+        yield self
 
 
 class IdSelector(SimpleSelector):
-    pass
+    def __init__(self, name):
+        super(IdSelector, self).__init__('id', name)
+        self._name = name
+
+    def _register_api(self):
+        super(IdSelector, self)._register_api()
+        self._api['name'] = self._get_name
+
+    def _to_string(self):
+        return values.String(self._name)
+
+    def _get_name(self):
+        return values.String(self._name)
+
+    def has_children(self):
+        return False
+
+    def _get_terminal_nodes(self):
+        yield self
 
 
 class ClassSelector(SimpleSelector):
-    pass
+    def __init__(self, name):
+        super(ClassSelector, self).__init__('class', name)
+        self._name = name
+
+    def _register_api(self):
+        super(ClassSelector, self)._register_api()
+        self._api['name'] = self._get_name
+
+    def _to_string(self):
+        return values.String(self._name)
+
+    def _get_name(self):
+        return values.String(self._name)
+
+    def has_children(self):
+        return False
+
+    def _get_terminal_nodes(self):
+        yield self
 
 
 class AttributeSelector(SimpleSelector):
-    pass
+    def __init__(self, children):
+        super(AttributeSelector, self).__init__('attribute-selector', children)
+        self.attribute = children[0]
+        self.selector = children[1] if len(children) > 1 else None
+        self.attr_value = children[2] if len(children) > 2 else None
+
+    def _register_api(self):
+        super(AttributeSelector, self)._register_api()
+        self._api['value'] = self._get_value
+
+    def _get_value(self):
+        if self.attr_value:
+            return values.Node(self.attr_value)
+        return values.Undefined.VALUE
+
+
+class Attribute(TerminalNode):
+    def __init__(self, value):
+        super(Attribute, self).__init__('attribute', value)
 
 
 class UniversalSelector(SimpleSelector):
@@ -168,16 +277,59 @@ class PseudoSelector(SimpleSelector):
     pass
 
 
+class Hex(TerminalNode):
+    def __init__(self, value):
+        super(Hex, self).__init__('hex', value)
+        self._is_long = len(self.value) > 4
+
+    def _register_api(self):
+        super(Hex, self)._register_api()
+        self._api['is-long'] = self._get_is_long
+
+    def _get_is_long(self):
+        return values.Boolean.build(self._is_long)
+
+
+class Number(TerminalNode):
+    def __init__(self, value, float_value):
+        super(Number, self).__init__('number', value)
+        self.float_value = float_value
+
+    def _register_api(self):
+        super(Number, self)._register_api()
+        self._api['value'] = self._get_value
+
+    def _get_value(self):
+        return values.Decimal(self.float_value)
+
+
 class String(TerminalNode):
 
-    def __init__(self, type_, value):
-        super(String, self).__init__(type_, value)
+    def __init__(self, value):
+        super(String, self).__init__('string', value)
 
-    def has_single_quotes(self):
-        return self.value[0] == '\''
+    def _register_api(self):
+        super(String, self)._register_api()
+        self._api['has-single-quotes'] = self._has_single_quotes
+        self._api['has-double-quotes'] = self._has_double_quotes
 
-    def has_double_quotes(self):
-        return not self.has_single_quotes()
+    def _to_string(self):
+        return values.String(self.value)
+
+    def _has_single_quotes(self):
+        return values.Boolean.build(self.value[0] == "'")
+
+    def _has_double_quotes(self):
+        return values.Boolean.build(self.value[0] == '"')
+
+
+class AtRule(Node):
+    pass
+
+
+class Charset(AtRule):
+    def __init__(self, value):
+        super(Charset, self).__init__('charset', value)
 
 
 class Position(object):
@@ -211,6 +363,17 @@ class ParseTreeBuilder(object):
         if self._is_terminal(l):
             node_type = l[0]
             node_value = l[1]
+            if node_type == 'shash':
+                return IdSelector(node_value)
+            if node_type == 'tag':
+                return ElementSelector(node_value)
+            if node_type == 'vhash':
+                return Hex(node_value)
+            if node_type == 'number':
+                number_value = float(node_value)
+                return Number(node_value, number_value)
+            if node_type == 'string':
+                return String(node_value)
             return TerminalNode(node_type, node_value)
 
         children = []
@@ -222,13 +385,30 @@ class ParseTreeBuilder(object):
         if node_type == 'declaration':
             return Declaration(children)
         if node_type == 'property':
-            return Property(children)
+            assert len(children) == 1
+            return Property(children[-1].value)
+        if node_type == 'clazz':
+            assert len(children) == 1
+            return ClassSelector(children[-1].value)
+        if node_type == 'attrib':
+            assert len(children) == 3 or len(children) == 1
+            children[0] = Attribute(children[0].value)
+            if len(children) == 3:
+                children[2].search_labels.append('attribute-value')
+            return AttributeSelector(children)
+        if node_type == 'atrules':
+            keyword = children[0].value[0].value
+            if keyword == 'charset':
+                children.pop(0)
+                return Charset(children)
+            # return None
         return Node(node_type, children)
 
     def _is_terminal(self, l):
         return len(l) == 2 and type(l[1]) is not list
 
     def _annotate_ast(self, node):
+        # TODO: what on earth have I done here? terminals' positions should be done while building
         self._add_parent_and_child_index(node)
         self._add_position_to_terminal_nodes(node)
         self._add_position_to_nodes(node)

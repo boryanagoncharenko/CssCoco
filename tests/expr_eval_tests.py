@@ -11,7 +11,7 @@ import coco.ast.ast as ast
 def real_case_expr():
 
     attr_expr3 = ast.IsExpr(ast.ImplicitVariableExpr(), ast.NodeTypeExpr(type_string='declaration'))
-    attr_expr2 = ast.EqualsExpr(ast.CountExpr(ast.ImplicitVariableExpr(), attr_expr3), ast.IntegerExpr(0))
+    attr_expr2 = ast.EqualsExpr(ast.CountExpr(ast.ImplicitVariableExpr(), attr_expr3), ast.DecimalExpr(0))
 
     attr_expr1 = ast.IsExpr(ast.ImplicitVariableExpr(), ast.NodeTypeExpr(type_string='ruleset'))
     rule_node = ast.NodeExprWrapper(ast.AndExpr(attr_expr1, attr_expr2))

@@ -84,7 +84,7 @@ def main():
 
     set = temp.ToGo.get_set()
     violations.ViolationsFinder.find(set, css_tree)
-    #
+
     print('--- Detected violations for %s seconds', (time.time() - start_time))
 
 main()

@@ -1,8 +1,12 @@
+import coco.visitor_decorator as vis
 
 
 class Value(object):
 
     def is_false(self):
+        raise ValueError()
+
+    def not_(self):
         raise ValueError()
 
     def and_(self, value):
@@ -14,13 +18,37 @@ class Value(object):
     def equals(self, value):
         raise ValueError()
 
-    def equals_integer(self, value):
+    def equals_decimal(self, value):
         raise ValueError()
 
     def equals_boolean(self, value):
         raise ValueError()
 
     def equals_string(self, value):
+        raise ValueError()
+
+    def greater_than(self, value):
+        raise ValueError()
+
+    def greater_than_decimal(self, value):
+        raise ValueError()
+
+    def greater_than_equals(self, value):
+        raise ValueError()
+
+    def greater_than_equals_decimal(self, value):
+        raise ValueError()
+
+    def less_than(self, value):
+        raise ValueError()
+
+    def less_than_decimal(self, value):
+        raise ValueError()
+
+    def less_than_equals(self, value):
+        raise ValueError()
+
+    def less_than_equals_decimal(self, value):
         raise ValueError()
 
     def is_(self, value):
@@ -30,15 +58,39 @@ class Value(object):
         raise ValueError()
 
 
-class Integer(Value):
+class Decimal(Value):
     def __init__(self, value):
         self.value = value
 
     def equals(self, value):
-        return value.equals_integer(self)
+        return value.equals_decimal(self)
 
-    def equals_integer(self, value):
+    def equals_decimal(self, value):
         return Boolean.build(value.value == self.value)
+
+    def greater_than(self, value):
+        return value.greater_than_decimal(self)
+
+    def greater_than_decimal(self, value):
+        return Boolean.build(value.value > self.value)
+
+    def greater_than_equals(self, value):
+        return value.greater_than_equals_decimal(self)
+
+    def greater_than_equals_decimal(self, value):
+        return Boolean.build(value.value >= self.value)
+
+    def less_than(self, value):
+        return value.less_than_decimal(self)
+
+    def less_than_decimal(self, value):
+        return Boolean.build(value.value < self.value)
+
+    def less_than_equals(self, value):
+        return value.less_than_equals_decimal(self)
+
+    def less_than_equals_decimal(self, value):
+        return Boolean.build(value.value <= self.value)
 
 
 class String(Value):
@@ -51,6 +103,8 @@ class String(Value):
     def equals_string(self, value):
         return Boolean.build(value.value == self.value)
 
+String.EMPTY = String('')
+
 
 class Boolean(Value):
     def __init__(self, value):
@@ -62,6 +116,9 @@ class Boolean(Value):
 
     def is_false(self):
         return not self.value
+
+    def not_(self):
+        return Boolean.build(not self.value)
 
     def and_(self, value):
         return value.and_bool(self)
@@ -80,14 +137,13 @@ Boolean.TRUE = Boolean(True)
 
 
 class NodeType(Value):
-    def __init__(self, type_=None, value=None):
-        self.type_ = type_
+    def __init__(self, value):
         self.value = value
 
     def is_of_type(self, node_value):
         real_node = node_value.value
-
-        return self._is_type_match(real_node) and self._is_value_match(real_node)
+        return Boolean.build(real_node.matches(self.value))
+        # return self._is_type_match(real_node) and self._is_value_match(real_node)
 
     def _is_type_match(self, node):
         if not node:
@@ -119,6 +175,29 @@ class List(Value):
 
 class Undefined(Value):
     def __init__(self):
-        pass
+        self.value = None
 
 Undefined.VALUE = Undefined()
+
+
+class Factory(object):
+
+    @staticmethod
+    def build(value):
+        return Factory().visit(value)
+
+    @vis.visitor(bool)
+    def visit(self, b):
+        return Boolean.build(b)
+
+    @vis.visitor(str)
+    def visit(self, s):
+        return String(s)
+
+    @vis.visitor(int)
+    def visit(self, i):
+        return Decimal(i)
+
+    @vis.visitor(list)
+    def visit(self, l):
+        return List(l)

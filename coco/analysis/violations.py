@@ -42,18 +42,18 @@ class ViolationsFinder(object):
     def find(sheet, tree):
         finder = ViolationsFinder(tree)
         finder.visit(sheet)
-        # print(finder._violations.to_string())
+        print(finder._violations.to_string())
         print(len(finder._violations._inner))
 
     @vis.visitor(ast.ConventionSet)
     def visit(self, sheet):
         for c in sheet.contexts:
+            self._set_current_context(c)
             self.visit(c)
-
+            self._reset_current_context()
 
     @vis.visitor(ast.SemanticContext)
     def visit(self, context):
-        self._set_current_context(context)
         # pool = ThreadPool(4)
         # results = pool.map(self.visit, context.conventions)
         #
@@ -61,7 +61,11 @@ class ViolationsFinder(object):
         # pool.join()
         for c in context.conventions:
             self.visit(c)
-        self._reset_current_context()
+
+    @vis.visitor(ast.WhitespaceContext)
+    def visit(self, context):
+        for c in context.conventions:
+            self.visit(c)
 
     def _set_current_context(self, context):
         self._context = context
@@ -92,9 +96,9 @@ class ViolationsFinder(object):
         filter_seq = p_matcher.Filter(self._get_current_context().get_ignored_and_target_patterns())
         matcher = p_matcher.PatternMatcher(filter_seq)
         for id_node_table in matcher.find_pattern_in_tree(self._tree, forbid.target_pattern):
-            # anchor_desc = forbid.target_pattern.get_anchors()[0]
-            # anchor_node = id_node_table[anchor_desc]
-            self._violations.add_violation(Violation(forbid.message, 1)) # anchor_node.start_position.line))
+            anchor_desc = forbid.target_pattern.get_anchors()[0]
+            anchor_node = id_node_table[anchor_desc]
+            self._violations.add_violation(Violation(forbid.message, anchor_node.start_position.line))
 
     @vis.visitor(ast.FindForbidConvention)
     def visit(self, find_forbid):
