@@ -27,7 +27,7 @@ class CssParser(TestCase):
     
     def test_declaration_transformation(self):
         s_expr = ['declaration', ['property', '...'], ['value', '...']]
-        expected = ['declaration', ['property', '...'], ['symbol', ':'], ['value', '...']]
+        expected = ['declaration', ['property', '...'], ['colon', ':'], ['value', '...']]
     
         parser.SExprTransformer()._declaration_transformation(s_expr)
         assert s_expr == expected
@@ -42,7 +42,7 @@ class CssParser(TestCase):
                                   ['selector', ['simpleselector', ['ident', 'a']], ['delim', ','],
                                   ['simpleselector', ['ident', 'p']]],
                                   ['block', ['symbol', '{'], ['declaration', ['property', ['ident', 'font']],
-                                  ['symbol', ':'], ['value', ['ident', 'black']]], ['decldelim', ';'], ['symbol', '}']]]]
+                                  ['colon', ':'], ['value', ['ident', 'black']]], ['decldelim', ';'], ['symbol', '}']]]]
     
         parser.SExprTransformer()._add_missing_tokens(s_expr)
         assert s_expr == expected
