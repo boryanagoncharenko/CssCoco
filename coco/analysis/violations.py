@@ -42,30 +42,22 @@ class ViolationsFinder(object):
     def find(sheet, tree):
         finder = ViolationsFinder(tree)
         finder.visit(sheet)
-        print(finder._violations.to_string())
+        # print(finder._violations.to_string())
         print(len(finder._violations._inner))
 
     @vis.visitor(ast.ConventionSet)
     def visit(self, sheet):
-        for c in sheet.contexts:
-            self._set_current_context(c)
-            self.visit(c)
+        for context in sheet.contexts:
+            self._set_current_context(context)
+            for conv in context.conventions:
+                self.visit(conv)
             self._reset_current_context()
 
-    @vis.visitor(ast.SemanticContext)
-    def visit(self, context):
         # pool = ThreadPool(4)
         # results = pool.map(self.visit, context.conventions)
         #
         # pool.close()
-        # pool.join()
-        for c in context.conventions:
-            self.visit(c)
-
-    @vis.visitor(ast.WhitespaceContext)
-    def visit(self, context):
-        for c in context.conventions:
-            self.visit(c)
+        # # pool.join()
 
     def _set_current_context(self, context):
         self._context = context
@@ -80,7 +72,6 @@ class ViolationsFinder(object):
     def visit(self, find_require):
         filter_ = p_matcher.Filter(self._get_current_context().get_ignored_and_target_patterns())
         matcher = p_matcher.PatternMatcher(filter_)
-        start = time.time()
         all_ = matcher.find_pattern_in_tree(self._tree, find_require.target_pattern)
         for id_node_table in all_:
             constraint_filter = p_matcher.Filter(self._get_current_context().get_ignored_patterns())
@@ -93,7 +84,7 @@ class ViolationsFinder(object):
 
     @vis.visitor(ast.ForbidConvention)
     def visit(self, forbid):
-        filter_seq = p_matcher.Filter(self._get_current_context().get_ignored_and_target_patterns())
+        filter_seq = p_matcher.Filter(self._get_current_context().get_ignored_patterns())
         matcher = p_matcher.PatternMatcher(filter_seq)
         for id_node_table in matcher.find_pattern_in_tree(self._tree, forbid.target_pattern):
             anchor_desc = forbid.target_pattern.get_anchors()[0]

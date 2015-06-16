@@ -82,7 +82,7 @@ def main():
     print('--- Detecting violations ---')
     start_time = time.time()
 
-    set = temp.ToGo.get_set()
+    set = temp.ToGo.get_google_set()
     violations.ViolationsFinder.find(set, css_tree)
 
     print('--- Detected violations for %s seconds', (time.time() - start_time))

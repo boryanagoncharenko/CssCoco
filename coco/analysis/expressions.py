@@ -205,6 +205,6 @@ class ExprEvaluator(object):
         operand_node_value = self.visit(after.operand)
         _filter = self._context.pattern_matcher._filter
         matcher = coco.analysis.pattern_matcher.WhitespaceVariationMatcher(_filter)
-        match = matcher.is_variation_after_node(after.variation, operand_node_value)
+        match = matcher.is_variation_after_node(after.variation, operand_node_value.value)
         return values.Boolean.build(match)
 

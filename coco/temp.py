@@ -4,7 +4,7 @@ from coco.ast.ast import *
 class ToGo(object):
     
     @staticmethod
-    def get_set():
+    def get_google_set():
         sem_conventions = [
             ToGo.conv1(),
             ToGo.conv2(),
@@ -32,15 +32,25 @@ class ToGo(object):
         sem_context = SemanticContext(sem_conventions, [])
 
         white_conventions = [
-            # ToGo.conv22(),
+            ToGo.conv22(),
             ToGo.conv23(),
+            ToGo.conv24(),
+            ToGo.conv25(),
+            ToGo.conv26(),
         ]
 
         white_context = WhitespaceContext(white_conventions, [])
 
+        indent_conventions = [
+            ToGo.conv27(),
+        ]
+
+        indent_context = IndentContext(indent_conventions, [])
+
         return ConventionSet([
-            # sem_context,
-            white_context
+            sem_context,
+            white_context,
+            indent_context,
         ])
 
     @staticmethod
@@ -300,3 +310,49 @@ class ToGo(object):
                                       NodeExprWrapper(NodeDescriptor.build_type('space'))])]),
                                   VariableExpr('i2'))
         return FindRequireConvention(seq, msg, requirement)
+
+    @staticmethod
+    def conv24():
+        msg = 'Put one space between the last selector and the block.'
+
+        seq = SequencePatternExpr([NodeExprWrapper(NodeDescriptor.build_type('selector'), identifier='i1'),
+                                   NodeExprWrapper(NodeDescriptor.build_type('block'), identifier='i2')])
+        requirement = BetweenExpr(VariableExpr('i1'),
+                                  WhitespaceVariation([SequencePatternExpr([
+                                      NodeExprWrapper(NodeDescriptor.build_type('space'))])]),
+                                  VariableExpr('i2'))
+        return FindRequireConvention(seq, msg, requirement)
+
+    @staticmethod
+    def conv25():
+        msg = 'One selector per line.'
+
+        seq = SequencePatternExpr([NodeExprWrapper(NodeDescriptor.build_type('delim'), identifier='d1'),
+                                   NodeExprWrapper(NodeDescriptor.build_type('simpleselector'), identifier='d2')])
+        requirement = BetweenExpr(VariableExpr('d1'),
+                                  WhitespaceVariation([SequencePatternExpr([
+                                    NodeExprWrapper(NodeDescriptor.build_type('newline'))])]),
+                                  VariableExpr('d2')
+                                  )
+        return FindRequireConvention(seq, msg, requirement)
+
+    @staticmethod
+    def conv26():
+        msg = 'No trailing spaces.'
+
+        seq = SequencePatternExpr([NodeExprWrapper(NodeDescriptor.build_type('space')),
+                                   NodeExprWrapper(NodeDescriptor.build_expr(lambda n: 'newline' in n.search_labels
+                                                                             or 'eof' in n.search_labels))])
+
+        return ForbidConvention(seq, msg)
+
+    @staticmethod
+    def conv27():
+        msg = 'Use 4 spaces for indentation, no tabs.'
+
+        indent = NodeExprWrapper(NodeDescriptor.build_type('indent'), identifier='i')
+        pattern = PatternExpr(indent, [indent], Relations())
+        requirement = EqualsExpr(ApiCallExpr(VariableExpr('i'), 'string'), StringExpr('    '))
+        return FindRequireConvention(pattern, msg, requirement)
+
+

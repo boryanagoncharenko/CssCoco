@@ -148,12 +148,59 @@ class SExprTransformer(object):
         """
         stack = NodePositionStack()
         stack.append(s_expr, -1)
-        return self._pull_up_ws_recursively(stack)
+        return self._try_pull(stack)
+
+    def _try_pull(self, stack):
+        if stack.len() == 0:
+            return
+        current = stack.get_current()
+        if self._has_children(current):
+            parent = stack.get_parent()
+            i = 1
+            while i < len(current):
+                child = current[i]
+
+                if self._should_pull_up_child(child, current, parent, i):
+                    # TODO:
+                    self._det_how_to_pull_up(stack, i)
+                    # position_in_parent = stack.get_position_in_parent()
+                    # self._pull_up_child(current, parent, i, position_in_parent)
+                else:
+                    stack.append(child, i)
+                    self._try_pull(stack)
+                    stack.pop()
+                i += 1
+
+    def _det_how_to_pull_up(self, stack, i):
+        expr = -1
+        position_in_parent = stack.get_position_in_parent()
+        position = position_in_parent if i == 1 else position_in_parent + 1
+        for j in range(stack.len()-2, 0, -1):
+            current = stack[j]
+            if self._is_first_child(position) or position == len(current[0]):
+                expr = j
+                pos = current[1]
+                position = pos if position == 1 else pos + 1
+            else:
+                break
+        space = stack[-1][0].pop(i)
+        stack[expr-1][0].insert(position, space)
+        if stack[expr][1] >= position:
+            stack.update(expr, (stack[expr][0], stack[expr][1] + 1))
+        pass
+
+    def _should_pull_up_child(self, child, current, parent, i):
+        if parent and child[0] == 's':
+            return self._is_first_child(i) or self._is_last_child(i, current)
+        return False
 
     def _pull_up_ws_recursively(self, stack):
         has_transformed, new_stack = self._try_pull_up_whitespace(stack)
-        if has_transformed:
+        if self.should_continue(has_transformed, new_stack):
             self._pull_up_ws_recursively(new_stack.trim_last_element())
+
+    def should_continue(self, has_transformed, new_stack):
+        return new_stack.len() != 1 or has_transformed
 
     def _try_pull_up_whitespace(self, stack):
         """
@@ -179,11 +226,6 @@ class SExprTransformer(object):
             stack.pop()
 
         return False, stack
-
-    def _should_pull_up_child(self, child, current, parent, i):
-        if parent and child[0] == 's':
-            return self._is_first_child(i) or self._is_last_child(i, current)
-        return False
 
     def _is_first_child(self, i):
         return i == 1
@@ -287,6 +329,15 @@ class SExprTransformer(object):
 class NodePositionStack(object):
     def __init__(self):
         self.inner = []
+
+    def __getitem__(self, item):
+        return self.inner[item]
+
+    def update(self, item, tuple):
+        self.inner[item] = tuple
+
+    def len(self):
+        return len(self.inner)
 
     def append(self, node, position):
         self.inner.append((node, position))

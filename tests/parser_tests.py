@@ -76,6 +76,39 @@ class CssParser(TestCase):
         parser.SExprTransformer()._push_down(s_expr)
         assert s_expr == expected
 
+    def test_whitespace_pull_up_multiple(self):
+        s_expr = ['root',
+                  ['ch1', ['ch2', ['ch3', ['s', ' '], ['p', 'p']]]],
+                  ['ch1', ['ch2', ['ch3', ['s', ' '], ['p', 'p']]]]
+                  ]
+        expected = ['root',
+                    ['s', ' '], ['ch1', ['ch2',  ['ch3', ['p', 'p']]]],
+                    ['s', ' '], ['ch1', ['ch2',  ['ch3', ['p', 'p']]]]
+                    ]
+
+        parser.SExprTransformer()._pull_up_whitespace(s_expr)
+        assert s_expr == expected
+
+    def test(self):
+        s_expr = ['ruleset',
+                  ['block', ['symbol', '{'], ['s', '\n    '],
+                   ['declaration', ['property', ['ident', 'color']],
+                    ['colon', ':'], ['value', ['s', ' '], ['ident', 'red']], ['decldelim', ';']], ['s', '\n    '],
+                   ['declaration', ['property', ['ident', 'margin']],
+                    ['colon', ':'], ['value', ['s', ' '], ['dimension', ['number', '5'], ['ident', 'px']]],
+                    ['decldelim', ';']], ['s', '\n'], ['symbol', '}']]]
+
+        expected = ['ruleset',
+                  ['block', ['symbol', '{'], ['s', '\n    '],
+                   ['declaration', ['property', ['ident', 'color']],
+                    ['colon', ':'], ['s', ' '], ['value', ['ident', 'red']], ['decldelim', ';']], ['s', '\n    '],
+                   ['declaration', ['property', ['ident', 'margin']],
+                    ['colon', ':'], ['s', ' '], ['value', ['dimension', ['number', '5'], ['ident', 'px']]],
+                    ['decldelim', ';']], ['s', '\n'], ['symbol', '}']]]
+
+        parser.SExprTransformer()._pull_up_whitespace(s_expr)
+        assert s_expr == expected
+
     def test_whitespace_pull_up_first(self):
         s_expr = ['root', ['ch1', ['ch2', ['ch3', ['s', ' '], ['p', 'p']]]]]
         expected = ['root', ['s', ' '], ['ch1', ['ch2',  ['ch3', ['p', 'p']]]]]

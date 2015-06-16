@@ -29,6 +29,7 @@ class WhitespaceContext(Context):
         super(WhitespaceContext, self).__init__(conventions, exceptions)
 
     def get_ignored_patterns(self):
+        # return []
         return [SequencePatternExpr([NodeExprWrapper(NodeDescriptor('newline')),
                                      NodeSequenceExprWrapper(NodeDescriptor('indent'), Repeater(1, 1)),
                                      NodeExprWrapper(NodeDescriptor('comment'))]),
@@ -37,10 +38,22 @@ class WhitespaceContext(Context):
                 SequencePatternExpr.build_simple_seq('comment')]
 
     def get_ignored_and_target_patterns(self):
+        # return []
         return self.get_ignored_patterns() + \
             [SequencePatternExpr.build_simple_seq('space'),
              SequencePatternExpr.build_simple_seq('newline'),
              SequencePatternExpr.build_simple_seq('tab')]
+
+
+class IndentContext(Context):
+    def __init__(self, conventions, exceptions):
+        super(IndentContext, self).__init__(conventions, exceptions)
+
+    def get_ignored_patterns(self):
+        return []
+
+    def get_ignored_and_target_patterns(self):
+        return []
 
 
 class CommentsContext(Context):

@@ -20,6 +20,17 @@ class Filter():
                 result.append(node)
         return result
 
+    def get_next_sibling(self, node):
+        index = 1
+        next_sibling = TreeWalker.get_next_sibling(node, index)
+        if next_sibling:
+            is_start, seq_len = self._is_start_if_sequence(next_sibling)
+            while is_start:
+                index += seq_len
+                next_sibling = TreeWalker.get_next_sibling(node, index)
+                is_start, seq_len = self._is_start_if_sequence(next_sibling)
+        return next_sibling
+
     def _is_start_if_sequence(self, node):
         for seq in self._sequences:
             is_filtered, rem_nodes = WhitespaceVariationMatcher.DEFAULT.is_start_of_sequence(seq, node)
@@ -74,6 +85,12 @@ class TreeWalker(object):
     # blocks = {'important', 'property', 'value'}
 
     @staticmethod
+    def get_next_sibling(node, index):
+        if not node.parent or len(node.parent.value) <= node.index + index:
+            return None
+        return node.parent.value[node.index+index]
+
+    @staticmethod
     def get_next_siblings_including(node):
         if not node.parent:
             return [node]
@@ -121,6 +138,8 @@ class Matcher(object):
     #     return PatternMatcher(filter_)
 
     def _is_node_desc_match(self, desc, node):
+        if node._type == 'delim':
+            pass
         type_ = desc.type_desc.is_node_match(node)
         if type_ and desc.has_add_constraints():
             context = expr.ExprContext(self, node)
@@ -161,8 +180,8 @@ class WhitespaceVariationMatcher(Matcher):
         Checks if a variation appears after a given node. Filter is applied.
         Returns boolean
         """
-        next_siblings = self._filter.apply(TreeWalker.get_next_siblings_excluding(node))
-        return self.is_start_of_variation(variation, next_siblings[0])
+        next_sibling = self._filter.get_next_sibling(node)
+        return self.is_start_of_variation(variation, next_sibling)
 
     def is_variation_between_nodes(self, variation, node1, node2):
         """
@@ -178,7 +197,8 @@ class WhitespaceVariationMatcher(Matcher):
         Returns boolean
         """
         for s in variation.sequences:
-            if self.is_start_of_sequence(s, node):
+            is_match, _ = self.is_start_of_sequence(s, node)
+            if is_match:
                 return True
         return False
 
@@ -187,6 +207,7 @@ class WhitespaceVariationMatcher(Matcher):
         The method checks whether a sequence exists starting from a given node. No filter applied.
         Returns boolean
         """
+        assert node
         nodes = TreeWalker.get_next_siblings_including(node)
         is_match, rem_nodes = self._get_match_and_remainder(sequence.root_desc, nodes)
         if not is_match:
@@ -328,11 +349,10 @@ class PatternMatcher(Matcher):
         return self._filter_by(node, desc, TreeWalker.traverse_children)
 
     def find_if_next_sibling_matches(self, node, desc):
-        nodes = self._filter.apply(TreeWalker.get_next_siblings_excluding(node))
-        for n in nodes:
-            if self._is_node_desc_match(desc, n):
-                yield n
-            break
+        next_sibling = self._filter.get_next_sibling(node)
+        if next_sibling and self._is_node_desc_match(desc, next_sibling):
+            yield next_sibling
+
 
     def find_all(self, node, descriptors):
         # TODO: provide efficient implementation

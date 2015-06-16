@@ -6,10 +6,10 @@ class Node(object):
     _print_indent = '  '
 
     def __init__(self, type_, value, categories=None):
+        self.parent = None
         self._type = type_
         self.value = value
         self.search_labels = self.initialize_labels(type_, categories)
-        self.parent = None
         self.index = -1
         self.start_position = None
         self.end_position = None
@@ -61,9 +61,9 @@ class Node(object):
         return ''.join([' start[', str(self.start_position.line), ':', str(self.start_position.column), ']',
                         'end[',  str(self.end_position.line), ':', str(self.end_position.column), ']'])
 
-    def __repr__(self):
-        parent_type = self.parent.type_ if self.has_parent() else 'none'
-        return ''.join([' Node(type=', self._type, ', parent=', parent_type, ' index=', str(self.index), ')'])
+    # def __repr__(self):
+    #     parent_type = self.parent.type_ if self.has_parent() else 'none'
+    #     return ''.join([' Node(type=', self._type, ', parent=', parent_type, ' index=', str(self.index), ')'])
 
     def to_error_string(self):
         string = ''
@@ -78,8 +78,8 @@ class Node(object):
 
 class TerminalNode(Node):
 
-    def __init__(self, type_, value):
-        super(TerminalNode, self).__init__(type_, value)
+    def __init__(self, type_, value, categories=None):
+        super(TerminalNode, self).__init__(type_, value, categories)
 
     def _register_api(self):
         super(TerminalNode, self)._register_api()
@@ -177,8 +177,9 @@ class GeneralSiblingSelector(CombinatorSelector):
     pass
 
 
-class SimpleSelector(Node):
-    pass
+class SimpleSelector(TerminalNode):
+    def __init__(self, type_, name):
+        super(SimpleSelector, self).__init__(type_, name)
 
 
 class ElementSelector(SimpleSelector):
@@ -196,12 +197,6 @@ class ElementSelector(SimpleSelector):
     def _get_name(self):
         return values.String(self._name)
 
-    def has_children(self):
-        return False
-
-    def _get_terminal_nodes(self):
-        yield self
-
 
 class IdSelector(SimpleSelector):
     def __init__(self, name):
@@ -217,12 +212,6 @@ class IdSelector(SimpleSelector):
 
     def _get_name(self):
         return values.String(self._name)
-
-    def has_children(self):
-        return False
-
-    def _get_terminal_nodes(self):
-        yield self
 
 
 class ClassSelector(SimpleSelector):
@@ -240,14 +229,8 @@ class ClassSelector(SimpleSelector):
     def _get_name(self):
         return values.String(self._name)
 
-    def has_children(self):
-        return False
 
-    def _get_terminal_nodes(self):
-        yield self
-
-
-class AttributeSelector(SimpleSelector):
+class AttributeSelector(Node):
     def __init__(self, children):
         super(AttributeSelector, self).__init__('attribute-selector', children)
         self.attribute = children[0]
@@ -357,7 +340,9 @@ class ParseTreeBuilder(object):
         return node
 
     def _build(self, l):
-        if type(l) is not list or len(l) == 0:
+        if type(l) is not list:
+            return TerminalNode('symbol', l)
+        if len(l) == 0:
             raise ValueError('Argument must be a non-empty list')
 
         if self._is_terminal(l):
@@ -374,6 +359,8 @@ class ParseTreeBuilder(object):
                 return Number(node_value, number_value)
             if node_type == 'string':
                 return String(node_value)
+            if node_type == 'delim':
+                pass
             return TerminalNode(node_type, node_value)
 
         children = []
