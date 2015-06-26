@@ -31,6 +31,17 @@ class Filter():
                 is_start, seq_len = self._is_start_if_sequence(next_sibling)
         return next_sibling
 
+    def get_prev_sibling(self, node):
+        index = -1
+        prev_sibling = TreeWalker.get_prev_sibling(node, index)
+        if prev_sibling:
+            is_start, _ = self._is_start_if_sequence(prev_sibling)
+            while is_start:
+                index -= 1
+                prev_sibling = TreeWalker.get_prev_sibling(node, index)
+                is_start, _ = self._is_start_if_sequence(prev_sibling)
+        return prev_sibling
+
     def _is_start_if_sequence(self, node):
         for seq in self._sequences:
             is_filtered, rem_nodes = WhitespaceVariationMatcher.DEFAULT.is_start_of_sequence(seq, node)
@@ -87,6 +98,12 @@ class TreeWalker(object):
     @staticmethod
     def get_next_sibling(node, index):
         if not node.parent or len(node.parent.value) <= node.index + index:
+            return None
+        return node.parent.value[node.index+index]
+
+    @staticmethod
+    def get_prev_sibling(node, index):
+        if not node.parent or node.index+index < 0:
             return None
         return node.parent.value[node.index+index]
 
@@ -348,11 +365,18 @@ class PatternMatcher(Matcher):
         """
         return self._filter_by(node, desc, TreeWalker.traverse_children)
 
+    def find_next_sibling(self, node):
+        next_sibling = self._filter.get_next_sibling(node)
+        return next_sibling
+
     def find_if_next_sibling_matches(self, node, desc):
         next_sibling = self._filter.get_next_sibling(node)
         if next_sibling and self._is_node_desc_match(desc, next_sibling):
             yield next_sibling
 
+    def find_previous_sibling(self, node):
+        prev_sibling = self._filter.get_prev_sibling(node)
+        return prev_sibling
 
     def find_all(self, node, descriptors):
         # TODO: provide efficient implementation

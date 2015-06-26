@@ -61,7 +61,11 @@ class ExprEvaluator(object):
 
     @vis.visitor(ast.OrExpr)
     def visit(self, or_expr):
-        return self.visit(or_expr.left) or self.visit(or_expr.right)
+        left = self.visit(or_expr.left)
+        if not left.is_false():
+            return values.Boolean.TRUE
+        right = self.visit(or_expr.right)
+        return left.or_(right)
 
     @vis.visitor(ast.AndExpr)
     def visit(self, and_expr):
@@ -76,6 +80,12 @@ class ExprEvaluator(object):
         left = self.visit(equals_expr.left)
         right = self.visit(equals_expr.right)
         return left.equals(right)
+
+    @vis.visitor(ast.NotEqualsExpr)
+    def visit(self, not_equals_expr):
+        left = self.visit(not_equals_expr.left)
+        right = self.visit(not_equals_expr.right)
+        return left.not_equals(right)
 
     @vis.visitor(ast.GreaterThanExpr)
     def visit(self, greater_than_expr):
@@ -103,7 +113,11 @@ class ExprEvaluator(object):
 
     @vis.visitor(ast.ListExpr)
     def visit(self, list_expr):
-        return values.List(list_expr.value)
+        vs = []
+        for v in list_expr.value:
+            nv = self.visit(v)
+            vs.append(nv)
+        return values.List(vs)
 
     @vis.visitor(ast.NodeTypeExpr)
     def visit(self, node_type_expr):
@@ -139,6 +153,12 @@ class ExprEvaluator(object):
         result = pattern.findall(operand.value)
         return values.Boolean.build(result)
 
+    @vis.visitor(ast.InExpr)
+    def visit(self, in_expr):
+        operand = self.visit(in_expr.left)
+        list_ = self.visit(in_expr.right)
+        return operand.in_(list_)
+
     @vis.visitor(ast.ApiCallExpr)
     def visit(self, api_call_expr):
         node = self.visit(api_call_expr.operand)
@@ -156,7 +176,7 @@ class ExprEvaluator(object):
     @vis.visitor(ast.ContainsExpr)
     def visit(self, contains_expr):
         node_value = self.visit(contains_expr.operand)
-        for d in self._context.pattern_matcher.find_descendants_that_match(node_value.value, ast.NodeExprWrapper(contains_expr.argument)):
+        for d in self._context.pattern_matcher.find_descendants_that_match(node_value.value, contains_expr.argument):
             return values.Boolean.TRUE
         return values.Boolean.FALSE
 
@@ -171,14 +191,22 @@ class ExprEvaluator(object):
     def visit(self, count_expr):
         node_value = self.visit(count_expr.operand)
         count = 0
-        for _ in self._context.pattern_matcher.find_descendants_that_match(node_value.value, ast.NodeExprWrapper(count_expr.argument)):
+        for _ in self._context.pattern_matcher.find_descendants_that_match(node_value.value, count_expr.argument):
             count += 1
         return values.Decimal(count)
 
     @vis.visitor(ast.NextSiblingExpr)
     def visit(self, next_sibling):
         node_value = self.visit(next_sibling.operand)
-        node = self._context.pattern_matcher.find_next_adjacent_sibling(node_value.value)
+        node = self._context.pattern_matcher.find_next_sibling(node_value.value)
+        if node:
+            return values.Node(node)
+        return values.Undefined.VALUE
+
+    @vis.visitor(ast.PreviousSiblingExpr)
+    def visit(self, prev_sibling):
+        node_value = self.visit(prev_sibling.operand)
+        node = self._context.pattern_matcher.find_previous_sibling(node_value.value)
         if node:
             return values.Node(node)
         return values.Undefined.VALUE

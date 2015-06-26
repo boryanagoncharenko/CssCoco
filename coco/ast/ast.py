@@ -323,6 +323,11 @@ class EqualsExpr(BinaryExpr):
         super(EqualsExpr, self).__init__(left, right)
 
 
+class NotEqualsExpr(BinaryExpr):
+    def __init__(self, left, right):
+        super(NotEqualsExpr, self).__init__(left, right)
+
+
 class GreaterThanExpr(BinaryExpr):
     def __init__(self, left, right):
         super(GreaterThanExpr, self).__init__(left, right)
@@ -415,6 +420,11 @@ class MatchExpr(Expr):
         self.regex = regex
 
 
+class InExpr(BinaryExpr):
+    def __init__(self, left, right):
+        super(InExpr, self).__init__(left, right)
+
+
 class VariableExpr(Expr):
     def __init__(self, variable_name):
         self.variable_name = variable_name
@@ -458,6 +468,11 @@ class CountExpr(NodeQueryExpr):
 class NextSiblingExpr(NodeQueryExpr):
     def __init__(self, operand):
         super(NextSiblingExpr, self).__init__(operand)
+
+
+class PreviousSiblingExpr(NodeQueryExpr):
+    def __init__(self, operand):
+        super(PreviousSiblingExpr, self).__init__(operand)
 
 
 class WhitespaceExpr(NodeQueryExpr):

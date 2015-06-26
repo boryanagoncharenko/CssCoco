@@ -29,7 +29,10 @@ class Node(object):
         self._api['child'] = self._get_child
 
     def _to_string(self):
-        return values.String.EMPTY
+        res = ''
+        for v in self.value:
+            res = ''.join([res, v._to_string().value])
+        return values.String(res)
 
     def _get_child(self, i):
         return values.Node(self.value[i])
@@ -114,11 +117,21 @@ class Declaration(Node):
 
     def _register_api(self):
         super(Declaration, self)._register_api()
+        self._api['property'] = self._get_property
+        self._api['value'] = self._get_value
         self._api['is-vendor-specific'] = self.is_vendor_specific
         self._api['say'] = self.say
 
+    def _get_property(self):
+        return values.Node(self.value[0])
+
+    def _get_value(self):
+        for i in range(1, len(self.value), 1):
+            if type(self.value[-i]) is not TerminalNode:
+                return values.Node(self.value[-i])
+
     def is_vendor_specific(self):
-        return values.Boolean.TRUE
+        return self.value[0]._is_vendor_specific()
 
     def say(self, param):
         return values.String(param.value)
@@ -135,26 +148,34 @@ class Property(TerminalNode):
 
     def _register_api(self):
         super(Property, self)._register_api()
-        self._api['name'] = self._name
+        self._api['name'] = self._get_name
         self._api['is-vendor-specific'] = self._is_vendor_specific
+        self._api['standard'] = self._get_standard
 
     def _to_string(self):
         return values.String(self._name)
 
-    def _name(self):
+    def _get_name(self):
         return values.String(self._name)
 
     def _is_vendor_specific(self):
         if not self._is_vendor:
-            self._is_vendor = self._check_is_vendor()
+            prefix = self._check_is_vendor()
+            self._is_vendor = values.Boolean.build(prefix)
         return self._is_vendor
 
     def _check_is_vendor(self):
         for p in self._vendor_prefixes:
             prefix_slice = self._name[:len(p)].lower()
             if prefix_slice.startswith(p):
-                return values.Boolean.TRUE
-        return values.Boolean.FALSE
+                return p
+        return None
+
+    def _get_standard(self):
+        if self._is_vendor_specific().value:
+            prefix = self._check_is_vendor()
+            return values.String(self._name[len(prefix):])
+        return self._get_name()
 
 
 class CombinatorSelector(Node):
@@ -260,6 +281,18 @@ class PseudoSelector(SimpleSelector):
     pass
 
 
+class Function(Node):
+    def __init__(self, value):
+        super(Function, self).__init__('function', value)
+
+    def _register_api(self):
+        super(Function, self)._register_api()
+        self._api['name'] = self._get_name
+
+    def _get_name(self):
+        return values.String(self.value[0].value)
+
+
 class Hex(TerminalNode):
     def __init__(self, value):
         super(Hex, self).__init__('hex', value)
@@ -313,6 +346,11 @@ class AtRule(Node):
 class Charset(AtRule):
     def __init__(self, value):
         super(Charset, self).__init__('charset', value)
+
+
+class Import(AtRule):
+    def __init__(self, value):
+        super(Import, self).__init__('import', value)
 
 
 class Position(object):
@@ -383,12 +421,16 @@ class ParseTreeBuilder(object):
             if len(children) == 3:
                 children[2].search_labels.append('attribute-value')
             return AttributeSelector(children)
+        if node_type == 'funktion':
+            return Function(children)
         if node_type == 'atrules':
             keyword = children[0].value[0].value
             if keyword == 'charset':
                 children.pop(0)
                 return Charset(children)
-            # return None
+            if keyword == 'import':
+                children.pop(0)
+                return Import(children)
         return Node(node_type, children)
 
     def _is_terminal(self, l):

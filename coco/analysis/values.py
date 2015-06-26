@@ -15,6 +15,12 @@ class Value(object):
     def and_bool(self, value):
         raise ValueError()
 
+    def or_(self, value):
+        raise ValueError()
+
+    def or_bool(self, value):
+        raise ValueError()
+
     def equals(self, value):
         raise ValueError()
 
@@ -25,6 +31,18 @@ class Value(object):
         raise ValueError()
 
     def equals_string(self, value):
+        raise ValueError()
+
+    def not_equals(self, value):
+        raise ValueError()
+
+    def not_equals_decimal(self, value):
+        raise ValueError()
+
+    def not_equals_boolean(self, value):
+        raise ValueError()
+
+    def not_equals_string(self, value):
         raise ValueError()
 
     def greater_than(self, value):
@@ -57,6 +75,12 @@ class Value(object):
     def is_of_type(self, value):
         raise ValueError()
 
+    def in_(self, value):
+        raise ValueError()
+
+    def in_list(self, value):
+        raise ValueError()
+
 
 class Decimal(Value):
     def __init__(self, value):
@@ -67,6 +91,12 @@ class Decimal(Value):
 
     def equals_decimal(self, value):
         return Boolean.build(value.value == self.value)
+
+    def not_equals(self, value):
+        return value.not_equals_decimal(self)
+
+    def not_equals_decimal(self, value):
+        return Boolean.build(value.value != self.value)
 
     def greater_than(self, value):
         return value.greater_than_decimal(self)
@@ -92,6 +122,9 @@ class Decimal(Value):
     def less_than_equals_decimal(self, value):
         return Boolean.build(value.value <= self.value)
 
+    def in_(self, value):
+        return value.is_in_list(self)
+
 
 class String(Value):
     def __init__(self, value):
@@ -102,6 +135,15 @@ class String(Value):
 
     def equals_string(self, value):
         return Boolean.build(value.value == self.value)
+
+    def not_equals(self, value):
+        return value.not_equals_string(self)
+
+    def not_equals_string(self, value):
+        return Boolean.build(value.value != self.value)
+
+    def in_(self, value):
+        return value.in_list(self)
 
 String.EMPTY = String('')
 
@@ -126,11 +168,27 @@ class Boolean(Value):
     def and_bool(self, value):
         return Boolean.build(value.value and self.value)
 
+    def or_(self, value):
+        return value.or_bool(self)
+
+    def or_bool(self, value):
+        return Boolean.build(value.value or self.value)
+
     def equals(self, value):
         return value.equals_boolean(self)
 
     def equals_boolean(self, value):
         return Boolean.build(value.value == self.value)
+
+    def not_equals(self, value):
+        return value.not_equals_boolean(self)
+
+    def not_equals_boolean(self, value):
+        return Boolean.build(value.value != self.value)
+
+
+    def in_(self, value):
+        return value.is_in_list(self)
 
 Boolean.FALSE = Boolean(False)
 Boolean.TRUE = Boolean(True)
@@ -171,6 +229,12 @@ class Node(Value):
 class List(Value):
     def __init__(self, value):
         self.value = value
+
+    def in_list(self, operand):
+        for v in self.value:
+            if operand.equals(v).value:
+                return Boolean.TRUE
+        return Boolean.FALSE
 
 
 class Undefined(Value):

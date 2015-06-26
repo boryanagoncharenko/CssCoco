@@ -74,18 +74,18 @@ def main():
     css_tree, error = get_css_parse_tree()
     print(error)
     res = nodes_counter(css_tree)
-    print(res)
+    print('Number of nodes: ', res)
     # if not error:
         # coco_ast = get_coco_ast()
 
-    print('--- Parsed CSS for %s seconds', (time.time() - start_time))
+    print('--- Parsed CSS for sec:', (time.time() - start_time))
     print('--- Detecting violations ---')
     start_time = time.time()
 
-    set = temp.ToGo.get_google_set()
+    set = temp.ToGo.get_lint_set()
     violations.ViolationsFinder.find(set, css_tree)
 
-    print('--- Detected violations for %s seconds', (time.time() - start_time))
+    print('--- Detected violations for secs:', (time.time() - start_time))
 
 main()
 # cProfile.run('main()')

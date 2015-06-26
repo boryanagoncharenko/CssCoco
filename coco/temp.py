@@ -2,7 +2,30 @@ from coco.ast.ast import *
 
 
 class ToGo(object):
-    
+
+    @staticmethod
+    def get_lint_set():
+        sem_conventions = [
+            # ToGo.conv3(),
+            # ToGo.conv4(),
+            # ToGo.conv27(),
+            # ToGo.conv28(),
+            # ToGo.conv29(),
+            # ToGo.conv30(),
+            # ToGo.conv31(),
+            # ToGo.conv32(),
+            # ToGo.conv33(),
+            # ToGo.conv34(),
+            # ToGo.conv35(),
+            ToGo.conv36(),
+            ]
+
+        sem_context = SemanticContext(sem_conventions, [])
+
+        return ConventionSet([
+            sem_context
+        ])
+
     @staticmethod
     def get_google_set():
         sem_conventions = [
@@ -36,12 +59,12 @@ class ToGo(object):
             ToGo.conv23(),
             ToGo.conv24(),
             ToGo.conv25(),
-            ToGo.conv26(),
         ]
 
         white_context = WhitespaceContext(white_conventions, [])
 
         indent_conventions = [
+            ToGo.conv26(),
             ToGo.conv27(),
         ]
 
@@ -355,4 +378,204 @@ class ToGo(object):
         requirement = EqualsExpr(ApiCallExpr(VariableExpr('i'), 'string'), StringExpr('    '))
         return FindRequireConvention(pattern, msg, requirement)
 
+    @staticmethod
+    def conv27():
+        msg = 'Do not use @import'
 
+        at_import = NodeExprWrapper(NodeDescriptor.build_type('import'))
+        pattern = PatternExpr(at_import, [at_import], Relations())
+        return ForbidConvention(pattern, msg)
+
+    @staticmethod
+    def conv28():
+        msg = "Warning if a rule contains width and border, border-left, " \
+              "border-right, padding, padding-left, or padding-right"
+
+        width = NodeExprWrapper(NodeDescriptor.build_type('property'),
+                                EqualsExpr(ApiCallExpr(VariableExpr('anything'), 'name'), StringExpr('width')))
+        border = NodeExprWrapper(NodeDescriptor.build_type('property'),
+                                 InExpr(ApiCallExpr(VariableExpr('anything'), 'name'),
+                                        ListExpr([StringExpr('border'),
+                                                  StringExpr('border-left'),
+                                                  StringExpr('border-right'),
+                                                  StringExpr('padding'),
+                                                  StringExpr('padding-left'),
+                                                  StringExpr('padding-right'),
+                                                  ])))
+        rule = NodeExprWrapper(NodeDescriptor.build_type('ruleset'),
+                               attr_expr=AndExpr(ContainsExpr(VariableExpr(''), width),
+                                                 ContainsExpr(VariableExpr(''), border)))
+
+        pattern = PatternExpr(rule, [rule], Relations())
+
+        return ForbidConvention(pattern, msg)
+
+    @staticmethod
+    def conv29():
+        msg = "Warning if a rule contains height and border, border-top, " \
+              "border-bottom, padding, padding-top, or padding-bottom"
+
+        width = NodeExprWrapper(NodeDescriptor.build_type('property'),
+                                EqualsExpr(ApiCallExpr(VariableExpr('anything'), 'name'), StringExpr('height')))
+        border = NodeExprWrapper(NodeDescriptor.build_type('property'),
+                                 InExpr(ApiCallExpr(VariableExpr('anything'), 'name'),
+                                        ListExpr([StringExpr('border'),
+                                                  StringExpr('border-top'),
+                                                  StringExpr('border-bottom'),
+                                                  StringExpr('padding'),
+                                                  StringExpr('padding-top'),
+                                                  StringExpr('padding-bottom'),
+                                                  ])))
+        rule = NodeExprWrapper(NodeDescriptor.build_type('ruleset'),
+                               attr_expr=AndExpr(ContainsExpr(VariableExpr(''), width),
+                                                 ContainsExpr(VariableExpr(''), border)))
+
+        pattern = PatternExpr(rule, [rule], Relations())
+
+        return ForbidConvention(pattern, msg)
+
+    @staticmethod
+    def conv30():
+        msg = 'A rule that has display: inline-block should not use float'
+
+        float_ = NodeExprWrapper(NodeDescriptor.build_type('property'),
+                                 EqualsExpr(ApiCallExpr(VariableExpr('anything'), 'name'), StringExpr('float')))
+        decl = NodeExprWrapper(NodeDescriptor.build_type('declaration'),
+                               AndExpr(EqualsExpr(ApiCallExpr(ApiCallExpr(VariableExpr('anything'), 'property'), 'name'), StringExpr('display')),
+                                       EqualsExpr(ApiCallExpr(ApiCallExpr(VariableExpr('anything'), 'value'), 'string'), StringExpr('inline-block'))))
+
+        rule = NodeExprWrapper(NodeDescriptor.build_type('ruleset'),
+                               attr_expr=AndExpr(ContainsExpr(VariableExpr(''), float_),
+                                                 ContainsExpr(VariableExpr(''), decl)))
+
+        pattern = PatternExpr(rule, [rule], Relations())
+
+        return ForbidConvention(pattern, msg)
+
+    @staticmethod
+    def conv31():
+        msg = 'A rule that has display: inline-block should not use vertical-align'
+
+        float_ = NodeExprWrapper(NodeDescriptor.build_type('property'),
+                                 EqualsExpr(ApiCallExpr(VariableExpr('anything'), 'name'), StringExpr('vertical-align')))
+        decl = NodeExprWrapper(NodeDescriptor.build_type('declaration'),
+                               AndExpr(EqualsExpr(ApiCallExpr(ApiCallExpr(VariableExpr('anything'), 'property'), 'name'), StringExpr('display')),
+                                       EqualsExpr(ApiCallExpr(ApiCallExpr(VariableExpr('anything'), 'value'), 'string'), StringExpr('inline-block'))))
+
+        rule = NodeExprWrapper(NodeDescriptor.build_type('ruleset'),
+                               attr_expr=AndExpr(ContainsExpr(VariableExpr(''), float_),
+                                                 ContainsExpr(VariableExpr(''), decl)))
+
+        pattern = PatternExpr(rule, [rule], Relations())
+
+        return ForbidConvention(pattern, msg)
+
+    @staticmethod
+    def conv32():
+        msg = 'Warning if a property is included in a rule twice and contains the same value.'
+
+        decl1 = NodeExprWrapper(NodeDescriptor.build_type('declaration'), identifier='d1')
+        decl2 = NodeExprWrapper(NodeDescriptor.build_type('declaration'), identifier='d2')
+
+        rule = NodeExprWrapper(NodeDescriptor.build_type('ruleset'))
+        rs = Relations()
+        rs.register_relation(rule, IsAncestorOfRelation(decl1))
+        rs.register_relation(rule, IsAncestorOfRelation(decl2))
+        pattern = PatternExpr(rule, [rule, decl1, decl2], rs)
+
+        req = AndExpr(EqualsExpr(ApiCallExpr(ApiCallExpr(VariableExpr('d1'), 'property'), 'name'),
+                                 ApiCallExpr(ApiCallExpr(VariableExpr('d2'), 'property'), 'name')),
+                      EqualsExpr(ApiCallExpr(ApiCallExpr(VariableExpr('d1'), 'value'), 'string'),
+                                 ApiCallExpr(ApiCallExpr(VariableExpr('d2'), 'value'), 'string')))
+
+        return FindForbidConvention(pattern, msg, req)
+
+    @staticmethod
+    def conv33():
+        # TODO: this rule is significantly slower than the other rules
+        msg = 'A property is included twice and is separated by at least one other property.'
+
+        decl1 = NodeExprWrapper(NodeDescriptor.build_type('declaration'), identifier='d1')
+        decl2 = NodeExprWrapper(NodeDescriptor.build_type('declaration'), identifier='d2')
+        decl3 = NodeExprWrapper(NodeDescriptor.build_type('declaration'), identifier='d3')
+
+        rule = NodeExprWrapper(NodeDescriptor.build_type('ruleset'))
+        rs = Relations()
+        rs.register_relation(rule, IsAncestorOfRelation(decl1))
+        rs.register_relation(rule, IsAncestorOfRelation(decl2))
+        rs.register_relation(rule, IsAncestorOfRelation(decl3))
+        pattern = PatternExpr(rule, [rule, decl1, decl2, decl3], rs)
+
+        req = AndExpr(EqualsExpr(ApiCallExpr(ApiCallExpr(VariableExpr('d1'), 'property'), 'name'),
+                                 ApiCallExpr(ApiCallExpr(VariableExpr('d3'), 'property'), 'name')),
+                      AndExpr(BooleanExpr.TRUE,
+                              # NotEqualsExpr(ApiCallExpr(ApiCallExpr(VariableExpr('d1'), 'value'), 'string'),
+                              #               ApiCallExpr(ApiCallExpr(VariableExpr('d3'), 'value'), 'string')),
+                              NotEqualsExpr(ApiCallExpr(ApiCallExpr(VariableExpr('d1'), 'property'), 'name'),
+                                            ApiCallExpr(ApiCallExpr(VariableExpr('d2'), 'property'), 'name'))
+                              )
+                      )
+
+        return FindForbidConvention(pattern, msg, BooleanExpr.FALSE)
+
+    @staticmethod
+    def conv34():
+        msg = 'Forbid empty rules.'
+
+        decl = NodeExprWrapper(NodeDescriptor.build_type('declaration'))
+        rule = NodeExprWrapper(NodeDescriptor.build_type('ruleset'),
+                               attr_expr=NotExpr(ContainsExpr(VariableExpr(''), decl)))
+                               # attr_expr=EqualsExpr(CountExpr(VariableExpr(''), decl), DecimalExpr(0)))
+        pattern = PatternExpr(rule, [rule], Relations())
+
+        return ForbidConvention(pattern, msg)
+
+    @staticmethod
+    def conv35():
+        msg = 'Warning if found a vendor-prefixed property without a standard property after it.'
+
+        decl1 = NodeExprWrapper(NodeDescriptor.build_type('declaration'), identifier='d1',
+                                attr_expr=ApiCallExpr(ApiCallExpr(VariableExpr(''), 'property'), 'is-vendor-specific'))
+        pattern = PatternExpr(decl1, [decl1], Relations())
+        req = AndExpr(IsExpr(NextSiblingExpr(VariableExpr('d1')), NodeTypeExpr('declaration')),
+                      OrExpr(AndExpr(ApiCallExpr(NextSiblingExpr(VariableExpr('d1')), 'is-vendor-specific'),
+                                     EqualsExpr(ApiCallExpr(ApiCallExpr(NextSiblingExpr(VariableExpr('d1')), 'property'), 'standard'),
+                                                ApiCallExpr(ApiCallExpr(VariableExpr('d1'), 'property'), 'standard'))),
+                             AndExpr(NotExpr(ApiCallExpr(NextSiblingExpr(VariableExpr('d1')), 'is-vendor-specific')),
+                                     EqualsExpr(ApiCallExpr(ApiCallExpr(VariableExpr('d1'), 'property'), 'standard'),
+                                                ApiCallExpr(ApiCallExpr(NextSiblingExpr(VariableExpr('d1')), 'property'), 'name'))
+                                   )
+                             )
+                      )
+        return FindRequireConvention(pattern, msg, req)
+
+
+    @staticmethod
+    def conv36():
+        msg = 'Require fallback color. A color property with a rgba(), hsl(), or hsla() color ' \
+              'without a preceding color property that has an older color format.'
+
+        decl1 = NodeExprWrapper(NodeDescriptor.build_type('declaration'), identifier='d1',
+                                attr_expr=EqualsExpr(ApiCallExpr(ApiCallExpr(VariableExpr(''), 'property'), 'name'),
+                                                     StringExpr('color')))
+        func = NodeExprWrapper(NodeDescriptor.build_type('function'),
+                               attr_expr=InExpr(ApiCallExpr(VariableExpr(''), 'name'),
+                                                ListExpr([StringExpr('rgb'),
+                                                          StringExpr('rgba'),
+                                                          StringExpr('hsl'),
+                                                          StringExpr('hsla')])
+                                                )
+                               )
+        relations = Relations()
+        relations.register_relation(decl1, IsAncestorOfRelation(func))
+        pattern = PatternExpr(decl1, [decl1, func], relations)
+
+        req = AndExpr(AndExpr(IsExpr(PreviousSiblingExpr(VariableExpr('d1')), NodeTypeExpr('declaration')),
+                              EqualsExpr(ApiCallExpr(ApiCallExpr(PreviousSiblingExpr(VariableExpr('d1')), 'property'), 'name'),
+                                         StringExpr('color'))),
+                      ContainsExpr(PreviousSiblingExpr(VariableExpr('d1')), NodeExprWrapper(NodeDescriptor.build_expr(
+                          lambda n: 'hex' in n.search_labels or 'color-name' in n.search_labels
+                      )))
+        )
+
+        return FindRequireConvention(pattern, msg, req)
