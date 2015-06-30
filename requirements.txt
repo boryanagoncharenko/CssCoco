@@ -1,0 +1,43 @@
+Recognize units with value px  
+Recognize property with value z-index    
+Recognize usage of !important    
+Recognize usage of id selectors   
+Find usage of @import statements   
+Recognize selectors and ids; check if selectors with ids contain other simple selectors  
+Recognize declarations, units with value rem, units with value px; find declarations with value that includes rem units; check if a declaration exists immediately before a given declaration; compare property names of declarations; check if the value of declaration contains a px unit.  
+Find @charset statements  
+Recognize uri values; check if the value of a uri starts with a given string  
+Find rulesets that do not contain the box-sizing property; check if they contain the property width and any of the properties in the list [border, border-left, border-right, padding, padding-left, padding-right].  
+Recognize rulesets, declarations with specific properties and values; find rulesets containing a declaration with property display and value inline; check if they contain any of the properties on the list [width, height, margin, margin-top, margin-bottom, float]     
+Recognize rulesets, declarations with specific properties and values; find rulesets containing a declaration with property display and value inline-block; check if they contain a declaration with property float.     
+Recognize rulesets, declarations with specific properties and values; find rulesets containing a declaration with property display and value block; check if they contain a declaration with property vertical-align.     
+Recognize rulesets, declarations with specific properties and value in a given form; find rulesets containing a declaration with property display and value that matches the form table-\*; check if it contains a declaration with any of the properties in the list [margin, margin-top, margin-right, margin-bottom, margin-left].     
+Compare couples of declarations within a rule; check if the two declarations have equal properties and values.    
+Compare triples of declarations within a rule; check if the first and third have the same property and if the first and the second have different properties.     
+Recognize rulesets and declarations; determine whether a ruleset contains a declaration. 
+Find declarations with property text-indent and negative value; check whether the rule that holds them also contains a declaration of direction with value ltr.  
+Find vendor-prefixed properties; check whether the following declaration does not exist; check whether the following declaration is not of the same property group.  
+Find declarations with color property and rgba, hsl or hsla value; check if a previous declaration exists; check if the previous declaration has property color and value of type hex, color-name, rgb.  
+Find properties that start with an asterisk. 
+Find properties that start with an underscore. 
+Find font-face statements; check they contain a url with the required suffix.  
+Recognize @font-face declarations; count the occurrences of @font-face declarations; compare the number to a predefined value.  
+Find any of the following selectors: *=, |=, ^=, $=, ~=  
+Find universal selector that is also the key simple-selector of a selector.  
+Find attribute selector that is also the key simple-selector of a selector.  
+Find declarations with property background-image and gradient value; check if a previous declaration exists; check if the previous declaration has a background-color property.  
+Find properties that are vendor-prefixed.  
+Find properties that match the list [margin, padding, backgruond, font, list-style, transition]  
+Find values that are color-names, rgb, hsl, or hsla.  
+Find rgba() values with opacity equal to 1.  
+Find hex values that match the format #rrggbb.  
+Find rulesets that contain all four properties in the list [margin-top, margin-right, margin-bottom, margin-left].
+Find rulesets that contain all four properties in the list [padding-top, padding-right, padding-bottom, padding-left]  
+Find rulesets that contain any of the properties in the list [border-top, border-right, border-bottom, border-left, border-color, border-style]. 
+Find rulesets that contain the font-size and font-family properties.  
+Find words in id and class selectors; check if words are colors  
+Find words in id and class selectors; check if words are present in a built-in dictionary  
+Find all but the first selectors in a multiline selector; check if they are indented once compared to the first selector 
+Find two adjacent rulesets that contain a single declaration; check if there is a one or two newline symbols between them. 
+Find properties; check if there is a space immediately after them 
+Find spaces immediately before a newline symbol  
