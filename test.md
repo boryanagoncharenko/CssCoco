@@ -663,8 +663,91 @@ treeitem[IsImapServer="true"] > treerow > .tree-folderpane-icon {…}
 -webkit-border-radius
 -moz-border-radius
  ```
- **Actions**:  Find properties that are vendor-prefixed
+ **Actions**:  Find properties that are vendor-prefixed  
  
+ ---
+**Description**: Put a semicolon at the end of each declaration  
+ **Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [CSSguidelines](http://cssguidelin.es/#introduction)  
+ **Violations**:  CSS allows the delimiter after the last declaration of a rule to be omitted. Since this can cause maintainability issues, the contanion requires the delimiter after the last declaration to be present. Violations occur when the last declaration of a rule does not have a following delimiter.
+ ```
+.myclass{
+  color: red;
+  font-family: "Arial Black"
+}
+ ```
+ **Actions**:  Find the last declaration of a ruleset; check if there is a declaration delimiter after it
  
+  ---
+**Description**: Do not use shorthand properties, except border    
+ **Source**: [phpied](http://www.phpied.com/css-coding-conventions/)  
+ **Violations**:  A warning should be issued when any of the properties are encountered: margin, padding, background, font, list-style, transition.
+ **Actions**:  Find properties that match the list [margin, padding, backgruond, font, list-style, transition]  
  
+ ---
+**Description**: Do not put quotes in uri values    
+ **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important)   
+ **Violations**:  A warning should be issued when the value of a URL is of type string:
+ ```
+ url("//www.google.com/css/maia.css")
+ ```
+ **Actions**:  Find url values; check if their type is string
  
+ ---
+**Description**: Use hex or rgba() for colors    
+ **Source**: [GitHub](http://primercss.io/guidelines/#css), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
+ **Violations**:  Violations include usages of color-names, rgb(), hsl() and hsla():
+ ```
+ color: red;
+ color: rgb(50, 100, 150)
+ ```
+ **Actions**:  Find color-names, rgb, hsl, or hsla  
+ 
+ ---
+**Description**: Use rgba only when opacity is needed    
+ **Source**: [GitHub](http://primercss.io/guidelines/#css), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
+ **Violations**:  Violations are usages of rgba() with last argument equal to 1:
+ ```
+ background-color: rgba(255, 0, 0, 1);
+ ```
+ **Actions**:  Find rgba() values with opacity equal to 1  
+ 
+ ---
+**Description**: Use short hex    
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862)  
+ **Violations**:  Presence of hex that is long and could be shortened. Long hex values contain 6 hexadecimal characters and short - 3 characters. Long hex values that could be shortened match the format #rrggbb. For example, the following two values are violations:
+```
+#99EE11;
+#ffffff;
+```
+The next examples do not violate the convention:
+```#9E1;
+#fff;
+#E9E9E9
+```
+ **Actions**:  Find hex values that match the format #rrggbb  
+ 
+ ---
+**Description**: Use the shorthand margin property    
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**:  Violation of this convention is a rule that contains all four properties: margin-top, margin-right, margin-bottom, margin-left.
+```
+a {
+margin-top: 10px;
+margin-right: 15px;
+margin-bottom: 25px;
+margin-left: 15px;
+}
+ **Actions**:  Find rulesets that contain all four properties in the list [margin-top, margin-right, margin-bottom, margin-left]  
+ 
+  ---
+ **Description**: Use the shorthand padding property    
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**:  Violation of this convention is a rule that contains all four properties: padding-top, padding-right, padding-bottom, padding-left.
+```
+a {
+padding-top: 10px;
+padding-right: 15px;
+padding-bottom: 25px;
+padding-left: 15px;
+}
+ **Actions**:  Find rulesets that contain all four properties in the list [padding-top, padding-right, padding-bottom, padding-left]  
