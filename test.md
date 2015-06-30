@@ -590,8 +590,6 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
  font-family: 'Arial Black';
  ```
  **Actions**:  Find strings in values of declarations with properties 'font-family' or 'font'; check if they use single quotes
- 
- 
 
  ---
 **Description**: Do not use over-qualified selectors    
@@ -648,7 +646,24 @@ treehead > treerow > treecell {...}
  ```
  **Actions**:  Find selectors that have html tags as their key selectors; check whether these selectors contain a child selector
  
+ ---
+**Description**: Question all usages of the child selector    
+ **Source**: [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
+ **Violations**:  A warning should be raised when the child selector is used:
+ ```
+treeitem[IsImapServer="true"] > treerow > .tree-folderpane-icon {…}
+ ```
+ **Actions**:  Find child selector
  
+  ---
+**Description**: Avoid vendor-specific features unless necessary    
+ **Source**: [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS)  
+ **Violations**:  A warning should be issued when a vendor-specific property is found:
+ ```
+-webkit-border-radius
+-moz-border-radius
+ ```
+ **Actions**:  Find properties that are vendor-prefixed
  
  
  
