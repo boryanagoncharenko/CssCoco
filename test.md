@@ -231,3 +231,101 @@ Note that the rule does not refer to class selectors connected using the descend
  **Actions**:  Find vendor-specific properties; check whether the rule that holds them also contains all other vendor-prefixed properties.
   
 
+
+---
+**Description**: Disallow negative indent    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**: A warning is issued when a text-indent value of -99 or similar (i.e., -100, -999, etc.) is used without the use of direction: ltr. Sample violations are:
+ ```
+/* missing direction */
+.mybox {
+    text-indent: -999px;
+}
+
+/* missing direction */
+.mybox {
+    text-indent: -999em;
+}
+
+/* direction is rtl */
+.mybox {
+    direction: rtl;
+    text-indent: -999em;
+}
+```
+ **Actions**:  Find declarations with property text-indent and negative value; check whether the rule that holds them also contains a declaration of direction with value ltr.  
+---
+**Description**: Require standard property with vendor prefix    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**: A warning is issued when a vendor-prefixed property is used without a standard property after it. Sample violations are:
+ ```
+/* missing standard property */
+.mybox {
+    -moz-border-radius: 5px;
+}
+```
+Note that there might be more than one vendor prefixes. In such cases the standard property should appear after the last vendor-prefixed property.
+ **Actions**:  Find vendor-prefixed properties; check whether the following declaration does not exist; check whether the following declaration is not of the same property group.  
+ 
+ ---
+**Description**: Require a fallback color (rule 1)    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**: A warning is issued when a color property with a rgba(), hsl(), or hsla() color is used without a preceding color property that has an older color format, i.e. hexadecimal, named, or rgb(). Sample violations are:
+ ```
+.mybox {
+    color: rgba(100, 200, 100, 0.5);
+}
+```
+ **Actions**:  Find declarations with color property and rgba, hsl or hsla value; check if a previous declaration exists; check if the previous declaration has property color and value of type hex, color-name, rgb.  
+ 
+ ---
+**Description**: Disallow the star hack    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**: A warning is issued when a property is preceded with an asterisk.
+ ```
+.mybox {
+    border: 1px solid black;
+    *width: 100px;
+}
+```
+ **Actions**:  Find properties that start with an asterisk. 
+ 
+ ---
+**Description**: Disallow the underscore hack    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**: A warning is issued when a property is preceded with an underscore.
+ ```
+.mybox {
+    border: 1px solid black;
+    _width: 100px;
+}
+```
+ **Actions**:  Find properties that start with an underscore. 
+ 
+ ---
+**Description**: Bulletproof font face    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**: A warning is issued if the first URL declaration does not contain the suffix '?#iefix'.
+ ```
+@font-face {
+    font-family: 'MyFontFamily';
+    src: url('myfont-webfont.eot') format('embedded-opentype')
+}
+```
+The implementation provided by CSS lint does not have much in common with the description. Testing shows that instead of ensuring that the first url has the required suffix, CSS lint checks in the font-face rule contains a url with the required suffix. In fact, the following CSS code avoids the mentioned bug, but does not comply with the definition of the rule.
+```
+@font-face {
+  font-family: 'MyWebFont';
+  src: url('webfont.eot'); /* IE9 Compat Modes */
+  src: url('webfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('webfont.woff2') format('woff2'), /* Super Modern Browsers */
+}
+```
+In conclusion, a violation occurs when a font-face rule does not contain a url with the suffix '?#iefix'. 
+ **Actions**:  Find font-face statements; check they contain a url with the required suffix.  
+ 
+ 
+ 
+ 
+ 
+ 
