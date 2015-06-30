@@ -1291,35 +1291,35 @@ rgb(100,100,100);
 ---
 **Description**: Newlines should be used for lengthier multi-part values such as those for shorthand properties like box-shadow and text-shadow.
  **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Drupal](https://www.drupal.org/node/1887862)   
- **Violations**: Violations occur when the values of a given length do not contain newlines.
-**Actions**:  Find the values that are more than 40 characters; check if they do not contain \n symbols
+ **Violations**: Violations occur when the values of a given length do not contain newlines. 
+ **Actions**:  Find the values that are more than 40 characters; check if they do not contain \n symbols
 
 ---
 **Description**: Place comments on a new line
  **Source**: [Idiomatic CSS](https://github.com/necolas/idiomatic-css)   
- **Violations**: Violations occur when a comment does not have \n symbols before and after it.
-**Actions**:  Find comments; check if they do not have \n symbols before and after them
+ **Violations**: Violations occur when a comment does not have \n symbols before and after it.   
+ **Actions**:  Find comments; check if they do not have \n symbols before and after them
 
 ---
 **Description**: No trailing spaces
  **Source**: [Drupal](https://www.drupal.org/node/1887862), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)   
- **Violations**: Violations occur when there are spaces at the end of a line.
-**Actions**:  Find spaces immediately before a \n symbol
+ **Violations**: Violations occur when there are spaces at the end of a line.  
+ **Actions**:  Find spaces immediately before a \n symbol
 
 ---
 **Description**: All text files should end with a single blank line  
  **Source**: [Drupal](https://www.drupal.org/node/1887862)     
- **Violations**: Violations occur when a file does not end up with a blank line.
-**Actions**:  Find files that do not end with a \n symbol
+ **Violations**: Violations occur when a file does not end up with a blank line.  
+ **Actions**:  Find files that do not end with a \n symbol
 
 ---
 **Description**: Put one space between the media feature and the value.  
  **Source**: [Drupal](https://www.drupal.org/node/1887862)    
- **Violations**: Violations occur when there is not exactly one space between the media feature and the value.
-**Actions**:  Find adjacent media feature and value; ensure there is one space between them
+ **Violations**: Violations occur when there is not exactly one space between the media feature and the value.  
+ **Actions**:  Find adjacent media feature and value; ensure there is one space between them
 
 ---
 **Description**: Put one space between the media feature and the value.  
  **Source**: [Drupal](https://www.drupal.org/node/1887862)    
- **Violations**: Violations occur when there is not exactly one space between the media feature and the value.
-**Actions**:  Find adjacent media feature and value; ensure there is one space between them
+ **Violations**: Violations occur when there is not exactly one space between the media feature and the value.  
+ **Actions**:  Find adjacent media feature and value; ensure there is one space between them
