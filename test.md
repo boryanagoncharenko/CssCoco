@@ -421,7 +421,7 @@ p.active { ... }
  
  ---
 **Description**: Avoid qualifying ID and class names with type selectors    
- **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#Protocol)  
+ **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#Protocol), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
  **Violations**:  Do not use element names in conjunction with IDs or classes. Sample violations include:
  ```
 ul#example {}
@@ -545,9 +545,6 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
 ```
  **Actions**:  Find declarations with property background-image and gradient value; check if a previous declaration exists; check if the previous declaration has a background-color property.  
  
- 
- 
- 
  ---
 **Description**: Strings should use double quotes    
  **Source**: [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Drupal](https://www.drupal.org/node/1887862), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
@@ -559,7 +556,7 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
  
  ---
 **Description**: Use single quotation marks for attribute selectors    
- **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)  
+ **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Drupal](https://www.drupal.org/node/1887862), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
  **Violations**:  The convention refers to the values of attribute selectors. According to the [CSS specification](http://www.w3.org/TR/css3-selectors/#attribute-selectors), the values of attribute selectors can be CSS identifiers or strings. This the possible violations of this convention includes 1) using double quotes or 2) not using quotes at all:
  ```
  span[class=example]
@@ -584,6 +581,73 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
  font-family: "Arial Black";
  ```
  **Actions**:  Find strings in values; check if they use double quotes
+ 
+  ---
+**Description**: Font names with spaces must surrounded by double quotes    
+ **Source**: [WordPress](https://make.wordpress.org/core/handbook/coding-standards/css/) 
+ **Violations**:  Font names appear in font or font-family declarations. Thus, a violation of this convention is a single-quote string that appears as a value of either of the declarations:
+ ```
+ font-family: 'Arial Black';
+ ```
+ **Actions**:  Find strings in values of declarations with properties 'font-family' or 'font'; check if they use single quotes
+ 
+ 
+
+ ---
+**Description**: Do not use over-qualified selectors    
+ **Source**: [WordPress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
+ **Violations**:  Violations occur when an html tag appears immediately before a class or an id:
+ ```
+ div.container
+ ```
+ **Actions**:  Find html tags that are immediate siblings of a class or an id
+ 
+ ---
+**Description**: Don’t qualify ID rules with tag names or classes    
+ **Source**: [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS)  
+ **Violations**:  The convention states that if a rule has an ID selector as its key selector, tags should not be added to the rule. Violations include:
+ ```
+button#backButton {…}
+.menu-left#newMenuIcon {…}
+ ```
+ **Actions**:  Find an id that is also a key selector; check if the previous sibling is an html tag
+ 
+ ---
+**Description**: Don’t qualify class rules with tag names or classes    
+ **Source**: [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS)  
+ **Violations**:  The convention states that if a rule has an class selector as its key selector, tags should not be added to the rule. Violations include:
+ ```
+treecell.indented {…}
+ ```
+ **Actions**:  Find a class that is also a key selector; check if the previous sibling is an html tag
+ 
+ ---
+**Description**: Use the most specific category possible    
+ **Source**: [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS)  
+ **Violations**:  The convention states that the single biggest cause of slowdown is too many rules in the tag category. Thus, instead of using tags as key selectors, we should use classes or ids. Violations include:
+ ```
+treeitem[mailfolder="true"] > treerow > treecell {…}
+ ```
+ **Actions**:  Find html tags that are also key selectors
+ 
+ ---
+**Description**: Avoid the descendant selector    
+ **Source**: [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
+ **Violations**:  Violations of this guideline are the usages of the descendant selector:
+ ```
+treehead treerow treecell {...}
+ ```
+ **Actions**:  Find descendant selector
+ 
+  ---
+**Description**: Avoid using the child selector with tag category rules    
+ **Source**: [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS)  
+ **Violations**:  Violations of this convention are the selectors that have html tags as key selectors and contain a child selector:
+ ```
+treehead > treerow > treecell {...}
+ ```
+ **Actions**:  Find selectors that have html tags as their key selectors; check whether these selectors contain a child selector
+ 
  
  
  
