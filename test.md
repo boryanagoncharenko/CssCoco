@@ -732,12 +732,13 @@ The next examples do not violate the convention:
 **Violations**:  Violation of this convention is a rule that contains all four properties: margin-top, margin-right, margin-bottom, margin-left.
 ```
 a {
-margin-top: 10px;
-margin-right: 15px;
-margin-bottom: 25px;
-margin-left: 15px;
+  margin-top: 10px;
+  margin-right: 15px;
+  margin-bottom: 25px;
+  margin-left: 15px;
 }
 ```  
+
 **Actions**: Find rulesets that contain all four properties in the list [margin-top, margin-right, margin-bottom, margin-left].  
  
 ---
@@ -750,7 +751,8 @@ a {
   padding-right: 15px;
   padding-bottom: 25px;
   padding-left: 15px;
-}```  
+}
+```  
 **Actions**: Find rulesets that contain all four properties in the list [padding-top, padding-right, padding-bottom, padding-left]  
 
 
