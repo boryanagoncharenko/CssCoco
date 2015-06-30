@@ -1,4 +1,4 @@
----
+
  **Description**: When possible, use em instead of pix   
  **Source**: [phpied](http://www.phpied.com/css-coding-conventions/)  
  **Violations**: Usage of unit with value px. For example, the snippet `font-size: 12pt;` is a violation. The snippet `font-size: 1em;` does not violate the convention.  
@@ -133,6 +133,7 @@ font-size: 1.5rem;
     margin: 10px;
 }
  ```
+
  **Actions**:  Recognize rulesets, declarations with specific properties and value in a given form; find rulesets containing a declaration with property display and value that matches the form table-\*; check if it contains a declaration with any of the properties in the list [margin, margin-top, margin-right, margin-bottom, margin-left].     
 ---
 **Description**: Disallow duplicate properties (rule 1)    
@@ -253,7 +254,9 @@ Note that the rule does not refer to class selectors connected using the descend
     text-indent: -999em;
 }
 ```
+
  **Actions**:  Find declarations with property text-indent and negative value; check whether the rule that holds them also contains a declaration of direction with value ltr.  
+
 ---
 **Description**: Require standard property with vendor prefix    
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
@@ -323,10 +326,7 @@ The implementation provided by CSS lint does not have much in common with the de
 ```
 In conclusion, a violation occurs when a font-face rule does not contain a url with the suffix '?#iefix'. 
  **Actions**:  Find font-face statements; check they contain a url with the required suffix.  
- 
- 
- 
- 
+  
  ---
 **Description**: Don't use too many web fonts    
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
@@ -364,9 +364,6 @@ In conclusion, a violation occurs when a font-face rule does not contain a url w
 }
  ```
  **Actions**:  Find any of selectors following selectors: *=, |=, ^=, $=, ~=  
- 
- 
- 
  
  ---
 **Description**: Disallow the universal selector    
