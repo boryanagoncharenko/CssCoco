@@ -987,7 +987,7 @@ color: #FFF;
 **Actions**: Find declarations where the value is 'left' or 'right'; check if there is a comment of the form ' LTR ' following the declaration
 
 ---
-**Description**: Add the comment /* LTR */ on the same line where you specify the direction of the language to ltr.  
+**Description**: Add the comment /\* LTR \*/ on the same line where you specify the direction of the language to ltr.  
 **Source**: [Drupal](https://www.drupal.org/node/1887862)    
 **Violations**: Violations occur when there is not a /\* LTR \*/ comment following a declaration with property direction and value ltr.  
 **Actions**: Find declarations with property direction and value ltr; check if there is a comment of the form ' LTR ' following the declaration
