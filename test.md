@@ -133,8 +133,8 @@ font-size: 1.5rem;
     margin: 10px;
 }
  ```
+**Actions**:  Recognize rulesets, declarations with specific properties and value in a given form; find rulesets containing a declaration with property display and value that matches the form table-\*; check if it contains a declaration with any of the properties in the list [margin, margin-top, margin-right, margin-bottom, margin-left].     
 
- **Actions**:  Recognize rulesets, declarations with specific properties and value in a given form; find rulesets containing a declaration with property display and value that matches the form table-\*; check if it contains a declaration with any of the properties in the list [margin, margin-top, margin-right, margin-bottom, margin-left].     
 ---
 **Description**: Disallow duplicate properties (rule 1)    
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Disallow-duplicate-properties)  
