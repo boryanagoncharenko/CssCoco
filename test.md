@@ -327,5 +327,133 @@ In conclusion, a violation occurs when a font-face rule does not contain a url w
  
  
  
+ ---
+**Description**: Don't use too many web fonts    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**: A warning is issued when a stylesheet contains more than five @font-face declarations.
+ **Actions**:  Recognize @font-face declarations; count the occurrences of @font-face declarations; compare the number to a predefined value.  
+ 
+ ---
+**Description**: Disallow selectors that look like regular expressions    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**: Usage of any of the following attribute selectors: contains, starts with, ends with, word match, contains with dashes. Violations are:
+ ```
+ .mybox[class~=xxx]{
+    color: red;
+}
+.mybox[class^=xxx]{
+    color: red;
+}
+.mybox[class|=xxx]{
+    color: red;
+}
+.mybox[class$=xxx]{
+    color: red;
+}
+.mybox[class*=xxx]{
+    color: red;
+}
+ ```
+ The following two examples are not violations:
+ ```
+ .mybox[class=xxx]{
+    color: red;
+}
+.mybox[class]{
+    color: red;
+}
+ ```
+ **Actions**:  Find any of selectors following selectors: *=, |=, ^=, $=, ~=  
+ 
+ 
+ 
+ 
+ ---
+**Description**: Disallow the universal selector    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**: A warning is raised when the universal selector appears as the key simple-selector of a selector:
+ ```
+ * {
+    color: red;
+}
+.selected * {
+    color: red;
+}
+ ```
+ However, if the selector is not key, there is no violation:
+ ```
+ .selected * a {
+    color: red;
+}
+ ```
+ **Actions**:  Find universal selector that is also the key simple-selector of a selector.  
+ 
+ ---
+**Description**: Disallow unqualified attribute selectors    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**: The presence of an attribute selector as a key selector is considered a violation:
+ ```
+.selected [type=text] {
+    color: red;
+}
+.myclass[type=text] {
+    color: red;
+}
+ ```
+ However, if the selector is not key, there is no violation:
+ ```
+.selected [type=text] a {
+    color: red;
+}
+ ```
+ **Actions**:  Find attribute selector that is also the key simple-selector of a selector.  
+ 
+ ---
+**Description**: Disallow overqualified elements    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**: A violation occurs when an html tag and class name are used together. However, the cases when two different elements are found with the same class name are not considered violations.
+ ```
+/* violation */
+li.active { ... }
+
+/* OK */
+li.active { ... }
+p.active { ... }
+ ```
+ **Actions**:  Find tags that are immediate siblings of classes. Count the number of unique tags that quality each class. Check if the number is equal to 1.
+ 
+ ---
+**Description**: Avoid qualifying ID and class names with type selectors    
+ **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#Protocol)  
+ **Violations**:  Do not use element names in conjunction with IDs or classes. Sample violations include:
+ ```
+ul#example {}
+div.error {}
+ ```
+ The following snippets are not considered violations:
+ ```
+ #example {}
+.error {}
+ ```
+ **Actions**:  Find html tags that are immediate siblings of classes or ids.
+ 
+ ---
+**Description**: Disallow duplicate background images    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**:  The rule forbids the same URL for background image to be included twice in the stylesheet. Sample violations include:
+ ```
+.heart-icon {
+    background: url(sprite.png) -16px 0 no-repeat;
+}
+.task-icon {
+    background: url(sprite.png) -32px 0 no-repeat;
+}
+ ```
+ **Actions**:  Check whether the URL values in background declarations are unique
+ 
+ 
+ 
+ 
+ 
  
  
