@@ -751,3 +751,64 @@ padding-bottom: 25px;
 padding-left: 15px;
 }
  **Actions**:  Find rulesets that contain all four properties in the list [padding-top, padding-right, padding-bottom, padding-left]  
+
+
+  ---
+**Description**: Use the shorthand border property   
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)  
+ **Violations**:  Violation of this convention is a rule that contains any of the properties: border-top, border-right, border-bottom, border-left, border-color, border-style.
+```
+.box {
+  border-top: 1px;
+}
+```
+**Actions**:  Find rulesets that contain any of the properties on the list [border-top, border-right, border-bottom, border-left, border-color, border-style]  
+ 
+  ---
+**Description**: Use the shorthand font property   
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)  
+ **Violations**:  Violation of this convention is a rule that contains the two properties: font-size and font-family.
+```
+.box {
+  font-size: 18em;
+  font-family: Fantasy;
+}
+```
+**Actions**:  Find rulesets that contain the font-size and font-family properties  
+ 
+ ---
+**Description**: Use the shorthand list-style property   
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)  
+ **Violations**:  Violation of this convention is a rule that contains any of the three properties: list-style-type, list-style-position, list-style-image.
+```
+ul {
+ list-style-type: square;
+}
+```
+**Actions**:  Find rulesets that contain any of the properites in the list [list-style-type, list-style-position, list-style-image]
+ 
+ ---
+**Description**: Do not use units after zero values   
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862),[GitHub](http://primercss.io/guidelines/#css), [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**:  Violation occur when dimensions or percentages have 0 values:
+```
+.box { margin-top: 0px; }
+.mybox { margin-bottom: 0%; }
+```
+**Actions**:  Find dimensions and percentages that have 0 value
+ 
+ ---
+**Description**: Use px for font-size   
+ **Source**: [GitHub](http://primercss.io/guidelines/#css)  
+ **Violations**: Violations are font-size declarations that use units different than px: em, rem, cm etc.
+```
+font-size: 1.5em;
+```
+**Actions**:  Find font-size declarations that contain dimensions with units different than px
+ 
+ 
+ ---
+**Description**: Line height should be unit-less   
+ **Source**: [GitHub](http://primercss.io/guidelines/#css), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/) 
+ **Violations**: Violations are line-height that contain units.
+**Actions**:  Find line-height declarations that contain units.
