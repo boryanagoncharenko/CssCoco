@@ -1,7 +1,7 @@
 
  **Description**: When possible, use em instead of pix   
  **Source**: [phpied](http://www.phpied.com/css-coding-conventions/)  
- **Violations**: Usage of unit with value px. For example, the snippet `font-size: 12pt;` is a violation. The snippet `font-size: 1em;` does not violate the convention.  
+ **Violations**: Usage of unit with value px. For example, the snippet `font-size: 12px;` is a violation. The snippet `font-size: 1em;` does not violate the convention.  
  **Actions**:  Recognize units with value px  
  
 ---
@@ -19,20 +19,20 @@
 ---
  **Description**: Do not use id selectors  
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Disallow-IDs-in-selectors), [Realdeal](http://www.realdealmarketing.net/docs/css-coding-style.php)  
- **Violations**:  Both sources require a warning whenever an id is found. An example of violation are `.mybox #go;`, `#header a` and `#mybox`  
+ **Violations**:  Both sources require a warning whenever an id is found. Sample violations are `.mybox #go;`, `#header a` and `#mybox`  
  **Actions**:  Recognize usage of id selectors   
  
 ---
  **Description**: Disallow @import  
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Disallow-%40import), [Realdeal](http://www.realdealmarketing.net/docs/css-coding-style.php)  
- **Violations**:  Due to performance reasons, the usage of @import should be avoided. The following pattern is considered a warning `@import url(foo.css);`  
+ **Violations**:  Due to performance reasons, the usage of @import should be avoided. The following pattern is considered a violation `@import url(foo.css);`  
  **Actions**:  Find usage of @import statements   
 
 ---
  **Description**: If you must use an id selector (#selector) make sure that you have no more than one in your rule declaration    
  **Source**: [GitHub](http://primercss.io/guidelines/#css)  
- **Violations**:  The guideline states that if a selector contains an id, it should not contain any other simple-selecotrs. Thus, a rule like `#header .search #quicksearch { ... }` is a violation. Note however, that the convention does not apply to multi-selectors, i.e. the following css code is not a violation: `#header, #footer { ... }`  
- **Actions**:  Recognize selectors and ids; check if selectors with ids contain othe simple selectors  
+ **Violations**:  The guideline states that if a selector contains an id, it should not contain any other simple-selectors. Thus, a rule like `#header .search #quicksearch { ... }` is a violation. Note however, that the convention does not apply to multi-selectors, i.e. the following css code is not a violation: `#header, #footer { ... }`  
+ **Actions**:  Recognize selectors and ids; check if selectors with ids contain other simple selectors  
  
 ---
  **Description**: Use rem units preceded by px units for a safe fallback    
@@ -64,7 +64,7 @@ font-size: 1.5rem;
 ---
  **Description**: Beware of box model size (rule 1)   
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Disallow-IDs-in-selectors)  
- **Violations**: In case the ruleset contains the box-sizing property, no warnings are yielded. However, if it does not contain the property, a warning should be issued if the any of the following couples of properties are found:
+ **Violations**: In case the ruleset contains the box-sizing property, no warnings are yielded. However, if it does not contain the property, a warning should be issued if any of the following couples of properties are found:
  1. width, border
  2. width, border-left
  3. width, border-right
@@ -72,12 +72,12 @@ font-size: 1.5rem;
  5. width, padding-left
  6. width, padding-right
 
-**Actions**:  Find rulesets that does not contain the box-sizing property; check if they contain the property width and any of the properties in the list [border, border-left, border-right, padding, padding-left, padding-right].  
+**Actions**:  Find rulesets that do not contain the box-sizing property; check if they contain the property width and any of the properties in the list [border, border-left, border-right, padding, padding-left, padding-right].  
 
 ---
 **Description**: Beware of box model size (rule 2)   
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Disallow-IDs-in-selectors)  
- **Violations**: In case the ruleset contains the box-sizing property, no warnings are yielded. However, if it does not contain the property, a warning should be issued if the any of the following couples of properties are found:
+ **Violations**: In case the ruleset contains the box-sizing property, no warnings are yielded. However, if it does not contain the property, a warning should be issued if any of the following couples of properties are found:
  1. height, border
  2. height, border-top
  3. height, border-bottom
@@ -85,24 +85,24 @@ font-size: 1.5rem;
  5. height, padding-top
  6. height, padding-bottom
 
-**Actions**:  Find rulesets that does not contain the box-sizing property; check if they contain the property height and any of the properties in the list [border, border-top, border-bottom, padding, padding-top, padding-bottom].
+**Actions**:  Find rulesets that do not contain the box-sizing property; check if they contain the property height and any of the properties in the list [border, border-top, border-bottom, padding, padding-top, padding-bottom].
 
 ---
 **Description**: Require properties appropriate for display (rule 1)    
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Require-properties-appropriate-for-display)  
- **Violations**: A warning is issued when `display: inline` used with width, height, margin, margin-top, margin-bottom, and float. The following snippet is considered a violation:
+ **Violations**: A warning is issued when `display: inline` is used with width, height, margin, margin-top, margin-bottom, and float. The following snippet is considered a violation:
  ```
  .mybox {
     display: inline;
     height: 25px;
 }
  ```
- **Actions**:  Recognize rulesets, declarations with specific properties and values; find rulesets containing a declaration with property display and value inline; chech if they contain any of the properties on the list [width, height, margin, margin-top, margin-bottom, float]     
+ **Actions**:  Recognize rulesets, declarations with specific properties and values; find rulesets containing a declaration with property display and value inline; check if they contain any of the properties on the list [width, height, margin, margin-top, margin-bottom, float]     
 
 ---
 **Description**: Require properties appropriate for display (rule 2)    
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Require-properties-appropriate-for-display)  
- **Violations**: A warning is issued when a ruleset contains a declaration `display: inline-block` and a declaration with property float. The following snippet is considered a violation:display: 
+ **Violations**: A warning is issued when a ruleset contains a declaration `display: inline-block` and a declaration with property float. The following snippet is considered a violation:
  ```
  .mybox {
     display: inline-block;
@@ -114,7 +114,7 @@ font-size: 1.5rem;
 ---
 **Description**: Require properties appropriate for display (rule 3)    
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Require-properties-appropriate-for-display)  
- **Violations**: A warning is issued when a ruleset contains a declaration `display: block` and a declaration with property `vertical-align`. The following snippet is considered a violation:display: 
+ **Violations**: A warning is issued when a ruleset contains a declaration `display: block` and a declaration with property `vertical-align`. The following snippet is considered a violation: 
  ```
  .mybox {
     display: block;
@@ -126,7 +126,7 @@ font-size: 1.5rem;
  ---
 **Description**: Require properties appropriate for display (rule 4)    
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Require-properties-appropriate-for-display)  
- **Violations**: A warning is issued when a ruleset contains a declaration with property display and value in the form table-\* and also contains declaration with property margin, margin-top, margin-right, margin-bottom or margin-left. The following snippet is considered a violation: 
+ **Violations**: A warning is issued when a ruleset contains a declaration with property display and value in the form table-\* and also contains a declaration with property margin, margin-top, margin-right, margin-bottom or margin-left. The following snippet is considered a violation: 
  ```
  .mybox {
     display: table-cell;
@@ -172,7 +172,7 @@ In case at least one declaration is present, the ruleset does not violate the co
 ```
 .myclass { color: green; }
 ```
- **Actions**:  Recognize rulesets and declarations; determine whether a ruleset contains a declaration
+ **Actions**:  Recognize rulesets and declarations; determine whether a ruleset contains a declaration.
  
     
 ---
@@ -187,7 +187,7 @@ In case at least one declaration is present, the ruleset does not violate the co
 ```
 .myclass { color: green; }
 ```
- **Actions**:  Recognize rulesets and declarations; determine whether a ruleset contains a declaration  
+ **Actions**:  Recognize rulesets and declarations; determine whether a ruleset contains a declaration. 
 
 ---
 **Description**: Disallow adjoining classes    
@@ -207,7 +207,7 @@ Note that the rule does not refer to class selectors connected using the descend
     border: 1px solid black;
 }
 ```
- **Actions**:  Find two classes that are immediate siblings  
+ **Actions**:  Find two classes that are immediate next to each other.
 
 ---
 **Description**: Disallow the box-sizing property    
@@ -284,7 +284,7 @@ Note that there might be more than one vendor prefixes. In such cases the standa
  ---
 **Description**: Disallow the star hack    
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
- **Violations**: A warning is issued when a property is preceded with an asterisk.
+ **Violations**: A warning is issued when a property is preceded by an asterisk.
  ```
 .mybox {
     border: 1px solid black;
@@ -296,7 +296,7 @@ Note that there might be more than one vendor prefixes. In such cases the standa
  ---
 **Description**: Disallow the underscore hack    
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
- **Violations**: A warning is issued when a property is preceded with an underscore.
+ **Violations**: A warning is issued when a property is preceded by an underscore.
  ```
 .mybox {
     border: 1px solid black;
@@ -315,7 +315,7 @@ Note that there might be more than one vendor prefixes. In such cases the standa
     src: url('myfont-webfont.eot') format('embedded-opentype')
 }
 ```
-The implementation provided by CSS lint does not have much in common with the description. Testing shows that instead of ensuring that the first url has the required suffix, CSS lint checks in the font-face rule contains a url with the required suffix. In fact, the following CSS code avoids the mentioned bug, but does not comply with the definition of the rule.
+The implementation provided by CSS lint does not have much in common with the description. Testing shows that instead of ensuring that the first url has the required suffix, CSS lint checks if the font-face rule contains a url with the required suffix. In fact, the following CSS code avoids the mentioned bug, but does not comply with the definition of the rule.
 ```
 @font-face {
   font-family: 'MyWebFont';
@@ -363,7 +363,7 @@ In conclusion, a violation occurs when a font-face rule does not contain a url w
     color: red;
 }
  ```
- **Actions**:  Find any of selectors following selectors: *=, |=, ^=, $=, ~=  
+ **Actions**:  Find any of the following selectors: *=, |=, ^=, $=, ~=  
  
  ---
 **Description**: Disallow the universal selector    
@@ -417,7 +417,7 @@ li.active { ... }
 li.active { ... }
 p.active { ... }
  ```
- **Actions**:  Find tags that are immediate siblings of classes. Count the number of unique tags that quality each class. Check if the number is equal to 1.
+ **Actions**:  Find html tags used in conjunction with classes. Count the number of unique tags that qualify each class. Check if the number is equal to 1.
  
  ---
 **Description**: Avoid qualifying ID and class names with type selectors    
@@ -432,12 +432,12 @@ div.error {}
  #example {}
 .error {}
  ```
- **Actions**:  Find html tags that are immediate siblings of classes or ids.
+ **Actions**:  Find html tags used in conjunction with classes or ids.
  
  ---
 **Description**: Disallow duplicate background images    
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
- **Violations**:  The rule forbids the same URL for background image to be included twice in the stylesheet. Sample violations include:
+ **Violations**:  The rule forbids the same url for background image to be included twice in the stylesheet. Sample violations include:
  ```
 .heart-icon {
     background: url(sprite.png) -16px 0 no-repeat;
@@ -446,20 +446,20 @@ div.error {}
     background: url(sprite.png) -32px 0 no-repeat;
 }
  ```
- **Actions**:  Check whether the URL values in background declarations are unique
+ **Actions**:  Check whether the url values in background declarations are unique.
  
  ---
 **Description**: Disallow too many floats    
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
- **Violations**:  Violations of this convention occur when a stylesheet contains more than 10 declarations of float
- **Actions**:  Count the number of occurrences of float; compare the number to 10
+ **Violations**:  Violations of this convention occur when a stylesheet contains more than 10 declarations of the float property.
+ **Actions**:  Count the number of occurrences of float; compare the number to 10.
  
  ---
 **Description**: Don't use too many font size declarations    
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
  **Violations**:  Violations of this convention occur when a stylesheet contains more than 10 declarations of font-size.
  Note that the implementation provided by CSS lint takes into consideration only font-size declarations. Font declarations are disregarded.
- **Actions**:  Count the number of occurrences of font-size; compare the number to 10
+ **Actions**:  Count the number of occurrences of font-size; compare the number to 10.
  
 ---
 **Description**: Disallow outline:none (rule 1)    
@@ -473,8 +473,8 @@ a {
     outline: 0;
 }
  ```
- Note that the implementation provided by CSS lint takes into consideration the presence of the :focus pseudo selector anywhere in the selector. Thus, a rule `a:focus p` does not yield a warning. Also, CSS lint does not check multiselectors. The rule `a:focus, p` is considered OK, which is obivously wrong.
- **Actions**:  Find rulesets that contain declaration with specific property and value; check if the selector of the ruleset contains the :focus pseudoselector.
+ Note that the implementation provided by CSS lint takes into consideration the presence of the :focus pseudo selector anywhere in the selector. Thus, a rule `a:focus p` does not yield a warning. Also, CSS lint does not check multiselectors. The rule `a:focus, p` is considered OK, which is obviously wrong.
+ **Actions**:  Find rulesets that contain declaration with specific property and value; check if the selector of the ruleset contains the :focus pseudo selector.
  
  ---
 **Description**: Disallow outline:none (rule 2)    
@@ -485,12 +485,12 @@ a:focus {
     outline: 0;
 }
  ```
- **Actions**:  Find rulesets that contain declaration with specific property and value and the :focus pseudoselector; check they contain more than one declaration.
+ **Actions**:  Find rulesets that contain declaration with specific property and value and the :focus pseudo selector; check they contain more than one declaration.
  
  ---
 **Description**: Disallow qualified headings    
  **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
- **Violations**:  Violations of this convention occur when a ruleset contains a selector where the heading element is key and the selector contains more simple-selectors.
+ **Violations**:  Violations of this convention occur when a ruleset contains a selector where the heading element is key and the selector contains more simple-selectors. Sample violations:
  ```
 .box h3 {
     font-weight: normal;
@@ -505,7 +505,7 @@ h3 {
     font-weight: normal;
 }
 ```
- **Actions**:  Find selectors that have html tags as key selectors; check whether the selectors contain other simple selectors
+ **Actions**:  Find selectors that have heading tags as key selectors; check whether the selectors contain other simple selectors
  
  ---
 **Description**: Headings should only be defined once    
@@ -528,11 +528,11 @@ h3:hover {
     font-weight: bold;
 }
 ```
-Note that CSS lint simply disregards the headings with pseudoselectors. Repeating the h3:hover selector in multiple rules does not yield a warning.
- **Actions**:  Find key selectors that contain headings and do not contain pseudoselectors; check if two key-selectors contain the same heading.
+Note that CSS lint simply disregards the headings with pseudo selectors. Repeating the h3:hover selector in multiple rules does not yield a warning.
+ **Actions**:  Find key selectors that contain headings and do not contain pseudo selectors; check if two key-selectors contain the same heading.
  
  ---
-**Description**: Headings should only be defined once    
+**Description**: Require a fallback property for background-image declarations that use gradients    
  **Source**: [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important)  
  **Violations**:  A violation occurs when a declaration of background-image uses a gradient value does not have a fallback declaration of background-color.
  ```
@@ -548,7 +548,7 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
  ---
 **Description**: Strings should use double quotes    
  **Source**: [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Drupal](https://www.drupal.org/node/1887862), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
- **Violations**:  Violations of this convention occur when string uses single quotes:
+ **Violations**:  Violations of this convention occur when a string uses single quotes:
  ```
  font-family: "Arial Black"
  ```
@@ -567,7 +567,7 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
  ---
 **Description**: Use double quotation marks in charsets    
  **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)  
- **Violations**:  Using single quotes in charset is illegal according to CSS rules. Since the convention describes an anti-pattern, its violations occur when single quotes are using in a charset:
+ **Violations**:  Using single quotes in charset is illegal according to CSS rules. Since the convention describes an anti-pattern, its violations occur when single quotes are used in a charset:
  ```
  @charset 'UTF-8';
  ```
@@ -578,18 +578,18 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
  **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)  
  **Violations**:  Violations occur when values contain strings that use double quotes:
  ```
- font-family: "Arial Black";
+ font-family: "Verdana";
  ```
- **Actions**:  Find strings in values; check if they use double quotes
+ **Actions**:  Find strings in values; check if they use double quotes.
  
   ---
-**Description**: Font names with spaces must surrounded by double quotes    
+**Description**: Font names with spaces must be surrounded by double quotes    
  **Source**: [WordPress](https://make.wordpress.org/core/handbook/coding-standards/css/) 
  **Violations**:  Font names appear in font or font-family declarations. Thus, a violation of this convention is a single-quote string that appears as a value of either of the declarations:
  ```
  font-family: 'Arial Black';
  ```
- **Actions**:  Find strings in values of declarations with properties 'font-family' or 'font'; check if they use single quotes
+ **Actions**:  Find strings in values of declarations with properties 'font-family' or 'font'; check if they use single quotes.
 
  ---
 **Description**: Do not use over-qualified selectors    
@@ -598,7 +598,7 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
  ```
  div.container
  ```
- **Actions**:  Find html tags that are immediate siblings of a class or an id
+ **Actions**:  Find html tags used in conjunction with a class or an id.
  
  ---
 **Description**: Don’t qualify ID rules with tag names or classes    
@@ -608,16 +608,16 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
 button#backButton {…}
 .menu-left#newMenuIcon {…}
  ```
- **Actions**:  Find an id that is also a key selector; check if the previous sibling is an html tag
+ **Actions**:  Find an id that is also a key selector; check if the previous sibling is an html tag.
  
  ---
 **Description**: Don’t qualify class rules with tag names or classes    
  **Source**: [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS)  
- **Violations**:  The convention states that if a rule has an class selector as its key selector, tags should not be added to the rule. Violations include:
+ **Violations**:  The convention states that if a rule has a class selector as its key selector, tags should not be added to the rule. Violations include:
  ```
 treecell.indented {…}
  ```
- **Actions**:  Find a class that is also a key selector; check if the previous sibling is an html tag
+ **Actions**:  Find a class that is also a key selector; check if the previous sibling is an html tag.
  
  ---
 **Description**: Use the most specific category possible    
@@ -626,7 +626,7 @@ treecell.indented {…}
  ```
 treeitem[mailfolder="true"] > treerow > treecell {…}
  ```
- **Actions**:  Find html tags that are also key selectors
+ **Actions**:  Find html tags that are also key selectors.
  
  ---
 **Description**: Avoid the descendant selector    
@@ -635,7 +635,7 @@ treeitem[mailfolder="true"] > treerow > treecell {…}
  ```
 treehead treerow treecell {...}
  ```
- **Actions**:  Find descendant selector
+ **Actions**:  Find descendant selector.
  
   ---
 **Description**: Avoid using the child selector with tag category rules    
@@ -644,7 +644,7 @@ treehead treerow treecell {...}
  ```
 treehead > treerow > treecell {...}
  ```
- **Actions**:  Find selectors that have html tags as their key selectors; check whether these selectors contain a child selector
+ **Actions**:  Find selectors that have html tags as their key selectors; check whether these selectors contain a child selector.
  
  ---
 **Description**: Question all usages of the child selector    
@@ -653,7 +653,7 @@ treehead > treerow > treecell {...}
  ```
 treeitem[IsImapServer="true"] > treerow > .tree-folderpane-icon {…}
  ```
- **Actions**:  Find child selector
+ **Actions**:  Find child selectors.
  
   ---
 **Description**: Avoid vendor-specific features unless necessary    
@@ -663,19 +663,19 @@ treeitem[IsImapServer="true"] > treerow > .tree-folderpane-icon {…}
 -webkit-border-radius
 -moz-border-radius
  ```
- **Actions**:  Find properties that are vendor-prefixed  
+ **Actions**:  Find properties that are vendor-prefixed.  
  
  ---
 **Description**: Put a semicolon at the end of each declaration  
  **Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [CSSguidelines](http://cssguidelin.es/#introduction)  
- **Violations**:  CSS allows the delimiter after the last declaration of a rule to be omitted. Since this can cause maintainability issues, the contanion requires the delimiter after the last declaration to be present. Violations occur when the last declaration of a rule does not have a following delimiter.
+ **Violations**:  CSS allows the delimiter after the last declaration of a rule to be omitted. Since this can cause maintainability issues, the convention requires the delimiter after the last declaration to be present. Violations occur when the last declaration of a rule does not have a following delimiter.
  ```
 .myclass{
   color: red;
   font-family: "Arial Black"
 }
  ```
- **Actions**:  Find the last declaration of a ruleset; check if there is a declaration delimiter after it
+ **Actions**:  Find the last declaration of a ruleset; check if there is a declaration delimiter after it.
  
   ---
 **Description**: Do not use shorthand properties, except border    
@@ -686,11 +686,11 @@ treeitem[IsImapServer="true"] > treerow > .tree-folderpane-icon {…}
  ---
 **Description**: Do not put quotes in uri values    
  **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important)   
- **Violations**:  A warning should be issued when the value of a URL is of type string:
+ **Violations**:  A warning should be issued when the value of a url is of type string:
  ```
  url("//www.google.com/css/maia.css")
  ```
- **Actions**:  Find url values; check if their type is string
+ **Actions**:  Find url values; check if their type is string.
  
  ---
 **Description**: Use hex or rgba() for colors    
@@ -700,21 +700,21 @@ treeitem[IsImapServer="true"] > treerow > .tree-folderpane-icon {…}
  color: red;
  color: rgb(50, 100, 150)
  ```
- **Actions**:  Find color-names, rgb, hsl, or hsla  
+ **Actions**:  Find values that are color-names, rgb, hsl, or hsla.  
  
  ---
-**Description**: Use rgba only when opacity is needed    
+**Description**: Use rgba only when opacity is needed.   
  **Source**: [GitHub](http://primercss.io/guidelines/#css), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
  **Violations**:  Violations are usages of rgba() with last argument equal to 1:
  ```
  background-color: rgba(255, 0, 0, 1);
  ```
- **Actions**:  Find rgba() values with opacity equal to 1  
+ **Actions**:  Find rgba() values with opacity equal to 1.  
  
  ---
-**Description**: Use short hex    
+**Description**: Use short hexadecimal values   
  **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862)  
- **Violations**:  Presence of hex that is long and could be shortened. Long hex values contain 6 hexadecimal characters and short - 3 characters. Long hex values that could be shortened match the format #rrggbb. For example, the following two values are violations:
+ **Violations**:  Presence of a hex value that is long and could be shortened. Long hex values contain 6 hexadecimal characters and short - 3 characters. Long hex values that could be shortened match the format #rrggbb. Sample violations:
 ```
 #99EE11;
 #ffffff;
@@ -724,7 +724,7 @@ The next examples do not violate the convention:
 #fff;
 #E9E9E9
 ```
- **Actions**:  Find hex values that match the format #rrggbb  
+ **Actions**:  Find hex values that match the format #rrggbb.  
  
  ---
 **Description**: Use the shorthand margin property    
@@ -737,7 +737,7 @@ margin-right: 15px;
 margin-bottom: 25px;
 margin-left: 15px;
 }
- **Actions**:  Find rulesets that contain all four properties in the list [margin-top, margin-right, margin-bottom, margin-left]  
+ **Actions**:  Find rulesets that contain all four properties in the list [margin-top, margin-right, margin-bottom, margin-left].  
  
   ---
  **Description**: Use the shorthand padding property    
@@ -762,7 +762,7 @@ padding-left: 15px;
   border-top: 1px;
 }
 ```
-**Actions**:  Find rulesets that contain any of the properties on the list [border-top, border-right, border-bottom, border-left, border-color, border-style]  
+**Actions**:  Find rulesets that contain any of the properties in the list [border-top, border-right, border-bottom, border-left, border-color, border-style]. 
  
   ---
 **Description**: Use the shorthand font property   
@@ -774,7 +774,7 @@ padding-left: 15px;
   font-family: Fantasy;
 }
 ```
-**Actions**:  Find rulesets that contain the font-size and font-family properties  
+**Actions**:  Find rulesets that contain the font-size and font-family properties.  
  
  ---
 **Description**: Use the shorthand list-style property   
@@ -785,7 +785,7 @@ ul {
  list-style-type: square;
 }
 ```
-**Actions**:  Find rulesets that contain any of the properites in the list [list-style-type, list-style-position, list-style-image]
+**Actions**:  Find rulesets that contain any of the properties in the list [list-style-type, list-style-position, list-style-image]
  
  ---
 **Description**: Do not use units after zero values   
@@ -795,7 +795,7 @@ ul {
 .box { margin-top: 0px; }
 .mybox { margin-bottom: 0%; }
 ```
-**Actions**:  Find dimensions and percentages that have 0 value
+**Actions**:  Find dimensions and percentages that have 0 value.
  
  ---
 **Description**: Use px for font-size   
@@ -804,15 +804,13 @@ ul {
 ```
 font-size: 1.5em;
 ```
-**Actions**:  Find font-size declarations that contain dimensions with units different than px
- 
+**Actions**:  Find font-size declarations that contain dimensions with units different than px.
  
  ---
 **Description**: Line height should be unit-less   
  **Source**: [GitHub](http://primercss.io/guidelines/#css), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/) 
  **Violations**: Violations are line-height that contain units.
 **Actions**:  Find line-height declarations that contain units.
-
 
  ---
 **Description**: Use a leading zero for decimal values   
