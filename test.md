@@ -1033,7 +1033,7 @@ color: #FFF;
 **Actions**:  Find rulesets; check if their selector is vertically aligned with the closing bracket of the declaration block
 
 ---
-**Description**: Align verticlaly vendor properties
+**Description**: Align vertically vendor properties
  **Source**: [CSSguidelines](http://cssguidelin.es/#introduction)    
  **Violations**: Violations occur when vendor-prefixed properties are not right-aligned:
  ```
@@ -1044,4 +1044,192 @@ color: #FFF;
 }
  ```
 **Actions**:  Find consecutive declarations that belong to the same standard property group; check if the declarations are aligned to the right
+
+
+---
+**Description**: Align vertically the values of adjacent properties that belong to the same logical group: top bottom left right, margin\*, padding\*.
+ **Source**: [CSSguidelines](http://cssguidelin.es/#introduction)  
+ **Violations**: Violations occur when values of related properties are not vertically aligned to the left:
+```
+.bar { 
+    margin-right: -10px;
+    margin-left: -10px;
+    padding-right: 10px;
+    padding-left:  10px;
+}
+```
+This is the correct alignment:
+```
+.bar { 
+    margin-right: -10px;
+    margin-left:  -10px;
+    padding-right: 10px;
+    padding-left:  10px;
+}
+```
+**Actions**:  Find related properties; check if their values are vertically aligned
+
+---
+**Description**: Align vertically vendor-specific values
+ **Source**: [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important)  
+ **Violations**: Violations occur when vendor specific values are not aligned vertically to the right:
+```
+.foo {
+	background-image: linear-gradient(top, #444444, #999999);
+	background-image: -o-linear-gradient(top, #444444, #999999);
+	background-image: -moz-linear-gradient(top, #444444, #999999);
+	background-image: -webkit-linear-gradient(top, #444444, #999999);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#999999));
+}
+```
+This is the correct alignment:
+```
+.foo {
+	background-color: #444444;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#999999));
+	background-image: -webkit-linear-gradient(      top, #444444, #999999);
+	background-image:    -moz-linear-gradient(      top, #444444, #999999);
+	background-image:      -o-linear-gradient(      top, #444444, #999999);
+	background-image:         linear-gradient(to bottom, #444444, #999999);
+}
+```
+**Actions**:  Find related vendor-speicifc values; check if they are vertically aligned
+ 
+---
+**Description**: Indent multiline selectors
+ **Source**: [Realdeal](http://www.realdealmarketing.net/docs/css-coding-style.php)   
+ **Violations**: Violations occur if the all but the first selectors in a multiline selector are not indented once, compared to the first selector:
+```
+.class1,
+	class2,
+	class3,
+	class4 { font-size: 80%; }
+.otherClass { font-size: 2em; }
+```
+**Actions**:  Find all but the first selectors in a multiline selectors; check if they are indented once compared to the first selector 
+
+---
+**Description**: Rulesets in media queries should be indented once
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Drupal](https://www.drupal.org/node/1887862)   
+ **Violations**: Violations occur when rulesets in metia atrules are not indented once:
+```
+@media all and (max-width: 699px) and (min-width: 520px) {
+    .class { ... }
+}
+```
+**Actions**:  Find rulesets that are nested in media queries; check if they are indented once compared to the media atrule
+
+---
+**Description**: Comments should be indented with the thing they describe
+ **Source**: [Drupal](https://www.drupal.org/node/1887862)   
+ **Violations**: Violations occur when a comment is not indented with the declaration it describes:
+```
+/* a fix */
+   color: red !important;
+```
+**Actions**:  Find comments that appear before a declaration; check if they are vertically aligned with the declaration after them
+
+---
+**Description**: Add one blank line between rulesets
+ **Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction)     
+ **Violations**: Violations occurs when there is not exatly one blank line between rulesets:
+```
+a { ... }
+b { ... } /* no blank line */
+
+
+c { ... } /* two blank lines instead of one */
+```
+**Actions**:  Find two adjacent rulesets; check if there is not an empty line between them
+
+---
+**Description**: Single-line rules may appear on adjacent lines
+ **Source**: [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [CSSguidelines](http://cssguidelin.es/#introduction)     
+ **Violations**: Note that this convention relaxes the constraints of the previous convention. It states that in specific circumstances, there might not be a new line. Its violations are the cases in which single-line rules appear on the same line or have more than one blank line between them:
+```
+a { property: value; } b { property: value; } /* same line */
+
+
+c { property: value; } /* two blank lines instead of one */
+```
+**Actions**:  Find two adjacent rulesets that contain a single declaration; check if there is a '\n' or a '\n\n'. 
+
+---
+**Description**: No space before the colon
+ **Source**: [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Drupal](https://www.drupal.org/node/1887862)     
+ **Violations**: Violations occur when there is a space between the property and the colon of a declaration:
+```
+color : red;
+```
+**Actions**:  Find properties; check if there is a space immediately after them 
+
+---
+**Description**: Put one space after colons
+ **Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction)      
+ **Violations**: Violations occur when a there is not a space after the colon of a declaration:
+```
+color:red;
+```
+**Actions**:  Find colons in declarations; check if there is a space immediately after them
+
+---
+**Description**: Put one space between the last selector and the block
+ **Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction)      
+ **Violations**: Violations occur when a there is not a space after the colon of a declaration or if there is more than one space:
+```
+a{ ... }
+a   { ... }
+```
+**Actions**:  Find selectors followed by declaration blocks; check if there is not exactly one space between them
+
+---
+**Description**: Opening brace must be on the same line as the last selector
+ **Source**: [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important)      
+ **Violations**: This convention is slightly less restrictive than the previous one. While the former guideline requires exactly one space, the current convention disallows the usage of newlines:
+```
+a
+{ ... }
+```
+**Actions**:  Find selectors followed by declaration blocks; check if there is a newline between them
+
+---
+**Description**: Put the first declaration on a newline after the opening curly brace
+ **Source**: [CSSguidelines](http://cssguidelin.es/#introduction)       
+ **Violations**: Violations occur when the first declaration does not appear on the next line:
+```
+a { color: red; }
+
+a { 
+
+color: red; 
+
+}
+```
+**Actions**:  Find the opening brace of a declaration block and the first declaration of a block; check if the \n symbols between them are not equal to 1
+
+---
+**Description**: One selector per line
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction)         
+ **Violations**: Violations occur if adjacent selectors of a multiselector do not appear on adjacent lines:
+```
+h1, h2, h3 { ... }
+
+h1,
+
+h2 { ... }
+```
+**Actions**:  Find adjacent selectors in a multiselector; check if there is one \n symbol between them
+
+---
+**Description**: Properties and values should be on the same line
+ **Source**: [CSSguidelines](http://cssguidelin.es/#introduction)         
+ **Violations**: Violations occur a declaration appears on more than one line:
+```
+margin: 0px,
+        20px,
+        0px,
+        10px;
+```
+**Actions**:  Find declarations; check if contain \n symbol
+
 
