@@ -556,7 +556,7 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
  
 ---
 **Description**: Use single quotation marks for attribute selectors.  
-**Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Drupal](https://www.drupal.org/node/1887862), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
+**Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Drupal](https://www.drupal.org/node/1887862), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [ss64](http://ss64.com/css/syntax-naming.html)  
 **Violations**:  The convention refers to the values of attribute selectors. According to the [CSS specification](http://www.w3.org/TR/css3-selectors/#attribute-selectors), the values of attribute selectors can be CSS identifiers or strings. This the possible violations of this convention includes 1) using double quotes or 2) not using quotes at all:
  ```
  span[class=example]
@@ -667,7 +667,7 @@ treeitem[IsImapServer="true"] > treerow > .tree-folderpane-icon {…}
  
 ---
 **Description**: Put a semicolon at the end of each declaration  
-**Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [CSSguidelines](http://cssguidelin.es/#introduction)  
+**Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [CSSguidelines](http://cssguidelin.es/#introduction), [ss64](http://ss64.com/css/syntax-naming.html), [cbracco](https://github.com/cbracco/css-conventions), (Morshed)[http://www.morshed-alam.com/2010/01/css-coding-guidelinesconventions.html]  
 **Violations**:  CSS allows the delimiter after the last declaration of a rule to be omitted. Since this can cause maintainability issues, the convention requires the delimiter after the last declaration to be present. Violations occur when the last declaration of a rule does not have a following delimiter.
  ```
 .myclass{
@@ -679,7 +679,7 @@ treeitem[IsImapServer="true"] > treerow > .tree-folderpane-icon {…}
  
 ---
 **Description**: Do not use shorthand properties, except border.  
-**Source**: [phpied](http://www.phpied.com/css-coding-conventions/)  
+**Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [LiquidContract](http://wiki.liquid-contact.com/index.php?title=CSS_Coding_Conventions#Introduction)  
 **Violations**:  A warning should be issued when any of the properties are encountered: margin, padding, background, font, list-style, transition  
 **Actions**: Find properties that match the list [margin, padding, backgruond, font, list-style, transition]  
  
@@ -835,7 +835,7 @@ font-size: 1.5em;
 
 ---
 **Description**: Avoid presentation-specific words in selector names.   
-**Source**: [phpied](http://www.phpied.com/css-coding-conventions/)  
+**Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [ss64](http://ss64.com/css/syntax-naming.html), (Morshed)[http://www.morshed-alam.com/2010/01/css-coding-guidelinesconventions.html]  
 **Violations**: Violations occur when a word in an id or a class has presentation meaning. Although such violations are very hard to detect, one approach is to check whether the word is a color or belongs to a predefined list of forbidden words.
 ```
 .blue { ... }
@@ -861,7 +861,7 @@ The following two examples are not considered violations:
 
 ---
 **Description**: Id and class names should be lowercase and separated by dashes.  
-**Source**: [phpied](http://www.phpied.com/css-coding-conventions/),[Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [CSSguidelines](http://cssguidelin.es/#introduction)   
+**Source**: [phpied](http://www.phpied.com/css-coding-conventions/),[Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [CSSguidelines](http://cssguidelin.es/#introduction), [LiquidContract](http://wiki.liquid-contact.com/index.php?title=CSS_Coding_Conventions#Introduction), [ss64](http://ss64.com/css/syntax-naming.html)   
 **Violations**: Violations occur when an id or a class contains a symbol other than dashes and lowercase letters.
 ```
 .Prod { ... }
@@ -871,7 +871,7 @@ The following two examples are not considered violations:
 
 ---
 **Description**: Require id and class names to be lowercase  
-**Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)  
+**Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [cbracco](https://github.com/cbracco/css-conventions), (Morshed)[http://www.morshed-alam.com/2010/01/css-coding-guidelinesconventions.html]  
 **Violations**: Violations occur when an id or a class contains an uppercase letter.
 ```
 .Prod_rule { ... }
@@ -924,7 +924,7 @@ color: red;
 
 ---
 **Description**: HTML elements should be lowercase.  
-**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css)  
+**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [cbracco](https://github.com/cbracco/css-conventions)  
 **Violations**: Violations occur when an html tag contains uppercase letters:
 ```
 H1 { ... };
@@ -933,7 +933,7 @@ H1 { ... };
 
 ---
 **Description**: Attributes should be lowercase.  
-**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css)  
+**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [cbracco](https://github.com/cbracco/css-conventions)  
 **Violations**: Violations occur when an attribute contains uppercase letters:
 ```
 [PROP] { ... };
@@ -942,7 +942,7 @@ H1 { ... };
 
 ---
 **Description**: Attributes values should be lowercase.  
-**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css)  
+**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [cbracco](https://github.com/cbracco/css-conventions)  
 **Violations**: Violations occur when an attribute value contains uppercase letters:
 ```
 [property='VALUE'] { ... };
@@ -951,7 +951,7 @@ H1 { ... };
 
 ---
 **Description**: Values should be lowercase, except for strings.  
-**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css)  
+**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [cbracco](https://github.com/cbracco/css-conventions)  
 **Violations**: Violations occur when a property value other than a string contains uppercase letters:
 ```
 color: RED;
@@ -970,7 +970,7 @@ margin-top: 3PX;
 
 ---
 **Description**: Hexadecimal values should be lowercase.  
-**Source**: [Drupal](https://www.drupal.org/node/1887862)  
+**Source**: [Drupal](https://www.drupal.org/node/1887862), [ss64](http://ss64.com/css/syntax-naming.html), [Idiomatic CSS](https://github.com/necolas/idiomatic-css)  
 **Violations**: Violations occur when a hexadecimal value contains uppercase letters:
 ```
 color: #FFF;
@@ -979,7 +979,7 @@ color: #FFF;
 
 ---
 **Description**: Put a table of contents at the beginning of every file.  
-**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [CSSguidelines](http://cssguidelin.es/#introduction)    
+**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [CSSguidelines](http://cssguidelin.es/#introduction), [cbracco](https://github.com/cbracco/css-conventions)    
 **Violations**: Violations occur when the stylesheet does not start with a comment.  
 **Actions**: Check if the first element of the file is a comment
 
@@ -997,7 +997,7 @@ color: #FFF;
 
 ---
 **Description**: Use 4 spaces for indentation.  
-**Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css)    
+**Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css), [LiquidContract](http://wiki.liquid-contact.com/index.php?title=CSS_Coding_Conventions#Introduction), [ss64](http://ss64.com/css/syntax-naming.html), [cbracco](https://github.com/cbracco/css-conventions)    
 **Violations**: Violations occur when line indentation contains other than spaces or the number of spaces is not a multiple of 4.  
 **Actions**: Find indentation of a line; check if it contains only spaces; check if the number of spaces is a multiple of the specific value
 
@@ -1021,7 +1021,7 @@ color: #FFF;
 
 ---
 **Description**: Closing curly bracket of a block has to be indented with the selector of the rule.  
-**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important),  [Drupal](https://www.drupal.org/node/1887862)    
+**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Drupal](https://www.drupal.org/node/1887862), [LiquidContract](http://wiki.liquid-contact.com/index.php?title=CSS_Coding_Conventions#Introduction), [ss64](http://ss64.com/css/syntax-naming.html), [cbracco](https://github.com/cbracco/css-conventions)    
 **Violations**: Violations occur when the closing bracket is not vertically indented with the beginning of the first selector of the corresponding rule
  ```
  selector {
@@ -1032,7 +1032,7 @@ color: #FFF;
 
 ---
 **Description**: Align vertically vendor properties.  
-**Source**: [CSSguidelines](http://cssguidelin.es/#introduction)    
+**Source**: [CSSguidelines](http://cssguidelin.es/#introduction), [ss64](http://ss64.com/css/syntax-naming.html), [cbracco](https://github.com/cbracco/css-conventions)    
 **Violations**: Violations occur when vendor-prefixed properties are not right-aligned:
  ```
 .foo {
@@ -1128,7 +1128,7 @@ This is the correct alignment:
 
 ---
 **Description**: Add one blank line between rulesets.  
-**Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction)     
+**Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction), [cbracco](https://github.com/cbracco/css-conventions)     
 **Violations**: Violations occurs when there is not exactly one blank line between rulesets:
 ```
 a { ... }
@@ -1162,7 +1162,7 @@ color : red;
 
 ---
 **Description**: Put one space after colons.  
-**Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction)      
+**Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction), [LiquidContract](http://wiki.liquid-contact.com/index.php?title=CSS_Coding_Conventions#Introduction), (Morshed)[http://www.morshed-alam.com/2010/01/css-coding-guidelinesconventions.html]      
 **Violations**: Violations occur when a there is not a space after the colon of a declaration:
 ```
 color:red;
@@ -1171,7 +1171,7 @@ color:red;
 
 ---
 **Description**: Put one space between the last selector and the block.  
-**Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction)      
+**Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction), [LiquidContract](http://wiki.liquid-contact.com/index.php?title=CSS_Coding_Conventions#Introduction), [ss64](http://ss64.com/css/syntax-naming.html), [cbracco](https://github.com/cbracco/css-conventions)      
 **Violations**: Violations occur when (1) there is not a space after the colon of a declaration or (2) there is more than one space after the colon:
 ```
 a{ ... }
@@ -1181,7 +1181,7 @@ a   { ... }
 
 ---
 **Description**: Opening brace must be on the same line as the last selector.  
-**Source**: [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important)      
+**Source**: [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [LiquidContract](http://wiki.liquid-contact.com/index.php?title=CSS_Coding_Conventions#Introduction), (Morshed)[http://www.morshed-alam.com/2010/01/css-coding-guidelinesconventions.html]      
 **Violations**: This convention is slightly less restrictive than the previous one. While the former guideline requires exactly one space, the current convention disallows the usage of newlines:
 ```
 a
@@ -1206,7 +1206,7 @@ color: red;
 
 ---
 **Description**: One selector per line.  
-**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction)         
+**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction), [cbracco](https://github.com/cbracco/css-conventions)         
 **Violations**: Violations occur if adjacent selectors of a multiselector do not appear on adjacent lines:
 ```
 h1, h2, h3 { ... }
@@ -1231,7 +1231,7 @@ margin: 0px
 
 ---
 **Description**: Put every declaration on a new line  
-**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction)         
+**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction), [LiquidContract](http://wiki.liquid-contact.com/index.php?title=CSS_Coding_Conventions#Introduction), [ss64](http://ss64.com/css/syntax-naming.html), [cbracco](https://github.com/cbracco/css-conventions)         
 **Violations**: Violations occur when declarations occur on the same line:
 ```
 margin-left: 10px; margin-right: 10px;
@@ -1250,7 +1250,7 @@ a {
 
 ---
 **Description**: For short styles you can use one-liners.  
-**Source**: [Realdeal](http://www.realdealmarketing.net/docs/css-coding-style.php), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction)         
+**Source**: [Realdeal](http://www.realdealmarketing.net/docs/css-coding-style.php), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction), [cbracco](https://github.com/cbracco/css-conventions)         
 **Violations**: This convention relaxes the constaints of a number of conventions. It states that if a ruleset contains a single declaration, it may appear in the form `selector { property: value; }`:
 ```
 ul { margin: 10px 20px; }
@@ -1276,8 +1276,8 @@ rgb(100, 100, 100 );
 **Actions**: Find ')' symbol; check if there is a space before it
 
 ---
-**Description**: Multiple csvalues should be separated by a space  
-**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/),[Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Drupal](https://www.drupal.org/node/1887862)   
+**Description**: Multiple csv values should be separated by a space  
+**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/),[Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Drupal](https://www.drupal.org/node/1887862), [ss64](http://ss64.com/css/syntax-naming.html)   
 **Violations**: Violations occur when there is not a space after the csv delimiter:
 ```
 rgb(100,100,100);
@@ -1292,13 +1292,13 @@ rgb(100,100,100);
 
 ---
 **Description**: Place comments on a new line.  
-**Source**: [Idiomatic CSS](https://github.com/necolas/idiomatic-css)   
+**Source**: [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [LiquidContract](http://wiki.liquid-contact.com/index.php?title=CSS_Coding_Conventions#Introduction)   
 **Violations**: Violations occur when a comment does not have newline symbols before and after it.  
 **Actions**: Find comments; check if they do not have newline symbols before and after them
 
 ---
 **Description**: No trailing spaces.  
-**Source**: [Drupal](https://www.drupal.org/node/1887862), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)   
+**Source**: [Drupal](https://www.drupal.org/node/1887862), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [cbracco](https://github.com/cbracco/css-conventions)   
 **Violations**: Violations occur when there are spaces at the end of a line.  
 **Actions**: Find spaces immediately before a newline symbol  
 
