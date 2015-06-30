@@ -324,7 +324,7 @@ The implementation provided by CSS lint does not have much in common with the de
        url('webfont.woff2') format('woff2'), /* Super Modern Browsers */
 }
 ```
-In conclusion, a violation occurs when a font-face rule does not contain a url with the suffix '?#iefix'. 
+In conclusion, a violation occurs when a font-face rule does not contain a url with the suffix '?#iefix'.  
 **Actions**: Find font-face statements; check they contain a url with the required suffix.  
   
 ---
@@ -584,7 +584,7 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
  
 ---
 **Description**: Font names with spaces must be surrounded by double quotes.  
-**Source**: [WordPress](https://make.wordpress.org/core/handbook/coding-standards/css/) 
+**Source**: [WordPress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
 **Violations**:  Font names appear in font or font-family declarations. Thus, a violation of this convention is a single-quote string that appears as a value of either of the declarations:
  ```
  font-family: 'Arial Black';
@@ -808,7 +808,7 @@ font-size: 1.5em;
  
 ---
 **Description**: Line height should be unit-less.   
-**Source**: [GitHub](http://primercss.io/guidelines/#css), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/) 
+**Source**: [GitHub](http://primercss.io/guidelines/#css), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
 **Violations**: Violations are line-height that contain units.  
 **Actions**: Find line-height declarations that contain units.
 
@@ -981,7 +981,7 @@ color: #FFF;
 **Actions**: Check if the first element of the file is a comment
 
 ---
-**Description**: Add the comment /* LTR */ on the same line where you use the values 'left' or 'right'.  
+**Description**: Add the comment /\* LTR \*/ on the same line where you use the values 'left' or 'right'.  
 **Source**: [Drupal](https://www.drupal.org/node/1887862)    
 **Violations**: Violations occur when there is not a /\* LTR \*/ comment following a declaration with value 'left' or 'right'.  
 **Actions**: Find declarations where the value is 'left' or 'right'; check if there is a comment of the form ' LTR ' following the declaration
