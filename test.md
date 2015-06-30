@@ -746,11 +746,11 @@ margin-left: 15px;
 **Violations**:  Violation of this convention is a rule that contains all four properties: padding-top, padding-right, padding-bottom, padding-left.
 ```
 a {
-padding-top: 10px;
-padding-right: 15px;
-padding-bottom: 25px;
-padding-left: 15px;
-  
+  padding-top: 10px;
+  padding-right: 15px;
+  padding-bottom: 25px;
+  padding-left: 15px;
+}```  
 **Actions**: Find rulesets that contain all four properties in the list [padding-top, padding-right, padding-bottom, padding-left]  
 
 
