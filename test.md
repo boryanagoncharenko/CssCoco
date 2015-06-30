@@ -1225,11 +1225,83 @@ h2 { ... }
  **Source**: [CSSguidelines](http://cssguidelin.es/#introduction)         
  **Violations**: Violations occur a declaration appears on more than one line:
 ```
-margin: 0px,
-        20px,
-        0px,
+margin: 0px
+        20px
+        0px
         10px;
 ```
 **Actions**:  Find declarations; check if contain \n symbol
 
 
+---
+**Description**: Put every declaration on a new line  
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction)         
+ **Violations**: Violations occur when declarations occur on the same line:
+```
+margin-left: 10px; margin-right: 10px;
+```
+**Actions**:  Find adjacent declarations; check if there is not a \n symbol between them
+
+---
+**Description**: Place closing brace on a new line  
+ **Source**: [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction)         
+ **Violations**: Violations occur when the closing brace of the declaration block does appears on the same line:
+```
+a {
+  property: value; }
+```
+**Actions**:  Find closing brace of declaration blocks; check if there is not a \n symbol before it
+
+---
+**Description**: For short styles you can use one-line  
+ **Source**: [Realdeal](http://www.realdealmarketing.net/docs/css-coding-style.php), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction)         
+ **Violations**: This convention relaxes the constaints of a number of conventions. It states that if a ruleset contains a single declaration, it may appear in the form `selector { property: value; }`:
+```
+ul { margin: 10px 20px; }
+```
+**Actions**:  Find rulesets with one declaration; check if they do not have a newline between the "{" and the declaration and between the declaration and the "}" or if they do not have a space between the "{" and the declaration and between the declaration and the "}"
+
+---
+**Description**: Do not put a space after the '(' of functions  
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/),[Drupal](https://www.drupal.org/node/1887862)   
+ **Violations**: Violations occur when a space appears after the '(' symbol:
+```
+rgb( 100, 100, 100);
+```
+**Actions**:  Find '(' symbol; check if there is a space after it
+
+---
+**Description**: Do not put a space before ')'  
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/),[Drupal](https://www.drupal.org/node/1887862)   
+ **Violations**: Violations occur when a space appears before the ')' symbol:
+```
+rgb(100, 100, 100 );
+```
+**Actions**:  Find ')' symbol; check if there is a space before it
+
+---
+**Description**: Multiple csvalues should be separated by a space  
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/),[Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Drupal](https://www.drupal.org/node/1887862)   
+ **Violations**: Violations occur when there is not a space after the csv delimiter :
+```
+rgb(100,100,100);
+```
+**Actions**:  Find csv delimiters; check if there is a after them
+
+---
+**Description**: Newlines should be used for lengthier multi-part values such as those for shorthand properties like box-shadow and text-shadow.
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Drupal](https://www.drupal.org/node/1887862)   
+ **Violations**: Violations occur when the values of a given length do not contain newlines.
+**Actions**:  Find the values that are more than 40 characters; check if they do not contain \n symbols
+
+---
+**Description**: Place comments on a new line
+ **Source**: [Idiomatic CSS](https://github.com/necolas/idiomatic-css)   
+ **Violations**: Violations occur when a comment does not have \n symbols before and after it.
+**Actions**:  Find comments; check if they do not have \n symbols before and after them
+
+---
+**Description**: No trailing spaces
+ **Source**: [Drupal](https://www.drupal.org/node/1887862), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)   
+ **Violations**: Violations occur when there are spaces at the end of a line.
+**Actions**:  Find spaces immediately before a \n symbol
