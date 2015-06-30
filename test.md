@@ -812,3 +812,79 @@ font-size: 1.5em;
  **Source**: [GitHub](http://primercss.io/guidelines/#css), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/) 
  **Violations**: Violations are line-height that contain units.
 **Actions**:  Find line-height declarations that contain units.
+
+
+ ---
+**Description**: Use a leading zero for decimal values   
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)  
+ **Violations**:  Violation occurs when a number with value in the interval (-1,1) does not start with a 0 character:
+```
+.box { font-size: .8em; }
+```
+**Actions**:  Find decimal values that start with '.' or '-.'
+
+---
+**Description**: All values in media queries has to be written in rems unless it is inappropriate   
+ **Source**: [Drupal](https://www.drupal.org/node/1887862)  
+ **Violations**: Violations occur when media queries use dimensions with other units:
+```
+@media screen and (min-width: 450px) { ... }
+```
+**Actions**:  Find dimensions in media queries; check whether their unit is rem
+
+---
+**Description**: Avoid presentation-specific words in the name   
+ **Source**: [phpied](http://www.phpied.com/css-coding-conventions/)  
+ **Violations**: Violations occur when a word in an id or a class has presentation meaning. Although such violations are very hard to detect, one approach is to check whether the word is a color or belongs to a predefined list of forbidden words.
+```
+.blue { ... }
+#text-gray { ... }
+.light-box { ... }
+```
+**Actions**:  Find words in id and class selectors; check if words are colors  
+
+---
+**Description**: Do not abbreviate   
+ **Source**: [phpied](http://www.phpied.com/css-coding-conventions/)  
+ **Violations**: Violations occur when a word in an id or a class is not present in the built-in dictionary.
+```
+.prod { ... }
+#txt { ... }
+```
+The following two examples are not considered violations:
+```
+.production { ... }
+#text { ... }
+```
+**Actions**:  Find words in id and class selectors; check if words are present in the built-in dictionary  
+
+---
+**Description**: Id and class names should be lowercase and separated by dashes  
+ **Source**: [phpied](http://www.phpied.com/css-coding-conventions/),[Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [CSSguidelines](http://cssguidelin.es/#introduction)   
+ **Violations**: Violations occur when an id or class contains a symbol other than dashes and lowercase letters.
+```
+.Prod { ... }
+#text-case { ... }
+```
+**Actions**:  Find id and class selectors; check if their names contain characters other than lowercase letters or dashes
+
+---
+**Description**: Require id and class names to be lowercase  
+ **Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)  
+ **Violations**: Violations occur when an id or class contains an uppercase letter.
+```
+.Prod_rule { ... }
+#textCase { ... }
+```
+**Actions**:  Find id and class selectors; check if their names contain uppercase letters
+
+---
+**Description**: Id and class names should use camelCase  
+ **Source**: [Realdeal](http://www.realdealmarketing.net/docs/css-coding-style.php)  
+ **Violations**: Violations occur when an id or class name does not match the pattern `[a-z][A-Za-z]*`.
+```
+.production_Rule { ... }
+#TextRule { ... }
+```
+**Actions**:  Find id and class selectors; check if their names match a given regex
+
