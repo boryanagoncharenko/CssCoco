@@ -888,3 +888,160 @@ The following two examples are not considered violations:
 ```
 **Actions**:  Find id and class selectors; check if their names match a given regex
 
+---
+**Description**: Avoid using attributes in selector names  
+ **Source**: [Realdeal](http://www.realdealmarketing.net/docs/css-coding-style.php)  
+ **Violations**: Violations occur when an id or class name contains a word that is a value in the rule.
+```
+.red { color: red; }
+```
+**Actions**:  Find id and class words; check if words match any of the values contained in the ruleset
+
+---
+**Description**: Do not use specific words in id and class names  
+ **Source**: [Realdeal](http://www.realdealmarketing.net/docs/css-coding-style.php)  
+ **Violations**: Violations occur when a word of an id or class matches any of the values of a predefined list. Particularly, the convention refers to the words [html, head, bottom, top, left, right]
+```
+.box-top { color: red; }
+```
+**Actions**:  Find id and class words; check if words match any of the values specified in a list
+
+---
+**Description**: Properties should be lowercase, except for vendor-specific ones  
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)  
+ **Violations**: Violations occur when a non vendor-prefixed property uses uppercase letters:
+```
+Color: red;
+MARGIN: 10px;
+```
+The following sample snippets are not considered violations:
+```
+color: red;
+-MOZ-border-radius: 5px;
+```
+**Actions**:  Find non vendor-prefixed properties; check if they contain any uppercase letters
+
+---
+**Description**: HTML element should be lowercase
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css)  
+ **Violations**: Violations occur when an html tag contains uppercase letters:
+```
+H1 { ... };
+```
+**Actions**:  Find html tags; check if they contain any uppercase letters
+
+
+---
+**Description**: Attributes should be lowercase
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css)  
+ **Violations**: Violations occur when an attribute contains uppercase letters:
+```
+[PROP] { ... };
+```
+**Actions**:  Find attribute selectors; check if they contain any uppercase letters
+
+
+---
+**Description**: Attributes values should be lowercase
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css)  
+ **Violations**: Violations occur when an attribute value contains uppercase letters:
+```
+[property='VALUE'] { ... };
+```
+**Actions**:  Find attribute values; check if they contain any uppercase letters
+
+---
+**Description**: Values should be lowercase, except for strings
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css)  
+ **Violations**: Violations occur when a property value other than a string contains uppercase letters:
+```
+color: RED;
+margin-top: 3PX;
+```
+**Actions**:  Find values different than strings; check if they contain any uppercase letters
+
+
+---
+**Description**: Never reference js- prefixed class names from CSS files. js- are used exclusively from JS files. Use the is- prefix for state rules that are shared between CSS and JS.
+ **Source**: [GitHub](http://primercss.io/guidelines/#css)  
+ **Violations**: Violations occur when a class name has a 'js-' prefix:
+```
+.js-box { ... }
+```
+**Actions**:  Find classes; check if they have a 'js-' prefix
+
+---
+**Description**: Hex values should be lowercase
+ **Source**: [Drupal](https://www.drupal.org/node/1887862)  
+ **Violations**: Violations occur when a hex value contains uppercase letters:
+```
+color: #FFF;
+```
+**Actions**:  Find hex values; check if they contain uppercase letters
+
+---
+**Description**: Put a table of contents at the beginning of every file
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [CSSguidelines](http://cssguidelin.es/#introduction)    
+ **Violations**: Violations occur when stylesheet does not start with a comment.
+**Actions**:  check if the first element of the file is a comment
+
+---
+**Description**: Add the comment /* LTR */ on the same line where you use the values 'left' or 'right'
+ **Source**: [Drupal](https://www.drupal.org/node/1887862)    
+ **Violations**: Violations occur when there is not a /\* LTR \*/ comment following a declaration with value 'left' or 'right'.
+**Actions**:  Find declarations where the value is 'left' or 'right'; check if there is a comment of the form ' LTR ' following the declaration
+
+---
+**Description**: Add the comment /* LTR */ on the same line where you specify the direction of the language to ltr.
+ **Source**: [Drupal](https://www.drupal.org/node/1887862)    
+ **Violations**: Violations occur when there is not a /\* LTR \*/ comment following a declaration with property direction and value ltr.
+**Actions**:  Find declarations with property direction and value ltr; check if there is a comment of the form ' LTR ' following the declaration
+
+---
+**Description**: Use 4 spaces for indentation
+ **Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css)    
+ **Violations**: Violations occur line indentation contains other than spaces or the number of spaces is not a multiple of 4.
+**Actions**:  Find indentation of a line; check if it contains only spaces; check if the number of spaces is a multiple of the specific value
+
+---
+**Description**: Indent declarations once
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important),  [Drupal](https://www.drupal.org/node/1887862), [CSSguidelines](http://cssguidelin.es/#introduction)    
+ **Violations**: Violations occur when a declaraion is not exactly indented once using its ruleset as a reference point. Note that a ruleset might be nested inside a media atrule and in such cases declarations need to be indented twice. Thus, the rule speicifies the require indentation only compared to the rule that contains the declaration.
+**Actions**:  Find declarations; check if they are indented one level compared to the rule that contains them
+
+---
+**Description**: Indent the contents of a block
+ **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)    
+ **Violations**: Note that this rule differs from the previous one. Instead of targeting declarations, this convention refers to all elements of a declaration block that appear after a newline. While the following snippet is valid according to the previous rule, it is a violation of the current convention:
+ ```
+ selector {
+ /* comment that is not indented */
+     property: value;
+ }
+ ```
+**Actions**:  Find all elements of a block that appear after a newline; check if they are indented one level compared to the start of the block
+
+---
+**Description**: Closing curly bracket of a block has to be indented with the selector of the rule
+ **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important),  [Drupal](https://www.drupal.org/node/1887862)    
+ **Violations**: Violations occur when the closing bracket is not vertically indented with the beginning of the first selector of the corresponding rule
+ ```
+ selector {
+     property: value;
+     }
+ ```
+**Actions**:  Find rulesets; check if their selector is vertically aligned with the closing bracket of the declaration block
+
+---
+**Description**: Align verticlaly vendor properties
+ **Source**: [CSSguidelines](http://cssguidelin.es/#introduction)    
+ **Violations**: Violations occur when vendor-prefixed properties are not right-aligned:
+ ```
+.foo {
+    -webkit-border-radius: 3px;
+       -moz-border-radius: 3px;
+            border-radius: 3px;
+}
+ ```
+**Actions**:  Find consecutive declarations that belong to the same standard property group; check if the declarations are aligned to the right
+
