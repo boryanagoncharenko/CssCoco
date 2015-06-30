@@ -448,7 +448,142 @@ div.error {}
  ```
  **Actions**:  Check whether the URL values in background declarations are unique
  
+ ---
+**Description**: Disallow too many floats    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**:  Violations of this convention occur when a stylesheet contains more than 10 declarations of float
+ **Actions**:  Count the number of occurrences of float; compare the number to 10
  
+ ---
+**Description**: Don't use too many font size declarations    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**:  Violations of this convention occur when a stylesheet contains more than 10 declarations of font-size.
+ Note that the implementation provided by CSS lint takes into consideration only font-size declarations. Font declarations are disregarded.
+ **Actions**:  Count the number of occurrences of font-size; compare the number to 10
+ 
+---
+**Description**: Disallow outline:none (rule 1)    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**:  Violations of this convention occur when a rule contains declaration outline: none or outline: 0 and the selectors of the rule do not contain :focus.
+ ```
+a {
+    outline: none;
+}
+a {
+    outline: 0;
+}
+ ```
+ Note that the implementation provided by CSS lint takes into consideration the presence of the :focus pseudo selector anywhere in the selector. Thus, a rule `a:focus p` does not yield a warning. Also, CSS lint does not check multiselectors. The rule `a:focus, p` is considered OK, which is obivously wrong.
+ **Actions**:  Find rulesets that contain declaration with specific property and value; check if the selector of the ruleset contains the :focus pseudoselector.
+ 
+ ---
+**Description**: Disallow outline:none (rule 2)    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**:  Violations of this convention occur when a rule contains declaration outline: none or outline: 0 and a :focus pseudo selector, but does not contain any other declarations.
+ ```
+a:focus {
+    outline: 0;
+}
+ ```
+ **Actions**:  Find rulesets that contain declaration with specific property and value and the :focus pseudoselector; check they contain more than one declaration.
+ 
+ ---
+**Description**: Disallow qualified headings    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**:  Violations of this convention occur when a ruleset contains a selector where the heading element is key and the selector contains more simple-selectors.
+ ```
+.box h3 {
+    font-weight: normal;
+}
+.item:hover h3 {
+    font-weight: bold;
+}
+ ```
+ The following example is not a violation:
+```
+h3 {
+    font-weight: normal;
+}
+```
+ **Actions**:  Find selectors that have html tags as key selectors; check whether the selectors contain other simple selectors
+ 
+ ---
+**Description**: Headings should only be defined once    
+ **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
+ **Violations**:  Violations of this convention occur when more than one ruleset defines properties targeted at the same heading.
+ ```
+h3 {
+    font-weight: normal;
+}
+.box h3 {
+    font-weight: bold;
+}
+ ```
+ The following example is not a violation:
+```
+h3 {
+    font-weight: normal;
+}
+h3:hover {
+    font-weight: bold;
+}
+```
+Note that CSS lint simply disregards the headings with pseudoselectors. Repeating the h3:hover selector in multiple rules does not yield a warning.
+ **Actions**:  Find key selectors that contain headings and do not contain pseudoselectors; check if two key-selectors contain the same heading.
+ 
+ ---
+**Description**: Headings should only be defined once    
+ **Source**: [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important)  
+ **Violations**:  A violation occurs when a declaration of background-image uses a gradient value does not have a fallback declaration of background-color.
+ ```
+background-image: linear-gradient(top, #444444, #999999)
+ ```
+ The following example is not a violation:
+```
+background-color: #444444;
+background-image: -webkit-linear-gradient(top, #444444, #999999);
+```
+ **Actions**:  Find declarations with property background-image and gradient value; check if a previous declaration exists; check if the previous declaration has a background-color property.  
+ 
+ 
+ 
+ 
+ ---
+**Description**: Strings should use double quotes    
+ **Source**: [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Drupal](https://www.drupal.org/node/1887862), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
+ **Violations**:  Violations of this convention occur when string uses single quotes:
+ ```
+ font-family: "Arial Black"
+ ```
+ **Actions**:  Find strings; check if they use single quotes
+ 
+ ---
+**Description**: Use single quotation marks for attribute selectors    
+ **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)  
+ **Violations**:  The convention refers to the values of attribute selectors. According to the [CSS specification](http://www.w3.org/TR/css3-selectors/#attribute-selectors), the values of attribute selectors can be CSS identifiers or strings. This the possible violations of this convention includes 1) using double quotes or 2) not using quotes at all:
+ ```
+ span[class=example]
+ span[class="example"]
+ ```
+ **Actions**:  Find attribute values; check if their type is string; check if they use double quotes
+ 
+ ---
+**Description**: Use double quotation marks in charsets    
+ **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)  
+ **Violations**:  Using single quotes in charset is illegal according to CSS rules. Since the convention describes an anti-pattern, its violations occur when single quotes are using in a charset:
+ ```
+ @charset 'UTF-8';
+ ```
+ **Actions**:  Find strings in charsets; check if they use single quotes
+ 
+ ---
+**Description**: Use single quotes in values    
+ **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes)  
+ **Violations**:  Violations occur when values contain strings that use double quotes:
+ ```
+ font-family: "Arial Black";
+ ```
+ **Actions**:  Find strings in values; check if they use double quotes
  
  
  
