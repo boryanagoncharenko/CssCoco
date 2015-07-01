@@ -1321,13 +1321,13 @@ hsla(100,  100,  100);
 **Actions**: Find every pair of properties within a ruleset; retrieve the group to which each property belongs; check if the properties do not conform to the specified order   
 
 ---
-**Description**: Put declarations in alphabetical order. Ignore vendor specific prefixes for sorting. 
+**Description**: Put declarations in alphabetical order. Ignore vendor specific prefixes for sorting.   
 **Source**: [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide), [CodeGuide](http://codeguide.co/), [Mediarain](http://standards.mediarain.com/html-css), [Toll](http://www.benjamintoll.com/software/css_code_conventions.html)   
 **Violations**: Violations occur when two adjacent properties are not in alphabetical order.  
 **Actions**: Find every pair of adjacent properties within a ruleset; check if the appear in alphabetical order  
 
 ---
-**Description**: Multiple vendor-prefixed properties should be alphabetically sorted. 
+**Description**: Multiple vendor-prefixed properties should be alphabetically sorted.   
 **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide)   
 **Violations**: Violations occur when two adjacent vendor-prefixed properties are not in alphabetical order.  
 **Actions**: Find every pair of adjacent vendor-prefixed properties within a ruleset; check if the appear in alphabetical order  
