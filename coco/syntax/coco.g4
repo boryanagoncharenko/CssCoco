@@ -17,24 +17,24 @@ node : (Identifier '=')? type_expression (constraint)?;
 
 constraint : '{' attr_expression '}' ;
 
-type_expression : '(' type_expression ')'
-                | 'not' type_expression
-                | type_expression 'or' type_expression
-                | Identifier
+type_expression : '(' parenthesis=type_expression ')'
+                | operator='not' operand=type_expression
+                | left=type_expression operator='and' right=type_expression
+                | left=type_expression operator='or' right=type_expression
+                | primary=Identifier
                 ;
 
 attr_expression : '(' attr_expression ')'
-                | op=('not'|'-'|'+') operand=attr_expression
-                | left=attr_expression op=('<'|'>'|'<='|'>='|'=='|'!=') right=attr_expression
-                | left=attr_expression op=('in'|'match'|'is') right=attr_expression
-                | left=attr_expression 'and' right=attr_expression
-                | left=attr_expression 'or' right=attr_expression
-                | primary_rule=node
-                | primary_rule=api_call
-                | primary_rule=list_
-                | primary=String
-                | primary=Integer
-                | primary=Identifier
+                | operator=('not'|'-'|'+') operand=attr_expression
+                | left=attr_expression operator=('<'|'>'|'<='|'>='|'=='|'!=') right=attr_expression
+                | left=attr_expression operator=('in'|'match'|'is') right=attr_expression
+                | left=attr_expression operator='and' right=attr_expression
+                | left=attr_expression operator='or' right=attr_expression
+                | primary_call=api_call
+                | primary_lit=list_
+                | primary_str=String
+                | primary_int=Integer
+                | primary_id=Identifier
                 ;
 
 convention_group : '{' convention+ '}' ;

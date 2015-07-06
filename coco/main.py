@@ -5,11 +5,11 @@ import threading
 import queue
 import cProfile
 
-# import antlr4
+import antlr4
 #
-# import coco.syntax.listener as customListener
-# import coco.syntax.cocoLexer as cocoLexer
-# import coco.syntax.cocoParser as cocoParser
+import coco.syntax.listener as customListener
+import coco.syntax.cocoLexer as cocoLexer
+import coco.syntax.cocoParser as cocoParser
 import css.parser as parser
 import css.parse_tree as css
 import coco.analysis.violations as violations
@@ -32,27 +32,27 @@ def get_css_parse_tree():
     # return tr
 
 
-# def get_coco_ast():
-#     coco_filename = os.path.join('samples', 'one.coco')
-#     coco_file = open(coco_filename)
-#     cs = coco_file.read()
-#
-#     # res = grammar.Parser.parse(cs)
-#
-#     input = antlr4.FileStream(coco_filename)
-#     lexer = cocoLexer.cocoLexer(input)
-#     stream = antlr4.CommonTokenStream(lexer)
-#     parser = cocoParser.cocoParser(stream)
-#     walker = antlr4.ParseTreeWalker()
-#
-#     tree = parser.stylesheet()
-#     # listener = customListener.CocoCustomListener()
-#     # walker.walk(listener, tree)
-#
-#     visitor = customListener.CocoCustomVisitor()
-#     visitor.visitStylesheet(tree)
-#
-#     return None
+def get_coco_ast():
+    coco_filename = os.path.join('samples', 'one.coco')
+    coco_file = open(coco_filename)
+    # cs = coco_file.read()
+
+    # res = grammar.Parser.parse(cs)
+
+    input = antlr4.FileStream(coco_filename)
+    lexer = cocoLexer.cocoLexer(input)
+    stream = antlr4.CommonTokenStream(lexer)
+    parser = cocoParser.cocoParser(stream)
+    walker = antlr4.ParseTreeWalker()
+
+    tree = parser.stylesheet()
+    # listener = customListener.CocoCustomListener()
+    # walker.walk(listener, tree)
+
+    visitor = customListener.CocoCustomVisitor()
+    convention_set = visitor.visitStylesheet(tree)
+
+    return convention_set
 
 
 def nodes_counter(node):
@@ -76,14 +76,15 @@ def main():
     res = nodes_counter(css_tree)
     print('Number of nodes: ', res)
     # if not error:
-        # coco_ast = get_coco_ast()
+    coco_ast = get_coco_ast()
 
     print('--- Parsed CSS for sec:', (time.time() - start_time))
     print('--- Detecting violations ---')
     start_time = time.time()
 
-    set = temp.ToGo.get_lint_set()
-    violations.ViolationsFinder.find(set, css_tree)
+    # set = temp.ToGo.get_lint_set()
+    # violations.ViolationsFinder.find(set, css_tree)
+    violations.ViolationsFinder.find(coco_ast, css_tree)
 
     print('--- Detected violations for secs:', (time.time() - start_time))
 

@@ -1,7 +1,4 @@
-
 Semantic {
-  forbid a=(tag or h1)
-  forbid h2
+  forbid p=(property){name=='color'}
+  /* message "Forbid @import at-rules" */
 }
-
-Whitespace{}

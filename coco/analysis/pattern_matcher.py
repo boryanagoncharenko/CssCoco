@@ -319,6 +319,7 @@ class PatternMatcher(Matcher):
         The method searches a tree for occurrences of a given pattern
         Returns a list of {desc: node} dictionaries
         """
+        """ THE RESULT HAS TO BE OF TYPE PATTERN FOR ONTOLOGICAL CONFORMANCE. PATTERN LIVES IN THE AST """
         result = []
         current_result = {}
         nodes = self._filter_by(tree, pattern.root_desc, TreeWalker.traverse_current_and_descendants)

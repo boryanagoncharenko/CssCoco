@@ -508,15 +508,14 @@ class ToGo(object):
 
         req = AndExpr(EqualsExpr(ApiCallExpr(ApiCallExpr(VariableExpr('d1'), 'property'), 'name'),
                                  ApiCallExpr(ApiCallExpr(VariableExpr('d3'), 'property'), 'name')),
-                      AndExpr(BooleanExpr.TRUE,
-                              # NotEqualsExpr(ApiCallExpr(ApiCallExpr(VariableExpr('d1'), 'value'), 'string'),
-                              #               ApiCallExpr(ApiCallExpr(VariableExpr('d3'), 'value'), 'string')),
+                      AndExpr(NotEqualsExpr(ApiCallExpr(ApiCallExpr(VariableExpr('d1'), 'value'), 'string'),
+                                            ApiCallExpr(ApiCallExpr(VariableExpr('d3'), 'value'), 'string')),
                               NotEqualsExpr(ApiCallExpr(ApiCallExpr(VariableExpr('d1'), 'property'), 'name'),
                                             ApiCallExpr(ApiCallExpr(VariableExpr('d2'), 'property'), 'name'))
                               )
                       )
 
-        return FindForbidConvention(pattern, msg, BooleanExpr.FALSE)
+        return FindForbidConvention(pattern, msg, req)
 
     @staticmethod
     def conv34():
@@ -577,5 +576,18 @@ class ToGo(object):
                           lambda n: 'hex' in n.search_labels or 'color-name' in n.search_labels
                       )))
         )
-
+        # ToGo.or_(ToGo.type_(''))
         return FindRequireConvention(pattern, msg, req)
+
+    @staticmethod
+    def not_(f, n):
+        return not f(n)
+
+    @staticmethod
+    def or_(f, g, n):
+        return f(n) or g(n)
+
+    @staticmethod
+    def type_(s, n):
+        return s in n.search_labels
+
