@@ -59,8 +59,7 @@ class TreeWalker(object):
     def traverse_current_and_descendants(desc, node, f):
         if f(desc, node):
             yield node
-        else:
-            yield from TreeWalker.traverse_descendants(desc, node, f)
+        yield from TreeWalker.traverse_descendants(desc, node, f)
 
     @staticmethod
     def traverse_descendants(desc, node, f):

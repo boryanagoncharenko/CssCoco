@@ -1,4 +1,4 @@
 Semantic {
   forbid p=(property){name=='color'}
-  /* message "Forbid @import at-rules" */
+  message 'Forbid @import at-rules'
 }

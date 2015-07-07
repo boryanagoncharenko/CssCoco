@@ -39,10 +39,13 @@ class CocoCustomVisitor(cocoVisitor):
 
     def visitConvention(self, ctx):
         target = self.visitPattern(ctx.children[1])
+        message = self.visitMessage(ctx.children[2])
         if ctx.children[0].symbol.text == 'forbid':
-            return ForbidConvention(target, 'Found!')
-        return FindRequireConvention(target, 'Found!', None)
+            return ForbidConvention(target, message=message)
+        return FindRequireConvention(target, message=message, constraint=None)
 
+    def visitMessage(self, ctx):
+        return self.unescape_quotes(ctx.children[1].symbol.text)
 
     def visitPattern(self, ctx):
         node_wrapper = self.visitNode(ctx.children[0])
@@ -58,7 +61,6 @@ class CocoCustomVisitor(cocoVisitor):
         return NodeExprWrapper(node_desc, attr_expr=attr_expr, identifier=identifier)
 
     def visit_attr_expr(self, ctx):
-
         if ctx.operand is not None:
             return self.visit_unary_attr_expr(ctx)
 
@@ -75,20 +77,43 @@ class CocoCustomVisitor(cocoVisitor):
             return StringExpr(self.unescape_quotes(ctx.primary_str.text))
 
     def visit_unary_attr_expr(self, ctx):
-        
+        operand = self.visit_attr_expr(ctx.operand)
+
+        if ctx.operator.text == 'not':
+            return NotExpr(operand)
+        raise NotImplementedError()
 
     def visit_binary_attr_expr(self, ctx):
+        operator = ctx.operator.text
         left = self.visit_attr_expr(ctx.left)
         right = self.visit_attr_expr(ctx.right)
 
-        if ctx.op.text == '==':
+        if operator == '==':
             return EqualsExpr(left, right)
-        if ctx.op.text == '<':
+        if operator == '!=':
+            return NotEqualsExpr(left, right)
+        if operator == '<':
             return LessThanExpr(left, right)
-        if ctx.op.text == '>':
+        if operator == '>':
             return GreaterThanExpr(left, right)
+        if operator == '<=':
+            return LessThanOrEqExpr(left, right)
+        if operator == '>=':
+            return GreaterThanOrEqExpr(left, right)
 
-        raise NotImplementedError()
+        if operator == 'and':
+            return AndExpr(left, right)
+        if operator == 'or':
+            return OrExpr(left, right)
+
+        if operator == 'in':
+            raise NotImplementedError()
+        if operator == 'match':
+            return MatchExpr(left, right)
+        if operator == 'is':
+            return IsExpr(left, right)
+
+        raise ValueError()
 
     def extract_identifier(self, children):
         assert children

@@ -7,7 +7,7 @@ context : name=Identifier '{' declaration* '}' ;
 declaration : convention
             ;
 
-convention : 'forbid' pattern
+convention : 'forbid' pattern message=message
            ;
 
 pattern : node
@@ -36,6 +36,8 @@ attr_expression : '(' attr_expression ')'
                 | primary_int=Integer
                 | primary_id=Identifier
                 ;
+
+message : 'message' String ;
 
 convention_group : '{' convention+ '}' ;
 

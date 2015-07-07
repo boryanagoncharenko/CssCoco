@@ -302,6 +302,16 @@ class NotExpr(UnaryExpr):
         super(NotExpr, self).__init__(operand)
 
 
+class UnaryMinusExpr(UnaryExpr):
+    def __init__(self, operand):
+        super(UnaryMinusExpr, self).__init__(operand)
+
+
+class UnaryPlusExpr(UnaryExpr):
+    def __init__(self, operand):
+        super(UnaryPlusExpr, self).__init__(operand)
+
+
 class BinaryExpr(Expr):
     def __init__(self, left, right):
         self.left = left
@@ -333,9 +343,19 @@ class GreaterThanExpr(BinaryExpr):
         super(GreaterThanExpr, self).__init__(left, right)
 
 
+class GreaterThanOrEqExpr(BinaryExpr):
+    def __init__(self, left, right):
+        super(GreaterThanOrEqExpr, self).__init__(left, right)
+
+
 class LessThanExpr(BinaryExpr):
     def __init__(self, left, right):
         super(LessThanExpr, self).__init__(left, right)
+
+
+class LessThanOrEqExpr(BinaryExpr):
+    def __init__(self, left, right):
+        super(LessThanOrEqExpr, self).__init__(left, right)
 
 
 class ConstantExpr(Expr):
