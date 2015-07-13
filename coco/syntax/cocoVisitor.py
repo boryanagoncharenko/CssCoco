@@ -40,6 +40,11 @@ class cocoVisitor(ParseTreeVisitor):
         pass
 
 
+    # Visit a parse tree produced by cocoParser#call_expression.
+    def visitCall_expression(self, ctx):
+        pass
+
+
     # Visit a parse tree produced by cocoParser#message.
     def visitMessage(self, ctx):
         pass
@@ -62,6 +67,11 @@ class cocoVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by cocoParser#attr_expression.
     def visitAttr_expression(self, ctx):
+        pass
+
+
+    # Visit a parse tree produced by cocoParser#node_descriptor.
+    def visitNode_descriptor(self, ctx):
         pass
 
 

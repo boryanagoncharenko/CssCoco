@@ -7,7 +7,7 @@ import cProfile
 
 import antlr4
 #
-import coco.syntax.listener as customListener
+import coco.syntax.ast_builder as customListener
 import coco.syntax.cocoLexer as cocoLexer
 import coco.syntax.cocoParser as cocoParser
 import css.parser as parser
@@ -82,7 +82,7 @@ def main():
     print('--- Detecting violations ---')
     start_time = time.time()
 
-    # set = temp.ToGo.get_lint_set()
+    # set = temp.ToGo.get_google_set()
     # violations.ViolationsFinder.find(set, css_tree)
     violations.ViolationsFinder.find(coco_ast, css_tree)
 

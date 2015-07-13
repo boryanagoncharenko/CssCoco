@@ -1,4 +1,61 @@
-Semantic {
-  forbid p=(property){name=='color'}
-  message 'Forbid @import at-rules'
+Semantic
+{
+/*
+  forbid ident{value in ['px', 'pt', 'cm']}
+  message 'Use em instead of pt, px, cm'
+
+  forbid property{name=='z-index'}
+  message 'Avoid using z-index property'
+
+  forbid important
+  message 'Do not use !important'
+
+  forbid id
+  message 'Avoid using ids'
+
+  find p=(id or class)
+  require p.name match lowercase
+  message 'All id and class names should be lowercase'
+
+  find p=property{not is-vendor-specific}
+  require p.name match lowercase
+  message 'Properties should be lowercase (vendor-specific properties are exception)'
+
+  find value=(not string) in value
+  require value.string match lowercase
+  message 'All values except the contents of strings should be lowercase'
+
+  find t=tag
+  require t.name match lowercase
+  message 'Html tags should be lowercase'
+
+  find d=declaration
+  require d.child(-1).string == ';'
+  message 'Put a ; at the end of declarations'
+
+  forbid string in uri
+  message 'Do not put quotes in url declarations'
+
+  forbid hex{is-long and string match shorten}
+  message 'Use short hex values'
+
+  forbid ruleset{contains-all([
+    property{name=='margin-right'},
+    property{name=='margin-left'},
+    property{name=='margin-top'},
+    property{name=='margin-bottom'}
+  ])}
+  message 'Use the shorthand margin property instead'
+
+  forbid number{value == 0} in (dimension or percentage)
+  message 'Do not use units after 0 values'
+
+  find n=number{value < 1 and value > -1}
+  require n.string match '^0.*'
+  message 'Use a leading zero for decimal values'
+*/
+  find v=attribute-value
+  require v is string and v.has-single-quotes
+  message 'Use single quotes in attribute selectors'
+/* */
 }

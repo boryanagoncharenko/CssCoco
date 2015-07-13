@@ -40,10 +40,10 @@ class Node(object):
     def has_method(self, property_name):
         return property_name in self._api
 
-    def invoke_method_with_arg(self, property_name, argument):
-        return self._api[property_name](argument)
+    def invoke_method(self, method_name, argument):
+        return self._api[method_name](argument)
 
-    def invoke_method(self, property_name):
+    def invoke_property(self, property_name):
         return self._api[property_name]()
 
     def has_children(self):

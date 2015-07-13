@@ -450,15 +450,21 @@ class VariableExpr(Expr):
         self.variable_name = variable_name
 
 
-class ApiCallExpr(Expr):
-    def __init__(self, operand, property_string):
+# class ApiCallExpr(Expr):
+#     def __init__(self, operand, call):
+#         self.operand = operand
+#         self.call = call
+
+
+class PropertyExpr(Expr):
+    def __init__(self, operand, value):
         self.operand = operand
-        self.property_string = property_string
+        self.value = value
 
 
-class ApiCallExprWithArg(ApiCallExpr):
-    def __init__(self, variable_name, property_string, argument):
-        super(ApiCallExprWithArg, self).__init__(variable_name, property_string)
+class MethodExpr(PropertyExpr):
+    def __init__(self, operand, value, argument):
+        super(MethodExpr, self).__init__(operand, value)
         self.argument = argument
 
 

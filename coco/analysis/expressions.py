@@ -59,6 +59,11 @@ class ExprEvaluator(object):
         operand = self.visit(not_expr.operand)
         return operand.not_()
 
+    @vis.visitor(ast.UnaryMinusExpr)
+    def visit(self, unary_minus_expr):
+        operand = self.visit(unary_minus_expr.operand)
+        return operand.unary_minus()
+
     @vis.visitor(ast.OrExpr)
     def visit(self, or_expr):
         left = self.visit(or_expr.left)
@@ -158,20 +163,28 @@ class ExprEvaluator(object):
         operand = self.visit(in_expr.left)
         list_ = self.visit(in_expr.right)
         return operand.in_(list_)
+    #
+    # @vis.visitor(ast.ApiCallExpr)
+    # def visit(self, api_call_expr):
+    #     node = self.visit(api_call_expr.operand)
+    #     real_node = node.value
+    #     return self.visit(api_call_expr.call, real_node)
+        # api_string = api_call_expr.call.value
+        # property_value = real_node.invoke_method(api_string)
+        # return property_value
 
-    @vis.visitor(ast.ApiCallExpr)
-    def visit(self, api_call_expr):
-        node = self.visit(api_call_expr.operand)
+    @vis.visitor(ast.PropertyExpr)
+    def visit(self, prop_expr):
+        node = self.visit(prop_expr.operand)
         real_node = node.value
-        property_value = real_node.invoke_method(api_call_expr.property_string)
-        return property_value
+        return real_node.invoke_property(prop_expr.value)
 
-    @vis.visitor(ast.ApiCallExprWithArg)
-    def visit(self, api_call_args_expr):
-        node = self.visit(api_call_args_expr.operand)
+    @vis.visitor(ast.MethodExpr)
+    def visit(self, method_expr):
+        node = self.visit(method_expr.operand)
         real_node = node.value
-        property_value = real_node.invoke_method_with_arg(api_call_args_expr.property_string, api_call_args_expr.argument)
-        return property_value
+        argument = self.visit(method_expr.argument)
+        return real_node.invoke_method(method_expr.value, argument.value)
 
     @vis.visitor(ast.ContainsExpr)
     def visit(self, contains_expr):

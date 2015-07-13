@@ -9,6 +9,9 @@ class Value(object):
     def not_(self):
         raise ValueError()
 
+    def unary_minus(self):
+        raise ValueError()
+
     def and_(self, value):
         raise ValueError()
 
@@ -85,6 +88,9 @@ class Value(object):
 class Decimal(Value):
     def __init__(self, value):
         self.value = value
+
+    def unary_minus(self):
+        return Decimal(-self.value)
 
     def equals(self, value):
         return value.equals_decimal(self)

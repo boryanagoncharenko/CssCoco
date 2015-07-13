@@ -154,8 +154,6 @@ class Matcher(object):
     #     return PatternMatcher(filter_)
 
     def _is_node_desc_match(self, desc, node):
-        if node._type == 'delim':
-            pass
         type_ = desc.type_desc.is_node_match(node)
         if type_ and desc.has_add_constraints():
             context = expr.ExprContext(self, node)
