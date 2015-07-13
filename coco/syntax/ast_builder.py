@@ -22,32 +22,75 @@ class CocoCustomVisitor(cocoVisitor):
             conventions.append(self.visitDeclaration(convention_ctx))
         if ctx.name.text == 'Semantic':
             return SemanticContext(conventions, [])
+        if ctx.name.text == 'Whitespace':
+            return WhitespaceContext(conventions, [])
         raise NotImplementedError()
 
     def visitDeclaration(self, ctx):
         # A declaration currently is only convention, so go there directly
         return self.visitConvention(ctx.children[0])
 
-    def visitConvention(self, ctx):
-        self.eval_target = True
-        target = self.visitPattern(ctx.target)
-        self.eval_target = False
-        message = self.visitMessage(ctx.msg)
+    def visitConvention(self, context):
+        if self.is_require_convention(context):
+            return self.visit_require_convention(context)
 
-        if self.is_forbid_convention(ctx):
+        self.eval_target = True
+        target = self.visitPattern(context.target)
+        self.eval_target = False
+
+        message = self.visitMessage(context.msg)
+
+        if self.is_forbid_convention(context):
             return ForbidConvention(target, message=message)
 
-        if self.is_require_convention(ctx):
+        if self.is_find_require_convention(context):
             self.push_identifiers(target)
-            requirement = self.visitAttr_expression(ctx.requirement)
+            requirement = self.visitAttr_expression(context.requirement)
             self.pop_identifiers()
             return FindRequireConvention(target, message=message, constraint=requirement)
 
         raise NotImplementedError('Unknown convention type')
 
+    def visit_require_convention(self, context):
+        succeeded, target = self.interpolate_target(context.requirement)
+        if not succeeded:
+            raise ValueError('Invalid convention target. Consider breaking the convention to simpler patterns')
+        message = self.visitMessage(context.msg)
+
+        self.push_identifiers(target)
+        requirement = self.visitAttr_expression(context.requirement)
+        self.pop_identifiers()
+
+        return FindRequireConvention(target, message=message, constraint=requirement)
+
+    def interpolate_target(self, context):
+        if context.operator:
+            operator = context.operator.text
+            wrappers = []
+            if operator == 'after' or operator == 'before':
+                right = self.visit_whitespace_argument(context.right, 'a1')
+                wrappers.append(right)
+            if operator == 'between':
+                first = self.visit_whitespace_argument(context.first, 'a1')
+                second = self.visit_whitespace_argument(context.second, 'a2')
+
+                wrappers.append(first)
+                wrappers.append(second)
+            return True, SequencePatternExpr(wrappers)
+        return False, None
+
+    def visit_whitespace_argument(self, context, identifier):
+        if context.abstract:
+            return self.visit_abstract_node_decl(context.abstract, identifier)
+        # if context.call:
+        #     return self.visitCall_expression(context.call)
+        if context.string_:
+            raise NotImplementedError()
+        raise ValueError('Unknown whitespace argument')
+
     def push_identifiers(self, target):
         for wrapper in target.all_descs:
-            if wrapper.identifier:
+            if wrapper.has_identifier():
                 self.identifiers.add(wrapper.identifier)
 
     def pop_identifiers(self):
@@ -56,9 +99,12 @@ class CocoCustomVisitor(cocoVisitor):
     def is_forbid_convention(self, ctx):
         return ctx.children[0].symbol.text == 'forbid'
 
-    def is_require_convention(self, ctx):
+    def is_find_require_convention(self, ctx):
         return ctx.children[0].symbol.text == 'find' and \
                ctx.children[2].symbol.text == 'require'
+
+    def is_require_convention(self, ctx):
+        return ctx.children[0].symbol.text == 'require'
 
     def visitMessage(self, ctx):
         return self.unescape_quotes(ctx.children[1].symbol.text)
@@ -69,23 +115,76 @@ class CocoCustomVisitor(cocoVisitor):
             if type(child) is cocoParser.NodeContext:
                 wrapper = self.visitNode(child)
                 wrappers.append(wrapper)
-        relations = Relations()
-        if len(wrappers) > 1:
-            for i in range(0, len(wrappers)-1):
-                relation = ctx.children[i*2+1]
-                if relation.symbol.text == 'in':
-                    relations.register_relation(wrappers[i+1], IsAncestorOfRelation(wrappers[i]))
-
-        return PatternExpr(wrappers[-1], wrappers, relations)
+        if ctx.semantic:
+            relations = Relations()
+            if len(wrappers) > 1:
+                for i in range(0, len(wrappers)-1):
+                    # relation = ctx.children[i*2+1]
+                    if ctx.relation.text == 'in':
+                        relations.register_relation(wrappers[i+1], IsAncestorOfRelation(wrappers[i]))
+                    if ctx.relation.text == 'next-to':
+                        return SequencePatternExpr(wrappers)
+            return PatternExpr(wrappers[-1], wrappers, relations)
+        # if ctx.whitespace:
+        #     return SequencePatternExpr(wrappers)
+        raise NotImplementedError()
 
     def visitNode(self, ctx):
-        has_identifier, identifier = self.extract_identifier(ctx.children)
-        i = 2 if has_identifier else 0
-        node_desc = self.get_node_desc(ctx.children[i])
-        attr_expr = None
-        if len(ctx.children) > i+1:
-            attr_expr = self.visitAttr_expression(ctx.children[i+1].children[1])
-        return NodeExprWrapper(node_desc, attr_expr=attr_expr, identifier=identifier)
+        if ctx.abstract and ctx.decl:
+            return self.visit_abstract_node_decl(ctx.abstract, ctx.decl.text)
+        if ctx.abstract:
+            return self.visitAbstract_node(ctx.abstract)
+        if ctx.parse:
+            return self.visitParse_node(ctx.parse)
+        raise ValueError('Unknown node')
+
+    def visitAbstract_node(self, ctx):
+        node_descriptor, attr_expression = self.get_type_and_attr_expr(ctx)
+        return NodeExprWrapper(node_descriptor, attr_expr=attr_expression)
+
+    def visit_abstract_node_decl(self, ctx, identifier):
+        node_descriptor, attr_expression = self.get_type_and_attr_expr(ctx)
+        return NodeExprWrapperWithId(node_descriptor, identifier, attr_expr=attr_expression)
+
+    def get_type_and_attr_expr(self, ctx):
+        node_descriptor = self.get_node_desc(ctx.node_type)
+        if not ctx.constraint:
+            return node_descriptor, None
+        attr_expression = self.visitAttr_expression(ctx.constraint)
+        return node_descriptor, attr_expression
+
+    def visitParse_node(self, ctx):
+        if ctx.parenthesis:
+            return self.visitParse_node(ctx.parenthesis)
+        if ctx.left:
+            left = self.visit(ctx.left)
+            right = self.visit(ctx.right)
+            return OrExpr(left, right)
+        if ctx.primary:
+            node_descriptor = self.get_node_desc(ctx)
+            repeater = Repeater.DEFAULT
+            if self.parse_node_has_constraint(ctx):
+                repeater = self.get_parse_node_constraint(ctx)
+            return NodeSequenceExprWrapper(node_descriptor, repeater)
+
+    def parse_node_has_constraint(self, ctx):
+        return ctx.lower or ctx.upper or ctx.exact
+
+    def get_parse_node_constraint(self, ctx):
+        if ctx.exact:
+            exact = int(ctx.exact)
+            return Repeater(exact, exact)
+        if ctx.lower and ctx.upper:
+            lower = int(ctx.lower)
+            upper = int(ctx.upper)
+            return Repeater(lower, upper)
+        if ctx.lower:
+            lower = int(ctx.lower)
+            return Repeater(lower=lower)
+        if ctx.upper:
+            upper = int(ctx.upper)
+            return Repeater(upper=upper)
+        raise ValueError('Unknown parse node constraint')
 
     def visitCall_expression(self, ctx):
         identifier = ctx.call.text
@@ -109,14 +208,20 @@ class CocoCustomVisitor(cocoVisitor):
 
     def visitAttr_expression(self, ctx):
 
+        if ctx.parenthesis:
+            return self.visitAttr_expression(self.parenthesis)
+
         if self.is_unary(ctx):
             return self.visit_unary_attr_expr(ctx)
 
+        if ctx.operator and ctx.operator.text == 'is':
+            pass
+
+        if ctx.operator and ctx.operator.text in ['in', 'not in', 'match', 'not match']:
+            pass
+
         if self.is_binary(ctx):
             return self.visit_binary_attr_expr(ctx)
-
-        if ctx.call:
-            return self.visitCall_expression(ctx.call)
 
         if ctx.primary_int is not None:
             return DecimalExpr(int(ctx.primary_int.text))
@@ -127,15 +232,20 @@ class CocoCustomVisitor(cocoVisitor):
         if ctx.primary_list is not None:
             return self.visitList_(ctx.primary_list)
 
+        if ctx.call:
+            return self.visitCall_expression(ctx.call)
+
+        raise ValueError('Unknown attribute expression')
+
     def visit_argument(self, ctx):
         if ctx.argument is not None:
             return self.visitAttr_expression(ctx.argument)
-        if ctx.argument2 is not None:
-            return self.visitNode(ctx.argument2)
+        if ctx.abstract is not None:
+            return self.visitNode(ctx.abstract)
         return None
 
     def is_unary(self, ctx):
-        return ctx.operand is not None and ctx.operator is not None
+        return ctx.operand and ctx.operator
 
     def visit_unary_attr_expr(self, ctx):
         operand = self.visitAttr_expression(ctx.operand)
@@ -151,7 +261,11 @@ class CocoCustomVisitor(cocoVisitor):
 
     def visit_binary_attr_expr(self, ctx):
         operator = ctx.operator.text
-        left = self.visitAttr_expression(ctx.left)
+        left = None
+        if operator in ['before', 'after', 'between']:
+            left = self.visitParse_node(ctx.left)
+        else:
+            left = self.visitAttr_expression(ctx.left)
         right = None
         if operator == 'is':
             right = self.visitType_expression(ctx.right)
@@ -178,8 +292,12 @@ class CocoCustomVisitor(cocoVisitor):
 
         if operator == 'in':
             return InExpr(left, right)
+        if operator == 'not in':
+            raise  NotImplementedError()
         if operator == 'match':
             return MatchExpr(left, right)
+        if operator == 'not match':
+            return NotExpr(MatchExpr(left, right))
         if operator == 'is':
             return IsExpr(left, right)
 
@@ -196,26 +314,13 @@ class CocoCustomVisitor(cocoVisitor):
     def visitList_element(self, ctx):
         if ctx.element_id is not None:
             raise NotImplementedError()
-
         if ctx.element_int is not None:
             return int(ctx.element_int.text)
-
         if ctx.element_str is not None:
             return StringExpr(self.unescape_quotes(ctx.element_str.text))
-
         if ctx.element_desc is not None:
-            return self.visitNode(ctx)
-
+            return self.visitAbstract_node(ctx.element_desc)
         raise ValueError('Unknown list element')
-
-    def extract_identifier(self, children):
-        assert children
-        if len(children) < 2:
-            return False, None
-        if type(children[0]) is TerminalNodeImpl and type(children[1]) is TerminalNodeImpl:
-            identifier = children[0].symbol.text
-            return True, identifier
-        return False, None
 
     def visitType_expression(self, ctx):
         if ctx.parenthesis:
@@ -231,7 +336,7 @@ class CocoCustomVisitor(cocoVisitor):
             if ctx.operator.text == 'or':
                 return OrExpr(left, right)
         if ctx.primary:
-            return NodeTypeExpr(ctx.primary)
+            return NodeTypeExpr(ctx.primary.text)
         raise ValueError('Unknown type expression')
 
 
@@ -244,16 +349,18 @@ class CocoCustomVisitor(cocoVisitor):
         if ctx.parenthesis:
             return self.get_type_expression_string(ctx.children[1])
 
-        if ctx.operand:
-            return 'not (' + self.get_type_expression_string(ctx.operand) + ')'
-
         if ctx.left:
             left = self.get_type_expression_string(ctx.left)
             right = self.get_type_expression_string(ctx.right)
             return ''.join([left, ' ', ctx.operator.text, ' ', right])
 
-        assert ctx.primary
-        return ''.join(['\'', ctx.primary.text, '\' in n.search_labels'])
+        if ctx.primary:
+            return ''.join(['\'', ctx.primary.text, '\' in n.search_labels'])
+
+        if ctx.operand:
+            return 'not (' + self.get_type_expression_string(ctx.operand) + ')'
+
+        raise ValueError('Unknown type expression')
 
     def unescape_quotes(self, string):
         if len(string) < 2:

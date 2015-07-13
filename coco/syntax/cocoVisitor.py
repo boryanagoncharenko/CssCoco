@@ -15,6 +15,11 @@ class cocoVisitor(ParseTreeVisitor):
         pass
 
 
+    # Visit a parse tree produced by cocoParser#abstract_node.
+    def visitAbstract_node(self, ctx):
+        pass
+
+
     # Visit a parse tree produced by cocoParser#api_call.
     def visitApi_call(self, ctx):
         pass
@@ -22,6 +27,11 @@ class cocoVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by cocoParser#list_.
     def visitList_(self, ctx):
+        pass
+
+
+    # Visit a parse tree produced by cocoParser#parse_node.
+    def visitParse_node(self, ctx):
         pass
 
 
@@ -70,23 +80,28 @@ class cocoVisitor(ParseTreeVisitor):
         pass
 
 
-    # Visit a parse tree produced by cocoParser#node_descriptor.
-    def visitNode_descriptor(self, ctx):
-        pass
-
-
     # Visit a parse tree produced by cocoParser#context.
     def visitContext(self, ctx):
         pass
 
 
-    # Visit a parse tree produced by cocoParser#constraint.
-    def visitConstraint(self, ctx):
+    # Visit a parse tree produced by cocoParser#query_expression.
+    def visitQuery_expression(self, ctx):
         pass
 
 
     # Visit a parse tree produced by cocoParser#type_expression.
     def visitType_expression(self, ctx):
+        pass
+
+
+    # Visit a parse tree produced by cocoParser#whitespace_argument.
+    def visitWhitespace_argument(self, ctx):
+        pass
+
+
+    # Visit a parse tree produced by cocoParser#repeater.
+    def visitRepeater(self, ctx):
         pass
 
 

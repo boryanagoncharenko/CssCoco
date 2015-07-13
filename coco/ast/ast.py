@@ -260,6 +260,8 @@ class Repeater(object):
             return True
         return i < self.upper - self.lower
 
+Repeater.DEFAULT = Repeater()
+
 
 class NodeExprBase(ast.AstNode):
     def __init__(self, type_desc):
@@ -276,16 +278,24 @@ class NodeSequenceExprWrapper(NodeExprBase):
 
 
 class NodeExprWrapper(NodeExprBase):
-    def __init__(self, type_desc, attr_expr=None, identifier=None):
+    def __init__(self, type_desc, attr_expr=None):
         super(NodeExprWrapper, self).__init__(type_desc)
         self.attr_expr = attr_expr
-        self.identifier = identifier
 
     def has_add_constraints(self):
         return self.attr_expr is not None
 
     def has_identifier(self):
-        return self.identifier is not None
+        return False
+
+
+class NodeExprWrapperWithId(NodeExprWrapper):
+    def __init__(self, node_type, identifier, attr_expr=None):
+        super(NodeExprWrapperWithId, self).__init__(node_type, attr_expr=attr_expr)
+        self.identifier = identifier
+
+    def has_identifier(self):
+        return True
 
 
 class Expr(ast.AstNode):

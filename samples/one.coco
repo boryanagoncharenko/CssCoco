@@ -1,9 +1,10 @@
+
 Semantic
 {
-/*
   forbid ident{value in ['px', 'pt', 'cm']}
   message 'Use em instead of pt, px, cm'
 
+/*
   forbid property{name=='z-index'}
   message 'Avoid using z-index property'
 
@@ -53,9 +54,36 @@ Semantic
   find n=number{value < 1 and value > -1}
   require n.string match '^0.*'
   message 'Use a leading zero for decimal values'
-*/
+
   find v=attribute-value
   require v is string and v.has-single-quotes
   message 'Use single quotes in attribute selectors'
-/* */
+
+  find s=string in charset
+  require s.has-single-quotes
+  message 'Use single quotes in charsets'
+
+  find s=string in value
+  require s.has-single-quotes
+  message 'Use single quotes in values'
+
+  forbid charset
+  message 'Do not specify the encoding of style sheets as these assume UTF-8.'
+
+  find r=raw in uri
+  require r.string not match '(?i)https?:.*'
+  message 'Omit the protocol http(s) in url'
+
+  forbid tag next-to (class or id)
+  message 'Do not over-qualify classes and ids with html tags'
 }
+
+Whitespace
+{
+  find r1=ruleset next-to r2=ruleset
+  require newline between r1 and r2
+  message 'Put one or two blank lines between rules'
+*/
+
+}
+

@@ -36,7 +36,7 @@ class ConstraintContext(EvaluationContext):
 
     def get_node_by_id(self, identifier):
         for desc in self._id_node_table:
-            if desc.identifier == identifier:
+            if desc.has_identifier() and desc.identifier == identifier:
                 return self._id_node_table[desc]
         raise ValueError('Identifier not in context')
 
@@ -133,6 +133,10 @@ class ExprEvaluator(object):
         return values.Node(self._context.get_node_by_id(variable_expr.variable_name))
 
     @vis.visitor(ast.NodeExprWrapper)
+    def visit(self, expr):
+        return expr
+
+    @vis.visitor(ast.NodeExprWrapperWithId)
     def visit(self, expr):
         return expr
 
