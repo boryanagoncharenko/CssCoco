@@ -459,6 +459,8 @@ class VariableExpr(Expr):
     def __init__(self, variable_name):
         self.variable_name = variable_name
 
+VariableExpr.DEFAULT = VariableExpr('')
+
 
 # class ApiCallExpr(Expr):
 #     def __init__(self, operand, call):
@@ -531,9 +533,3 @@ class BetweenExpr(WhitespaceExpr):
 class AfterExpr(WhitespaceExpr):
     def __init__(self, operand, variation):
         super(AfterExpr, self).__init__(operand, variation)
-
-
-class Repetition(Statement):
-    def __init__(self, repeat_list, convention):
-        self.repeat_list = repeat_list
-        self.convention = convention
