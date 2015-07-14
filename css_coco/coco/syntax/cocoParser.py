@@ -4,7 +4,7 @@ from io import StringIO
 package = globals().get("__package__", None)
 ischild = len(package)>0 if package is not None else False
 if ischild:
-    from .cocoVisitor import cocoVisitor
+    from css_coco.coco.syntax import cocoVisitor
 else:
     from cocoVisitor import cocoVisitor
 

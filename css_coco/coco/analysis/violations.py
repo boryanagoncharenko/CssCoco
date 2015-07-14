@@ -1,9 +1,7 @@
-import time
-from multiprocessing.dummy import Pool as ThreadPool
-import coco.ast.ast as ast
-import coco.analysis.expressions as expr
-import coco.visitor_decorator as vis
-import coco.analysis.pattern_matcher as p_matcher
+from css_coco.coco.ast import ast as ast
+import css_coco.coco.analysis.expressions as expr
+import css_coco.coco.visitor_decorator as vis
+import css_coco.coco.analysis.pattern_matcher as p_matcher
 
 
 class Violations(object):

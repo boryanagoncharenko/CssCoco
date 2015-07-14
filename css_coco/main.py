@@ -1,23 +1,21 @@
 import os
 import json
 import time
-import threading
-import queue
-import cProfile
+import sys
 
 import antlr4
-#
-import coco.syntax.ast_builder as customListener
-import coco.syntax.cocoLexer as cocoLexer
-import coco.syntax.cocoParser as cocoParser
-import css.parser as parser
-import css.parse_tree as css
-import coco.analysis.violations as violations
-import coco.temp as temp
+
+from css_coco.coco.syntax.ast_builder import *
+import css_coco.coco.syntax.cocoLexer as cocoLexer
+import css_coco.coco.syntax.cocoParser as cocoParser
+import css_coco.css.parser as parser
+import css_coco.css.parse_tree as css
+import css_coco.coco.analysis.violations as violations
 
 
 def get_css_parse_tree():
-    filename = os.path.join('samples', 'tiny.css')
+    filename = sys.argv[1]
+
     file = open(filename)
     css_source = file.read()
     result = parser.Parser.parse_css(css_source)
@@ -27,7 +25,7 @@ def get_css_parse_tree():
         return None, '-----\nPlease check the validity of the css block!\n-----'
     tr = parser.SExprTransformer.transform(l)
     a = css.ParseTreeBuilder.build(tr)
-    print(a.pretty_print())
+    # print(a.pretty_print())
     return a, ''
     # return tr
 
@@ -49,7 +47,7 @@ def get_coco_ast():
     # listener = customListener.CocoCustomListener()
     # walker.walk(listener, tree)
 
-    visitor = customListener.CocoCustomVisitor()
+    visitor = CocoCustomVisitor()
     convention_set = visitor.visitStylesheet(tree)
 
     return convention_set

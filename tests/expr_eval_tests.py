@@ -1,4 +1,4 @@
-import coco.ast.ast as ast
+from css_coco.coco.ast import ast as ast
 
 
 # def test_eval_integer_expr():

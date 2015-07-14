@@ -1,8 +1,9 @@
 import abc
 import itertools
-import coco.ast.ast as ast
-import coco.analysis.expressions as expr
-import coco.visitor_decorator as vis
+
+import css_coco.coco.ast.ast as ast
+import css_coco.coco.analysis.expressions as expr
+import css_coco.coco.visitor_decorator as vis
 
 
 class Filter():

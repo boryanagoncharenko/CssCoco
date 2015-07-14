@@ -1,9 +1,10 @@
 from unittest import TestCase
+
 from tests.helpers import ParseTreeConstructor
 from tests.helpers import PatternConstructor
-import css.parse_tree as parse
-import coco.ast.ast as ast
-import coco.analysis.pattern_matcher as matching
+import css_coco.css.parse_tree as parse
+from css_coco.coco.ast import ast as ast
+import css_coco.coco.analysis.pattern_matcher as matching
 
 
 class WhitespaceMatcher(TestCase):
