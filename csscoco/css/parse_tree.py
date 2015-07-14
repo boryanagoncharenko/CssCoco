@@ -1,4 +1,4 @@
-from css_coco.coco.analysis import values as values
+from csscoco.coco.analysis import values as values
 
 
 class Node(object):

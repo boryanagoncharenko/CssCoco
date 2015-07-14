@@ -1,6 +1,6 @@
-from css_coco.coco.ast.ast import *
-from css_coco.coco.syntax.cocoParser import *
-from css_coco.coco.syntax.cocoVisitor import cocoVisitor
+from csscoco.coco.ast.ast import *
+from csscoco.coco.syntax.cocoParser import *
+from csscoco.coco.syntax.cocoVisitor import cocoVisitor
 from antlr4.tree.Tree import *
 
 

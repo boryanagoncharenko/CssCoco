@@ -1,4 +1,4 @@
-from css_coco import coco as ast
+from csscoco import coco as ast
 
 
 class Marker(ast.AstNode):

@@ -1,8 +1,8 @@
 import re
 
-from css_coco.coco.ast import ast as ast
-import css_coco.coco.analysis.values as values
-import css_coco.coco.visitor_decorator as vis
+from csscoco.coco.ast import ast as ast
+import csscoco.coco.analysis.values as values
+import csscoco.coco.visitor_decorator as vis
 
 
 class EvaluationContext(object):
@@ -232,7 +232,7 @@ class ExprEvaluator(object):
     def visit(self, before):
         operand_node_value = self.visit(before.operand)
         _filter = self._context.pattern_matcher._filter
-        matcher = css_coco.coco.analysis.pattern_matcher.WhitespaceVariationMatcher(_filter)
+        matcher = csscoco.coco.analysis.pattern_matcher.WhitespaceVariationMatcher(_filter)
         match = matcher.is_variation_before_node(before.variation, operand_node_value.value)
         return values.Boolean.build(match)
 
@@ -241,7 +241,7 @@ class ExprEvaluator(object):
         left_node_value = self.visit(between.operand)
         right_node_value = self.visit(between.second_operand)
         _filter = self._context.pattern_matcher._filter
-        matcher = css_coco.coco.analysis.pattern_matcher.WhitespaceVariationMatcher(_filter)
+        matcher = csscoco.coco.analysis.pattern_matcher.WhitespaceVariationMatcher(_filter)
         match = matcher.is_variation_between_nodes(between.variation, left_node_value.value, right_node_value.value)
         return values.Boolean.build(match)
 
@@ -249,7 +249,7 @@ class ExprEvaluator(object):
     def visit(self, after):
         operand_node_value = self.visit(after.operand)
         _filter = self._context.pattern_matcher._filter
-        matcher = css_coco.coco.analysis.pattern_matcher.WhitespaceVariationMatcher(_filter)
+        matcher = csscoco.coco.analysis.pattern_matcher.WhitespaceVariationMatcher(_filter)
         match = matcher.is_variation_after_node(after.variation, operand_node_value.value)
         return values.Boolean.build(match)
 

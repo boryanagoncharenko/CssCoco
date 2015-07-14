@@ -1,5 +1,5 @@
 from unittest import TestCase
-import css_coco.css.parser as parser
+import csscoco.css.parser as parser
 
 
 class CssParser(TestCase):

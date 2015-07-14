@@ -1,4 +1,4 @@
-from css_coco.coco.ast.ast import *
+from csscoco.coco.ast.ast import *
 
 
 class ToGo(object):

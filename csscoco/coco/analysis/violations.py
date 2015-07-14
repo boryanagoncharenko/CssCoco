@@ -1,7 +1,7 @@
-from css_coco.coco.ast import ast as ast
-import css_coco.coco.analysis.expressions as expr
-import css_coco.coco.visitor_decorator as vis
-import css_coco.coco.analysis.pattern_matcher as p_matcher
+from csscoco.coco.ast import ast as ast
+import csscoco.coco.analysis.expressions as expr
+import csscoco.coco.visitor_decorator as vis
+import csscoco.coco.analysis.pattern_matcher as p_matcher
 
 
 class Violations(object):

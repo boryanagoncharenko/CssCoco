@@ -1,4 +1,4 @@
-from css_coco.coco.ast import ast_node as ast
+from csscoco.coco.ast import ast_node as ast
 
 
 class ConventionSet(ast.AstNode):

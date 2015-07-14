@@ -1,4 +1,4 @@
-from css_coco.coco import visitor_decorator as vis
+from csscoco.coco import visitor_decorator as vis
 
 
 class Value(object):
