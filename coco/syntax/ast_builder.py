@@ -110,8 +110,8 @@ class CocoCustomVisitor(cocoVisitor):
 
     def visitPattern(self, ctx):
         wrappers = self.get_node_declarations(ctx)
-        relations = self.build_relations(ctx, wrappers)
-        return PatternExpr(wrappers[-1], wrappers, relations)
+        relations, root = self.build_relations(ctx, wrappers)
+        return PatternExpr(wrappers[root], wrappers, relations)
 
     def get_node_declarations(self, context):
         result = []
@@ -123,14 +123,16 @@ class CocoCustomVisitor(cocoVisitor):
     def build_relations(self, context, wrappers):
         relations = Relations()
         if self.is_single_node_pattern(context):
-            return relations
+            return relations, 0
         title = context.relation.text
+        root = -1
         for i in range(1, len(wrappers)):
             if title == 'in':
                 relations.register_relation(wrappers[i], IsAncestorOfRelation(wrappers[i-1]))
             elif title == 'next-to':
-                relations.register_relation(wrappers[i], IsPreviousSiblingOfRelation(wrappers[i-1]))
-        return relations
+                relations.register_relation(wrappers[i-1], IsPreviousSiblingOfRelation(wrappers[i]))
+                root = 0
+        return relations, root
 
     def is_single_node_pattern(self, context):
         return len(context.children) == 1
@@ -168,7 +170,9 @@ class CocoCustomVisitor(cocoVisitor):
 
         operator = context.operator.text
         if operator == 'is':
-            pass
+            operand = self.visitCalls_expr(context.operand)
+            node_type = NodeTypeExpr(context.node_type.text)
+            return IsExpr(operand, node_type)
         if operator == 'not':
             operand = self.visitLogic_expr(context.operand)
             return NotExpr(operand)
@@ -239,7 +243,7 @@ class CocoCustomVisitor(cocoVisitor):
             return self.visitList_(context.primary_list)
 
         if context.primary_call:
-            return self.visitCall_expression(context.call)
+            return self.visitCall_expression(context.primary_call)
 
         operator = context.operator.text
         if operator == '-':
@@ -355,7 +359,7 @@ class CocoCustomVisitor(cocoVisitor):
             return self.visitCalls_expr(context.argument)
         if context.abstract:
             return self.visitSemantic_node(context.abstract)
-        raise ValueError('Unknown call expression argument')
+        return None
 
     def visitList_(self, ctx):
         result = []
@@ -373,7 +377,7 @@ class CocoCustomVisitor(cocoVisitor):
         if ctx.element_str is not None:
             return StringExpr(self.unescape_quotes(ctx.element_str.text))
         if ctx.element_desc is not None:
-            return self.visitAbstract_node(ctx.element_desc)
+            return self.visitSemantic_node(ctx.element_desc)
         raise ValueError('Unknown list element')
 
     def visitType_expression(self, ctx):

@@ -857,8 +857,7 @@ class cocoParser ( Parser ):
             self.operator = None # Token
             self.operand = None # Logic_exprContext
             self.parenthesis = None # Logic_exprContext
-            self.is_operand = None # Calls_exprContext
-            self.is_type = None # Token
+            self.node_type = None # Token
             self.primary_type = None # Type_exprContext
             self.primary_call = None # Calls_exprContext
             self.right = None # Logic_exprContext
@@ -921,11 +920,11 @@ class cocoParser ( Parser ):
 
             elif la_ == 3:
                 self.state = 137 
-                localctx.is_operand = self.calls_expr(0)
+                localctx.operand = self.calls_expr(0)
                 self.state = 138
                 localctx.operator = self.match(self.T__21)
                 self.state = 139
-                localctx.is_type = self.match(self.Identifier)
+                localctx.node_type = self.match(self.Identifier)
                 pass
 
             elif la_ == 4:

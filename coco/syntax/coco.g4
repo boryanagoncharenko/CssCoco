@@ -31,7 +31,7 @@ whitespace_variation : whitespace_node ('or' whitespace_node)* ;
 whitespace_node : node_type=Identifier ('{' quantifier=repeater '}')? ;
 
 logic_expr : '(' parenthesis=logic_expr ')'
-           | is_operand=calls_expr operator='is' is_type=Identifier/*(node)*/
+           | operand=calls_expr operator='is' node_type=Identifier/*(node)*/
            | operator='not' operand=logic_expr
            | left=logic_expr operator='and' right=logic_expr
            | left=logic_expr operator='or' right=logic_expr

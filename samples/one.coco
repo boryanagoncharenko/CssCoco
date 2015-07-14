@@ -1,15 +1,11 @@
-/*
 Semantic
 {
-  forbid decl in rule in stylesheet
-  message 'oh no'
 
   forbid ident{value in ['px', 'pt', 'cm']}
   message 'Use em instead of pt, px, cm'
 
   forbid property{name=='z-index'}
   message 'Avoid using z-index property'
-
 
   forbid important
   message 'Do not use !important'
@@ -58,6 +54,7 @@ Semantic
   require n.string match '^0.*'
   message 'Use a leading zero for decimal values'
 
+
   find v=attribute-value
   require v is string and v.has-single-quotes
   message 'Use single quotes in attribute selectors'
@@ -79,14 +76,12 @@ Semantic
 
   forbid tag next-to (class or id)
   message 'Do not over-qualify classes and ids with html tags'
+
 }
-*/
 Whitespace
 {
   find r1=ruleset next-to r2=ruleset
-  require newline{2,3} before r1
+  require newline{2,3} between r1 and r2
   message 'Put one or two blank lines between rules'
-
-
 }
 
