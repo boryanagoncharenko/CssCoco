@@ -283,7 +283,7 @@ class PseudoSelector(SimpleSelector):
 
 class Function(Node):
     def __init__(self, value):
-        super(Function, self).__init__('function', value)
+        super(Function, self).__init__(value[0].value, value, categories=['function'])
 
     def _register_api(self):
         super(Function, self)._register_api()

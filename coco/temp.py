@@ -454,13 +454,13 @@ class ToGo(object):
 
     @staticmethod
     def conv31():
-        msg = 'A rule that has display: inline-block should not use vertical-align'
+        msg = 'A rule that has display: block should not use vertical-align'
 
         float_ = NodeExprWrapper(NodeDescriptor.build_type('property'),
                                  EqualsExpr(PropertyExpr(VariableExpr('anything'), 'name'), StringExpr('vertical-align')))
         decl = NodeExprWrapper(NodeDescriptor.build_type('declaration'),
                                AndExpr(EqualsExpr(PropertyExpr(PropertyExpr(VariableExpr('anything'), StringExpr('property')), StringExpr('name')), StringExpr('display')),
-                                       EqualsExpr(PropertyExpr(PropertyExpr(VariableExpr('anything'), StringExpr('value')), StringExpr('string')), StringExpr('inline-block'))))
+                                       EqualsExpr(PropertyExpr(PropertyExpr(VariableExpr('anything'), StringExpr('value')), StringExpr('string')), StringExpr('block'))))
 
         rule = NodeExprWrapper(NodeDescriptor.build_type('ruleset'),
                                attr_expr=AndExpr(ContainsExpr(VariableExpr(''), float_),

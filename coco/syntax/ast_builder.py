@@ -21,7 +21,7 @@ class CocoCustomVisitor(cocoVisitor):
             return SemanticContext(conventions, [])
         if title == 'Whitespace':
             return WhitespaceContext(conventions, [])
-        raise NotImplementedError()
+        return Context(conventions, [])
 
     def get_conventions(self, context):
         result = []
@@ -42,11 +42,13 @@ class CocoCustomVisitor(cocoVisitor):
         if self.is_forbid_convention(context):
             return ForbidConvention(target, message)
 
-        if self.is_find_require_convention(context):
+        if context.find:
             self.push_identifiers(target)
-            requirement = self.visitLogic_expr(context.requirement)
+            constraint = self.visitLogic_expr(context.requirement)
             self.pop_identifiers()
-            return FindRequireConvention(target, message=message, constraint=requirement)
+            if context.action.text == 'require':
+                return FindRequireConvention(target, message=message, constraint=constraint)
+            return FindForbidConvention(target, message=message, constraint=constraint)
 
         raise NotImplementedError('Unknown convention type')
 
@@ -95,12 +97,8 @@ class CocoCustomVisitor(cocoVisitor):
     def pop_identifiers(self):
         self.identifiers = set()
 
-    def is_forbid_convention(self, ctx):
-        return ctx.children[0].symbol.text == 'forbid'
-
-    def is_find_require_convention(self, ctx):
-        return ctx.children[0].symbol.text == 'find' and \
-               ctx.children[2].symbol.text == 'require'
+    def is_forbid_convention(self, context):
+        return not context.find and context.action.text == 'forbid'
 
     def is_require_convention(self, ctx):
         return ctx.children[0].symbol.text == 'require'
@@ -108,16 +106,65 @@ class CocoCustomVisitor(cocoVisitor):
     def visitMessage(self, context):
         return self.unescape_quotes(context.message.text)
 
-    def visitPattern(self, ctx):
-        wrappers = self.get_node_declarations(ctx)
-        relations, root = self.build_relations(ctx, wrappers)
-        return PatternExpr(wrappers[root], wrappers, relations)
+    def visitPattern(self, context):
+        if context.simple:
+            return self.handle_simple_pattern(context)
+        return self.handle_fork_pattern(context)
+
+    def handle_simple_pattern(self, context):
+        if len(context.children) == 1:
+            wrapper = self.visitNode_declaration(context.children[0])
+            return PatternExpr(wrapper, [wrapper], Relations.EMPTY)
+        wrappers = []
+        for i in range(0, len(context.children), 2):
+            wrapper = self.visitNode_declaration(context.children[i])
+            wrappers.append(wrapper)
+        title = context.children[1].symbol.text
+        if title == 'in':
+            return self.build_in_pattern(wrappers)
+        return self.build_next_pattern(wrappers)
+
+    def build_in_pattern(self, wrappers):
+        relations = Relations()
+        for i in range(1, len(wrappers)):
+            relations.register_relation(wrappers[i], IsAncestorOfRelation(wrappers[i-1]))
+        return PatternExpr(wrappers[-1], wrappers, relations)
+
+    def build_next_pattern(self, wrappers):
+        relations = Relations()
+        for i in range(1, len(wrappers)):
+            relations.register_relation(wrappers[i-1], IsPreviousSiblingOfRelation(wrappers[i]))
+        return PatternExpr(wrappers[0], wrappers, relations)
+
+    def handle_fork_pattern(self, context):
+        fork_wrappers = self.visitFork_pattern(context.fork)
+        in_wrappers = []
+        for i in range(2, len(context.children), 2):
+            wrapper = self.visitNode_declaration(context.children[i])
+            in_wrappers.append(wrapper)
+        relations = Relations()
+        for i in range(1, len(in_wrappers)):
+            relations.register_relation(in_wrappers[i], IsAncestorOfRelation(in_wrappers[i-1]))
+        for fork in fork_wrappers:
+            relations.register_relation(in_wrappers[0], IsAncestorOfRelation(fork))
+        return PatternExpr(in_wrappers[-1], in_wrappers + fork_wrappers, relations)
+
+
+    def visitFork_pattern(self, context):
+        wrappers = []
+        for i in range(1, len(context.children), 2):
+            wrapper = self.visitNode_declaration(context.children[i])
+            wrappers.append(wrapper)
+        return wrappers
 
     def get_node_declarations(self, context):
         result = []
-        for i in range(0, len(context.children), 2):
-            wrapper = self.visitNode_declaration(context.children[i])
-            result.append(wrapper)
+        if context.simple:
+            for i in range(0, len(context.children), 2):
+                wrapper = self.visitNode_declaration(context.children[i])
+                result.append(wrapper)
+        if context.fork:
+            pass
         return result
 
     def build_relations(self, context, wrappers):
@@ -160,7 +207,7 @@ class CocoCustomVisitor(cocoVisitor):
 
     def visitLogic_expr(self, context):
         if context.parenthesis:
-            return self.visitLogic_expr(self.parenthesis)
+            return self.visitLogic_expr(context.parenthesis)
 
         if context.primary_type:
             return self.visitType_expr(context.primary_type)
@@ -217,7 +264,7 @@ class CocoCustomVisitor(cocoVisitor):
         if context.quantifier:
             repeater = self.visitRepeater(context.quantifier)
             return NodeSequenceExprWrapper(node_descriptor, repeater)
-        return node_descriptor
+        return NodeExprWrapper(node_descriptor)
 
     def visitRepeater(self, context):
         lower = -1
@@ -233,14 +280,8 @@ class CocoCustomVisitor(cocoVisitor):
         return Repeater(lower=lower, upper=upper)
 
     def visitCalls_expr(self, context):
-        if context.primary_int:
-            return DecimalExpr(int(context.primary_int.text))
-
-        if context.primary_str:
-            return StringExpr(self.unescape_quotes(context.primary_str.text))
-
-        if context.primary_list:
-            return self.visitList_(context.primary_list)
+        if context.primary:
+            return self.visitElement(context.primary)
 
         if context.primary_call:
             return self.visitCall_expression(context.primary_call)
@@ -275,24 +316,14 @@ class CocoCustomVisitor(cocoVisitor):
         if operator == 'not match':
             return NotExpr(MatchExpr(left, right))
 
-
-
-    # def visitNode(self, ctx):
-    #     if ctx.abstract and ctx.decl:
-    #         return self.visit_abstract_node_decl(ctx.abstract, ctx.decl.text)
-    #     if ctx.abstract:
-    #         return self.visitAbstract_node(ctx.abstract)
-    #     if ctx.parse:
-    #         return self.visitParse_node(ctx.parse)
-    #     raise ValueError('Unknown node')
-    #
-    # def visitAbstract_node(self, ctx):
-    #     node_descriptor, attr_expression = self.get_type_and_attr_expr(ctx)
-    #     return NodeExprWrapper(node_descriptor, attr_expr=attr_expression)
-    #
-    # def visit_abstract_node_decl(self, ctx, identifier):
-    #     node_descriptor, attr_expression = self.get_type_and_attr_expr(ctx)
-    #     return NodeExprWrapperWithId(node_descriptor, identifier, attr_expr=attr_expression)
+    def visitElement(self, context):
+        if context.primary_int:
+            return DecimalExpr(int(context.primary_int.text))
+        if context.primary_str:
+            return StringExpr(self.unescape_quotes(context.primary_str.text))
+        if context.primary_list:
+            return self.visitList_(context.primary_list)
+        raise ValueError('Unknown element')
 
     def get_type_and_attr_expr(self, ctx):
         node_descriptor = self.get_node_descriptor(ctx.node_type)
@@ -348,15 +379,24 @@ class CocoCustomVisitor(cocoVisitor):
             operand = self.visitCall_expression(ctx.operand)
 
         argument = self.visit_argument(ctx)
-        if argument:
-            if identifier == 'contains-all':
-                return ContainsAllExpr(operand, argument)
-            return MethodExpr(operand, ctx.call.text, argument)
-        return PropertyExpr(operand, ctx.call.text)
+        if not argument:
+            if identifier == 'next-sibling':
+                return NextSiblingExpr(operand)
+            if identifier == 'previous-sibling':
+                return PreviousSiblingExpr(operand)
+            return PropertyExpr(operand, ctx.call.text)
+
+        if identifier == 'contains-all':
+            return ContainsAllExpr(operand, argument)
+        if identifier == 'contains':
+            return ContainsExpr(operand, argument)
+        if identifier == 'count':
+            return CountExpr(operand, argument)
+        return MethodExpr(operand, ctx.call.text, argument)
 
     def visit_argument(self, context):
         if context.argument:
-            return self.visitCalls_expr(context.argument)
+            return self.visitElement(context.argument)
         if context.abstract:
             return self.visitSemantic_node(context.abstract)
         return None

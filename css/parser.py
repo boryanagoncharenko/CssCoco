@@ -41,6 +41,7 @@ class SExprTransformer(object):
 
         self._add_value_transformation(s_expr)
         self._block_transformation(s_expr)
+        self._function_transformation(s_expr)
         self._declaration_transformation(s_expr)
 
         i = 1
@@ -92,6 +93,11 @@ class SExprTransformer(object):
         if s_expr[0] == 'block':
             s_expr.insert(1, ['symbol', '{'])
             s_expr.append(['symbol', '}'])
+
+    def _function_transformation(self, s_expr):
+        if s_expr[0] == 'uri':
+            s_expr.insert(1, ['opening-parenthesis', '('])
+            s_expr.append(['closing-parenthesis', ')'])
 
     def _declaration_transformation(self, s_expr):
         """

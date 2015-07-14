@@ -5,12 +5,11 @@
  * Based (more or less) on the Twilight theme originally of Textmate fame.
  * @author Remy Bach
  */
-@charset "UTF-8";
-#CODE[class*='language-'],
-A[class*="language-"] {
-    font-size: 12pt !important;
+#code[class*="language-"],
+pre[class*="language-"] {
+    color: white;
     direction: ltr;
-    font-family: Consolas, Monaco, 'Andale Mono', monospace;
+    font-family: Consolas, Monaco, "Andale Mono", monospace;
     text-align: left;
     text-shadow: 0 -.1em .2em black;
     white-space: pre;
@@ -26,14 +25,14 @@ A[class*="language-"] {
     -ms-hyphens: none;
     hyphens: none;
 }
-@charset "UTF-8";
-PRE[class*='language-'],
-:not(pre) > code[class*='language-'] {
-    background:hsl(0, 0%, 8%); /* #141414 */
+
+PRE[class*="language-"],
+:not(pre) > code[class*="language-"] {
+    background: hsl(0, 0%, 8%); /* #141414 */
 }
 
 /* Code blocks */
-#PRE[class*='language-'] {
+#PRE[class*="language-"] {
     border-radius: .5em;
     border: .3em solid hsl(0,0%,33%); /* #282A2B */
     box-shadow: 1px 1px .5em black inset;
@@ -73,6 +72,7 @@ code[class*="language-"]::selection, code[class*="language-"] ::selection {
 .token.prolog,
 .token.doctype,
 .token.cdata {
+    color: #000000;
     color: hsl(0, 0%, 47%); /* #777777 */
 }
 
@@ -90,7 +90,7 @@ code[class*="language-"]::selection, code[class*="language-"] ::selection {
     color: hsl(14, 58%, 55%); /* #CF6A4C */
 }
 
-pre.Token,
+#Token.keyword,
 .token.property,
 .token.selector,
 .token.constant,
@@ -107,11 +107,11 @@ pre.Token,
 .language-css .token.string,
 .style .token.string,
 .token.variable {
-    color:url( http://test); /* #8F9D6A */
+    color:hsl(76, 21%, 52%); /* #8F9D6A */
 }
 
 .token.atrule {
-    color:#112233; /* #7587A6 */
+    color:hsl(218, 22%, 55%); /* #7587A6 */
 }
 
 .token.regex,
@@ -202,9 +202,9 @@ pre[class*="language-"] {
     word-spacing: normal;
     word-break: normal;
 
-    -MOZ-tab-size: 4;
-    -O-TAB-size: 4;
-    tAb-size: 4;
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
 
     -webkit-hyphens: none;
     -moz-hyphens: none;
@@ -214,7 +214,7 @@ pre[class*="language-"] {
 
 PRE[class*="language-"],
 :not(pre) > code[class*="language-"] {
-    backgrOund:hsl(0, 0%, 8%); /* #141414 */
+    background:hsl(0, 0%, 8%); /* #141414 */
 }
 
 /* Code blocks */
@@ -230,7 +230,7 @@ pre[class*="language-"]::selection { /* Safari */
     background:hsl(200, 4%, 16%); /* #282A2B */
 }
 pre[class*="language-"]::selection { /* Firefox */
-    background:hsl(200, 4%, 16%) /* #282A2B */
+    background:hsl(200, 4%, 16%); /* #282A2B */
 }
 
 /* Text Selection colour */
@@ -368,72 +368,4 @@ pre[data-line] {
     content: attr(data-end);
     top: auto;
 }
-/* Same as .prismâ€™s padding-top */
-/* http://prismjs.com/download.html?themes=prism-twilight&languages=clike+javascript */
-/**
- * prism.js Twilight theme
- * Based (more or less) on the Twilight theme originally of Textmate fame.
- * @author Remy Bach
- */
-#code[class*="language-"],
-pre[class*="language-"] {
-    color: white;
-    direction: ltr;
-    font-family: Consolas, Monaco, "Andale Mono", monospace;
-    text-align: left;
-    text-shadow: 0 -.1em .2em black;
-    white-space: pre;
-    word-spacing: normal;
-    word-break: normal;
 
-    -moz-tab-size: 4;
-    -o-tab-size: 4;
-    tab-size: 4;
-
-    -webkit-hyphens: none;
-    -moz-hyphens: none;
-    -ms-hyphens: none;
-    hyphens: none;
-}
-
-PRE[class*="language-"],
-:not(pre) > code[class*="language-"] {
-    background:hsl(0, 0%, 8%); /* #141414 */
-}
-
-/* Code blocks */
-#PRE[class*="language-"] {
-    border-radius: .5em;
-    border: .3em solid hsl(0,0%,33%); /* #282A2B */
-    box-shadow: 1px 1px .5em black inset;
-    margin: .5em 0;
-    overflow: auto;
-    padding: 1em;
-}
-pre[class*="language-"]::selection { /* Safari */
-    background:hsl(200, 4%, 16%); /* #282A2B */
-}
-
-pre[class*="language-"]::selection { /* Firefox */
-    background:hsl(200, 4%, 16%); /* #282A2B */
-}
-
-/* Text Selection colour */
-pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
-code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
-    text-shadow: none;
-    background: HSAL(0,0%,93%,0.15); /* #EDEDED */
-}
-
-pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
-code[class*="language-"]::selection, code[class*="language-"] ::selection {
-    text-shadow: none;
-    background: hsla(0,0%,93%,0.15); /* #EDEDED */
-}
-
-[class*='language-'] {
-    border-radius: .3em;
-    border: .13em solid hsl(0,0%,33%); /* #545454 */
-    box-shadow: 1px 1px .3em -.1em black inset;
-    padding: .15em .2em .05em;
-}

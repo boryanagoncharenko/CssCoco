@@ -80,6 +80,11 @@ class cocoVisitor(ParseTreeVisitor):
         pass
 
 
+    # Visit a parse tree produced by cocoParser#fork_pattern.
+    def visitFork_pattern(self, ctx):
+        pass
+
+
     # Visit a parse tree produced by cocoParser#type_expression.
     def visitType_expression(self, ctx):
         pass
@@ -87,6 +92,11 @@ class cocoVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by cocoParser#logic_expr.
     def visitLogic_expr(self, ctx):
+        pass
+
+
+    # Visit a parse tree produced by cocoParser#element.
+    def visitElement(self, ctx):
         pass
 
 

@@ -4,16 +4,18 @@ stylesheet : context* ;
 
 context : name=Identifier '{' declaration* '}' ;
 
-declaration : convention
-            ;
+declaration : convention ;
 
-convention : 'forbid' target=pattern 'message' message=String
-           | 'require' requirement=logic_expr 'message' message=String
-           | 'find' target=pattern 'require' requirement=logic_expr 'message' message=String
+convention : action='forbid' target=pattern 'message' message=String
+           | action='require' requirement=logic_expr 'message' message=String
+           | find='find' target=pattern action=('require'|'forbid') requirement=logic_expr 'message' message=String
            ;
 
-pattern : node_declaration (relation=('in'|'next-to') node_declaration)*
+pattern : simple=node_declaration (relation=('in'|'next-to') node_declaration)*
+        | fork=fork_pattern (relation='in' node_declaration)*
         ;
+
+fork_pattern : '(' node_declaration (',' node_declaration)+ ')' ;
 
 node_declaration : (variable=Identifier '=')? node=semantic_node ;
 
@@ -49,13 +51,16 @@ calls_expr : operator='-' operand=calls_expr
            | left=calls_expr operator=('<'|'>'|'<='|'>='|'=='|'!=') right=calls_expr
            | left=calls_expr operator=('in'|'not in'|'match'|'not match') right=calls_expr
            | primary_call=call_expression
-           | primary_int=Integer
-           | primary_str=String
-           | primary_list=list_
+           | primary=element
            ;
 
-call_expression : operand=call_expression '.' call=Identifier ('(' (argument=calls_expr|abstract=semantic_node ) ')')?
-                | call=Identifier ('(' (argument=calls_expr|abstract=semantic_node ) ')')?
+element : primary_int=Integer
+        | primary_str=String
+        | primary_list=list_
+        ;
+
+call_expression : operand=call_expression '.' call=Identifier ('(' (argument=element | abstract=semantic_node ) ')')?
+                | call=Identifier ('(' (argument=element|abstract=semantic_node ) ')')?
                 ;
 
 repeater : exact=Integer

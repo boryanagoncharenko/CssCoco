@@ -11,17 +11,17 @@ class Context(ast.AstNode):
         self.conventions = conventions
         self.exceptions = exceptions
 
-    def get_target_patterns(self):
+    def get_ignored_and_target_patterns(self):
         """
         What the context targets, i.e. whitespaces, indents, comments
         """
-        pass
+        return []
 
     def get_ignored_patterns(self):
         """
         What is completely ignored in the context
         """
-        pass
+        return []
 
 
 class WhitespaceContext(Context):
@@ -35,7 +35,8 @@ class WhitespaceContext(Context):
                                      NodeExprWrapper(NodeDescriptor('comment'))]),
                 SequencePatternExpr.build_simple_seq('newline', 'comment'),
                 SequencePatternExpr.build_simple_seq('indent'),
-                SequencePatternExpr.build_simple_seq('comment')]
+                SequencePatternExpr.build_simple_seq('comment')
+                ]
 
     def get_ignored_and_target_patterns(self):
         # return []
@@ -200,6 +201,8 @@ class Relations(object):
                 if r.target_node not in self.inner:
                     anchors.append(r.target_node)
         return anchors
+
+Relations.EMPTY = Relations()
 
 
 class NodeRelation(object):

@@ -330,10 +330,10 @@ class PatternMatcher(Matcher):
             rs = len(relations)
             if rs == 0:
                 result.append(current_result.copy())
-            if rs == 1:
+            elif rs == 1:
                 target_desc, new_nodes = self._process_relation(pattern, desc, node)
                 self._process_nodes(new_nodes, target_desc, pattern, current_result, result)
-            if rs > 1:
+            elif rs > 1:
                 self._process_fork(node, relations, desc, pattern, current_result, result)
 
             self._unregister_node_match(current_result, desc)
