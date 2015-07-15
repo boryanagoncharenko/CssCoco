@@ -1,6 +1,6 @@
 Semantic
 {
-/*
+
   forbid ident{value in ['px', 'pt', 'cm']}
   message 'Use em instead of pt, px, cm'
 
@@ -28,11 +28,11 @@ Semantic
   find t=tag
   require t.name match lowercase
   message 'Html tags should be lowercase'
-
+/* Fix the element
   find d=declaration
   require d.child(-1).string == ';'
   message 'Put a ; at the end of declarations'
-
+*/
   forbid string in uri
   message 'Do not put quotes in url declarations'
 
@@ -127,7 +127,7 @@ Semantic
           ((d.next-sibling.is-vendor-specific and d.next-sibling.property.standard == d.property.standard) or
            (not d.next-sibling.is-vendor-specific and d.next-sibling.property.standard == d.property.standard))
   message 'Warning if found a vendor-prefixed property without a standard property after it.'
-*/
+
 
   find (rgba or hsl or hsla) in d=declaration{property.name == 'color'}
   require d.previous-sibling is declaration and
@@ -138,7 +138,7 @@ Semantic
 
 Whitespace
 {
-/*
+
   find r1=ruleset next-to r2=ruleset
   require newline{2,3} between r1 and r2
   message 'Put one or two blank lines between rules'
@@ -165,6 +165,6 @@ Custom
   find i=indent
   require i.string match '^ {4}$'
   message 'Use 4 spaces for indentation, no tabs.'
-*/
+
 }
 

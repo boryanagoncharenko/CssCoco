@@ -1,5 +1,6 @@
 import re
 
+import csscoco
 from csscoco.coco.ast import ast as ast
 import csscoco.coco.analysis.values as values
 import csscoco.coco.visitor_decorator as vis
@@ -154,10 +155,10 @@ class ExprEvaluator(object):
 
     @vis.visitor(ast.MatchExpr)
     def visit(self, match_expr):
-        operand = self.visit(match_expr.operand)
+        operand = self.visit(match_expr.left)
         if not operand.value:
             return values.Boolean.TRUE
-        regex = self.visit(match_expr.regex)
+        regex = self.visit(match_expr.right)
         pattern = re.compile(regex.value)
         result = pattern.findall(operand.value)
         return values.Boolean.build(result)
@@ -233,7 +234,7 @@ class ExprEvaluator(object):
         operand_node_value = self.visit(before.operand)
         _filter = self._context.pattern_matcher._filter
         matcher = csscoco.coco.analysis.pattern_matcher.WhitespaceVariationMatcher(_filter)
-        match = matcher.is_variation_before_node(before.variation, operand_node_value.value)
+        match = matcher.is_variation_before_node(before.argument, operand_node_value.value)
         return values.Boolean.build(match)
 
     @vis.visitor(ast.BetweenExpr)
@@ -242,7 +243,7 @@ class ExprEvaluator(object):
         right_node_value = self.visit(between.second_operand)
         _filter = self._context.pattern_matcher._filter
         matcher = csscoco.coco.analysis.pattern_matcher.WhitespaceVariationMatcher(_filter)
-        match = matcher.is_variation_between_nodes(between.variation, left_node_value.value, right_node_value.value)
+        match = matcher.is_variation_between_nodes(between.argument, left_node_value.value, right_node_value.value)
         return values.Boolean.build(match)
 
     @vis.visitor(ast.AfterExpr)
@@ -250,6 +251,6 @@ class ExprEvaluator(object):
         operand_node_value = self.visit(after.operand)
         _filter = self._context.pattern_matcher._filter
         matcher = csscoco.coco.analysis.pattern_matcher.WhitespaceVariationMatcher(_filter)
-        match = matcher.is_variation_after_node(after.variation, operand_node_value.value)
+        match = matcher.is_variation_after_node(after.argument, operand_node_value.value)
         return values.Boolean.build(match)
 

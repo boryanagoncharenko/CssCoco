@@ -1,12 +1,26 @@
-from csscoco.coco.ast import ast_node as ast
 
 
-class ConventionSet(ast.AstNode):
+class AstNode(object):
+    pass
+    # def get_children(self):
+    #     return []
+
+    # def get_title(self):
+    #     return self.__class__.__name__
+
+    # def pretty_print(self, level=0, print_indent='  '):
+    #     s = ''.join(['\n', print_indent*level, self.get_title(), ':'])
+    #     for child in self.get_children():
+    #         s = ''.join([s, child.pretty_print(level + 1)])
+    #     return s
+
+
+class ConventionSet(AstNode):
     def __init__(self, contexts):
         self.contexts = contexts
 
 
-class Context(ast.AstNode):
+class Context(AstNode):
     def __init__(self, conventions, exceptions):
         self.conventions = conventions
         self.exceptions = exceptions
@@ -92,7 +106,7 @@ class SemanticContext(Context):
             []
 
 
-class Statement(ast.AstNode):
+class Statement(AstNode):
     pass
 
 
@@ -119,7 +133,7 @@ class FindForbidConvention(Convention):
         self.constraint = constraint
 
 
-class PatternExpr(ast.AstNode):
+class PatternExpr(AstNode):
     def __init__(self, root_node, all_nodes, relations):
         self.root_desc = root_node
         self.all_descs = all_nodes
@@ -161,7 +175,7 @@ class SequencePatternExpr(PatternExpr):
         return SequencePatternExpr(res)
 
 
-class WhitespaceVariation(ast.AstNode):
+class WhitespaceVariation(AstNode):
     """
     Contains all available sequences, e.g.
     (a space b) or (a space newline b)
@@ -266,7 +280,7 @@ class Repeater(object):
 Repeater.DEFAULT = Repeater()
 
 
-class NodeExprBase(ast.AstNode):
+class NodeExprBase(AstNode):
     def __init__(self, type_desc):
         self.type_desc = type_desc
 
@@ -301,8 +315,52 @@ class NodeExprWrapperWithId(NodeExprWrapper):
         return True
 
 
-class Expr(ast.AstNode):
+class Expr(AstNode):
     pass
+
+
+class LiteralExpr(Expr):
+    def __init__(self, value):
+        self.value = value
+
+
+class DecimalExpr(LiteralExpr):
+    def __init__(self, value):
+        super(DecimalExpr, self).__init__(value)
+
+
+class StringExpr(LiteralExpr):
+    def __init__(self, value):
+        super(StringExpr, self).__init__(value)
+
+
+class BooleanExpr(LiteralExpr):
+    def __init__(self, value):
+        super(BooleanExpr, self).__init__(value)
+
+    @staticmethod
+    def build(bool_value):
+        return BooleanExpr.TRUE if bool_value else BooleanExpr.FALSE
+
+BooleanExpr.TRUE = BooleanExpr(True)
+BooleanExpr.FALSE = BooleanExpr(False)
+
+
+class ListExpr(LiteralExpr):
+    def __init__(self, value):
+        super(ListExpr, self).__init__(value)
+
+
+class NodeTypeExpr(LiteralExpr):
+    def __init__(self, value):
+        super(NodeTypeExpr, self).__init__(value)
+
+
+class VariableExpr(Expr):
+    def __init__(self, variable_name):
+        self.variable_name = variable_name
+
+VariableExpr.DEFAULT = VariableExpr('')
 
 
 class UnaryExpr(Expr):
@@ -318,11 +376,6 @@ class NotExpr(UnaryExpr):
 class UnaryMinusExpr(UnaryExpr):
     def __init__(self, operand):
         super(UnaryMinusExpr, self).__init__(operand)
-
-
-class UnaryPlusExpr(UnaryExpr):
-    def __init__(self, operand):
-        super(UnaryPlusExpr, self).__init__(operand)
 
 
 class BinaryExpr(Expr):
@@ -371,44 +424,91 @@ class LessThanOrEqExpr(BinaryExpr):
         super(LessThanOrEqExpr, self).__init__(left, right)
 
 
-class ConstantExpr(Expr):
-    pass
+class IsExpr(BinaryExpr):
+    def __init__(self, left, right):
+        super(IsExpr, self).__init__(left, right)
 
 
-class DecimalExpr(ConstantExpr):
-    def __init__(self, value):
+class MatchExpr(BinaryExpr):
+    def __init__(self, left, right):
+        super(MatchExpr, self).__init__(left, right)
+
+
+class InExpr(BinaryExpr):
+    def __init__(self, left, right):
+        super(InExpr, self).__init__(left, right)
+
+
+class CallExpr(Expr):
+    def __init__(self, operand, value):
+        self.operand = operand
         self.value = value
 
 
-class StringExpr(ConstantExpr):
-    def __init__(self, value):
-        self.value = value
+class PropertyExpr(CallExpr):
+    def __init__(self, operand, value):
+        super(PropertyExpr, self).__init__(operand, value)
 
 
-class BooleanExpr(ConstantExpr):
-    def __init__(self, value):
-        self.value = value
-
-    @staticmethod
-    def build(bool_value):
-        return BooleanExpr.TRUE if bool_value else BooleanExpr.FALSE
+class MethodExpr(PropertyExpr):
+    def __init__(self, operand, value, argument):
+        super(MethodExpr, self).__init__(operand, value)
+        self.argument = argument
 
 
-BooleanExpr.TRUE = BooleanExpr(True)
-BooleanExpr.FALSE = BooleanExpr(False)
+class NodeQueryExpr(Expr):
+    def __init__(self, operand):
+        self.operand = operand
 
 
-class ListExpr(ConstantExpr):
-    def __init__(self, value):
-        self.value = value
+class NextSiblingExpr(NodeQueryExpr):
+    def __init__(self, operand):
+        super(NextSiblingExpr, self).__init__(operand)
 
 
-class NodeTypeExpr(ConstantExpr):
-    def __init__(self, value):
-        self.value = value
+class PreviousSiblingExpr(NodeQueryExpr):
+    def __init__(self, operand):
+        super(PreviousSiblingExpr, self).__init__(operand)
 
 
-class NodeDescriptor(ast.AstNode):
+class NodeQueryWithArgExpr(NodeQueryExpr):
+    def __init__(self, operand, argument):
+        super(NodeQueryWithArgExpr, self).__init__(operand)
+        self.argument = argument
+
+
+class ContainsExpr(NodeQueryWithArgExpr):
+    def __init__(self, operand, argument):
+        super(ContainsExpr, self).__init__(operand, argument)
+
+
+class ContainsAllExpr(NodeQueryWithArgExpr):
+    def __init__(self, operand, argument):
+        super(ContainsAllExpr, self).__init__(operand, argument)
+
+
+class CountExpr(NodeQueryWithArgExpr):
+    def __init__(self, operand, argument):
+        super(CountExpr, self).__init__(operand, argument)
+
+
+class BeforeExpr(NodeQueryWithArgExpr):
+    def __init__(self, operand, variation):
+        super(BeforeExpr, self).__init__(operand, variation)
+
+
+class AfterExpr(NodeQueryWithArgExpr):
+    def __init__(self, operand, variation):
+        super(AfterExpr, self).__init__(operand, variation)
+
+
+class BetweenExpr(NodeQueryWithArgExpr):
+    def __init__(self, left_operand, variation, right_operand):
+        super(BetweenExpr, self).__init__(left_operand, variation)
+        self.second_operand = right_operand
+
+
+class NodeDescriptor(AstNode):
     def __init__(self, type_=None, func=None):
         self.type_ = type_
         self.func = func
@@ -440,99 +540,3 @@ class NodeDescriptor(ast.AstNode):
         if self.is_type():
             return self.type_ in node.search_labels
         return self.func(node)
-
-
-class IsExpr(BinaryExpr):
-    def __init__(self, left, right):
-        super(IsExpr, self).__init__(left, right)
-
-
-class MatchExpr(Expr):
-    def __init__(self, operand, regex):
-        self.operand = operand
-        self.regex = regex
-
-
-class InExpr(BinaryExpr):
-    def __init__(self, left, right):
-        super(InExpr, self).__init__(left, right)
-
-
-class VariableExpr(Expr):
-    def __init__(self, variable_name):
-        self.variable_name = variable_name
-
-VariableExpr.DEFAULT = VariableExpr('')
-
-
-# class ApiCallExpr(Expr):
-#     def __init__(self, operand, call):
-#         self.operand = operand
-#         self.call = call
-
-
-class PropertyExpr(Expr):
-    def __init__(self, operand, value):
-        self.operand = operand
-        self.value = value
-
-
-class MethodExpr(PropertyExpr):
-    def __init__(self, operand, value, argument):
-        super(MethodExpr, self).__init__(operand, value)
-        self.argument = argument
-
-
-class NodeQueryExpr(Expr):
-    def __init__(self, operand):
-        self.operand = operand
-
-
-class ContainsExpr(NodeQueryExpr):
-    def __init__(self, operand, argument):
-        super(ContainsExpr, self).__init__(operand)
-        self.argument = argument
-
-
-class ContainsAllExpr(NodeQueryExpr):
-    def __init__(self, operand, argument):
-        super(ContainsAllExpr, self).__init__(operand)
-        self.argument = argument
-
-
-class CountExpr(NodeQueryExpr):
-    def __init__(self, operand, argument):
-        super(CountExpr, self).__init__(operand)
-        self.argument = argument
-
-
-class NextSiblingExpr(NodeQueryExpr):
-    def __init__(self, operand):
-        super(NextSiblingExpr, self).__init__(operand)
-
-
-class PreviousSiblingExpr(NodeQueryExpr):
-    def __init__(self, operand):
-        super(PreviousSiblingExpr, self).__init__(operand)
-
-
-class WhitespaceExpr(NodeQueryExpr):
-    def __init__(self, operand, variation):
-        super(WhitespaceExpr, self).__init__(operand)
-        self.variation = variation
-
-
-class BeforeExpr(WhitespaceExpr):
-    def __init__(self, operand, variation):
-        super(BeforeExpr, self).__init__(operand, variation)
-
-
-class BetweenExpr(WhitespaceExpr):
-    def __init__(self, operand, variation, second_operand):
-        super(BetweenExpr, self).__init__(operand, variation)
-        self.second_operand = second_operand
-
-
-class AfterExpr(WhitespaceExpr):
-    def __init__(self, operand, variation):
-        super(AfterExpr, self).__init__(operand, variation)
