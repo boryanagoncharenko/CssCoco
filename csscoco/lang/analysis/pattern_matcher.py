@@ -1,9 +1,9 @@
 import abc
 import itertools
 
-import csscoco.coco.ast.ast as ast
-import csscoco.coco.analysis.expressions as expr
-import csscoco.coco.visitor_decorator as vis
+import csscoco.lang.ast.ast as ast
+import csscoco.lang.analysis.expressions as expr
+import csscoco.lang.visitor_decorator as vis
 
 
 class Filter():
@@ -47,7 +47,7 @@ class Filter():
         for seq in self._sequences:
             is_filtered, rem_nodes = WhitespaceVariationMatcher.DEFAULT.is_start_of_sequence(seq, node)
             if is_filtered:
-                return True, len(seq.all_descs)
+                return True, len(seq.nodes)
         return False, None
 
 
@@ -155,10 +155,10 @@ class Matcher(object):
     #     return PatternMatcher(filter_)
 
     def _is_node_desc_match(self, desc, node):
-        type_ = desc.type_desc.is_node_match(node)
-        if type_ and desc.has_add_constraints():
+        type_ = desc.descriptor.is_node_match(node)
+        if type_ and desc.has_constraints():
             context = expr.ExprContext(self, node)
-            result = expr.ExprEvaluator.evaluate(desc.attr_expr, context)
+            result = expr.ExprEvaluator.evaluate(desc.constraint, context)
             return result.value
         return type_
 
@@ -224,13 +224,13 @@ class WhitespaceVariationMatcher(Matcher):
         """
         assert node
         nodes = TreeWalker.get_next_siblings_including(node)
-        is_match, rem_nodes = self._get_match_and_remainder(sequence.root_desc, nodes)
+        is_match, rem_nodes = self._get_match_and_remainder(sequence.root, nodes)
         if not is_match:
             return False, None
-        rem_desc = self._get_remaining_desc(sequence.all_descs, sequence.root_desc)
+        rem_desc = self._get_remaining_desc(sequence.nodes, sequence.root)
         if not rem_desc:
             return True, rem_nodes
-        return self.is_start_of_sequence(ast.SequencePatternExpr(rem_desc), rem_nodes[0])
+        return self.is_start_of_sequence(ast.SequencePattern(rem_desc), rem_nodes[0])
 
     def _get_remaining_desc(self, all_desc, desc):
         return [i for i in all_desc if i not in [desc]]
@@ -253,16 +253,16 @@ class WhitespaceVariationMatcher(Matcher):
         Returns boolean
         """
         assert nodes
-        is_match, rem_nodes = self._get_match_and_remainder(sequence.root_desc, nodes)
+        is_match, rem_nodes = self._get_match_and_remainder(sequence.root, nodes)
         if not is_match:
             return False
-        rem_desc = [item for item in sequence.all_descs if item not in [sequence.root_desc]]
+        rem_desc = [item for item in sequence.nodes if item not in [sequence.root]]
         if not rem_desc:
             return not rem_nodes
-        s = ast.SequencePatternExpr(rem_desc)
+        s = ast.SequencePattern(rem_desc)
         return self._is_sequence_exact_nodes_match(s, rem_nodes)
 
-    @vis.visitor(ast.NodeExprWrapper)
+    @vis.visitor(ast.Node)
     def _get_match_and_remainder(self, desc, nodes):
         """
         Checks if a node descriptor matches a nodes
@@ -273,7 +273,7 @@ class WhitespaceVariationMatcher(Matcher):
             return True, nodes[1:]
         return False, nodes
 
-    @vis.visitor(ast.NodeSequenceExprWrapper)
+    @vis.visitor(ast.WhitespaceNode)
     def _get_match_and_remainder(self, desc, nodes):
         """
         A node descriptor greedily matches a sequence of nodes
@@ -320,8 +320,8 @@ class PatternMatcher(Matcher):
         """ THE RESULT HAS TO BE OF TYPE PATTERN FOR ONTOLOGICAL CONFORMANCE. PATTERN LIVES IN THE AST """
         result = []
         current_result = {}
-        nodes = self._filter_by(tree, pattern.root_desc, TreeWalker.traverse_current_and_descendants)
-        return self._process_nodes(nodes, pattern.root_desc, pattern, current_result, result)
+        nodes = self._filter_by(tree, pattern.root, TreeWalker.traverse_current_and_descendants)
+        return self._process_nodes(nodes, pattern.root, pattern, current_result, result)
 
     def _process_nodes(self, nodes, desc, pattern, current_result, result):
         for node in nodes:
@@ -388,15 +388,15 @@ class PatternMatcher(Matcher):
                 return False
         return True
 
-    @vis.visitor(ast.IsParentOfRelation)
+    @vis.visitor(ast.IsParentOf)
     def _find_target_nodes(self, relation, node):
         return self.find_children_that_match(node, relation.target_node)
 
-    @vis.visitor(ast.IsAncestorOfRelation)
+    @vis.visitor(ast.IsAncestorOf)
     def _find_target_nodes(self, relation, node):
         return self.find_descendants_that_match(node, relation.target_node)
 
-    @vis.visitor(ast.IsPreviousSiblingOfRelation)
+    @vis.visitor(ast.IsPreviousSiblingOf)
     def _find_target_nodes(self, relation, node):
         return self.find_if_next_sibling_matches(node, relation.target_node)
 

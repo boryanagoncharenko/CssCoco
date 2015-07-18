@@ -20,11 +20,6 @@ class cocoVisitor(ParseTreeVisitor):
         pass
 
 
-    # Visit a parse tree produced by cocoParser#calls_expr.
-    def visitCalls_expr(self, ctx):
-        pass
-
-
     # Visit a parse tree produced by cocoParser#whitespace_node.
     def visitWhitespace_node(self, ctx):
         pass
@@ -40,23 +35,28 @@ class cocoVisitor(ParseTreeVisitor):
         pass
 
 
+    # Visit a parse tree produced by cocoParser#arithmetic_expr.
+    def visitArithmetic_expr(self, ctx):
+        pass
+
+
+    # Visit a parse tree produced by cocoParser#call_expr.
+    def visitCall_expr(self, ctx):
+        pass
+
+
     # Visit a parse tree produced by cocoParser#list_element.
     def visitList_element(self, ctx):
         pass
 
 
-    # Visit a parse tree produced by cocoParser#call_expression.
-    def visitCall_expression(self, ctx):
-        pass
-
-
-    # Visit a parse tree produced by cocoParser#declaration.
-    def visitDeclaration(self, ctx):
-        pass
-
-
     # Visit a parse tree produced by cocoParser#convention_group.
     def visitConvention_group(self, ctx):
+        pass
+
+
+    # Visit a parse tree produced by cocoParser#node_type.
+    def visitNode_type(self, ctx):
         pass
 
 
@@ -82,11 +82,6 @@ class cocoVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by cocoParser#fork_pattern.
     def visitFork_pattern(self, ctx):
-        pass
-
-
-    # Visit a parse tree produced by cocoParser#type_expression.
-    def visitType_expression(self, ctx):
         pass
 
 

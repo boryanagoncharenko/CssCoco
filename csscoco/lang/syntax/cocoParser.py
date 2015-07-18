@@ -4,146 +4,140 @@ from io import StringIO
 package = globals().get("__package__", None)
 ischild = len(package)>0 if package is not None else False
 if ischild:
-    from csscoco.coco.syntax import cocoVisitor
+    from .cocoVisitor import cocoVisitor
 else:
     from cocoVisitor import cocoVisitor
 
 def serializedATN():
     with StringIO() as buf:
-        buf.write("\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3(")
-        buf.write("\u0126\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
+        buf.write("\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3)")
+        buf.write("\u011c\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
         buf.write("\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\4\16")
         buf.write("\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22\4\23\t\23")
-        buf.write("\4\24\t\24\4\25\t\25\3\2\7\2,\n\2\f\2\16\2/\13\2\3\3\3")
-        buf.write("\3\3\3\7\3\64\n\3\f\3\16\3\67\13\3\3\3\3\3\3\4\3\4\3\5")
-        buf.write("\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3")
-        buf.write("\5\3\5\3\5\5\5N\n\5\3\6\3\6\3\6\7\6S\n\6\f\6\16\6V\13")
-        buf.write("\6\3\6\3\6\3\6\7\6[\n\6\f\6\16\6^\13\6\5\6`\n\6\3\7\3")
-        buf.write("\7\3\7\3\7\6\7f\n\7\r\7\16\7g\3\7\3\7\3\b\3\b\5\bn\n\b")
-        buf.write("\3\b\3\b\3\t\3\t\3\t\3\t\3\t\5\tw\n\t\3\n\3\n\3\n\3\n")
-        buf.write("\3\n\3\n\3\n\3\n\5\n\u0081\n\n\3\n\3\n\3\n\3\n\3\n\3\n")
-        buf.write("\7\n\u0089\n\n\f\n\16\n\u008c\13\n\3\13\3\13\3\13\7\13")
-        buf.write("\u0091\n\13\f\13\16\13\u0094\13\13\3\f\3\f\3\f\3\f\3\f")
-        buf.write("\5\f\u009b\n\f\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r")
-        buf.write("\3\r\3\r\3\r\5\r\u00aa\n\r\3\r\3\r\3\r\3\r\3\r\3\r\7\r")
-        buf.write("\u00b2\n\r\f\r\16\r\u00b5\13\r\3\16\3\16\3\16\3\16\5\16")
-        buf.write("\u00bb\n\16\3\16\3\16\3\16\3\16\5\16\u00c1\n\16\3\16\3")
-        buf.write("\16\3\16\3\16\5\16\u00c7\n\16\3\16\3\16\3\16\5\16\u00cc")
-        buf.write("\n\16\5\16\u00ce\n\16\3\17\3\17\3\17\3\17\3\17\5\17\u00d5")
-        buf.write("\n\17\3\17\3\17\3\17\3\17\3\17\3\17\7\17\u00dd\n\17\f")
-        buf.write("\17\16\17\u00e0\13\17\3\20\3\20\3\20\5\20\u00e5\n\20\3")
-        buf.write("\21\3\21\3\21\3\21\3\21\5\21\u00ec\n\21\3\21\3\21\5\21")
-        buf.write("\u00f0\n\21\3\21\3\21\3\21\3\21\3\21\3\21\5\21\u00f8\n")
-        buf.write("\21\3\21\3\21\5\21\u00fc\n\21\7\21\u00fe\n\21\f\21\16")
-        buf.write("\21\u0101\13\21\3\22\3\22\3\22\3\22\3\22\3\22\3\22\3\22")
-        buf.write("\5\22\u010b\n\22\3\23\3\23\6\23\u010f\n\23\r\23\16\23")
-        buf.write("\u0110\3\23\3\23\3\24\3\24\3\24\3\24\7\24\u0119\n\24\f")
-        buf.write("\24\16\24\u011c\13\24\3\24\3\24\3\25\3\25\3\25\3\25\5")
-        buf.write("\25\u0124\n\25\3\25\2\6\22\30\34 \26\2\4\6\b\n\f\16\20")
-        buf.write("\22\24\26\30\32\34\36 \"$&(\2\6\4\2\4\4\n\n\4\2\23\23")
-        buf.write("\35\35\6\2\5\5\t\t\26\30\32\32\5\2\3\3\24\24\34\35\u0140")
-        buf.write("\2-\3\2\2\2\4\60\3\2\2\2\6:\3\2\2\2\bM\3\2\2\2\n_\3\2")
-        buf.write("\2\2\fa\3\2\2\2\16m\3\2\2\2\20q\3\2\2\2\22\u0080\3\2\2")
-        buf.write("\2\24\u008d\3\2\2\2\26\u0095\3\2\2\2\30\u00a9\3\2\2\2")
-        buf.write("\32\u00cd\3\2\2\2\34\u00d4\3\2\2\2\36\u00e4\3\2\2\2 \u00e6")
-        buf.write("\3\2\2\2\"\u010a\3\2\2\2$\u010c\3\2\2\2&\u0114\3\2\2\2")
-        buf.write("(\u0123\3\2\2\2*,\5\4\3\2+*\3\2\2\2,/\3\2\2\2-+\3\2\2")
-        buf.write("\2-.\3\2\2\2.\3\3\2\2\2/-\3\2\2\2\60\61\7#\2\2\61\65\7")
-        buf.write("\6\2\2\62\64\5\6\4\2\63\62\3\2\2\2\64\67\3\2\2\2\65\63")
-        buf.write("\3\2\2\2\65\66\3\2\2\2\668\3\2\2\2\67\65\3\2\2\289\7\b")
-        buf.write("\2\29\5\3\2\2\2:;\5\b\5\2;\7\3\2\2\2<=\7\n\2\2=>\5\n\6")
-        buf.write("\2>?\7\36\2\2?@\7%\2\2@N\3\2\2\2AB\7\4\2\2BC\5\30\r\2")
-        buf.write("CD\7\36\2\2DE\7%\2\2EN\3\2\2\2FG\7\21\2\2GH\5\n\6\2HI")
-        buf.write("\t\2\2\2IJ\5\30\r\2JK\7\36\2\2KL\7%\2\2LN\3\2\2\2M<\3")
-        buf.write("\2\2\2MA\3\2\2\2MF\3\2\2\2N\t\3\2\2\2OT\5\16\b\2PQ\t\3")
-        buf.write("\2\2QS\5\16\b\2RP\3\2\2\2SV\3\2\2\2TR\3\2\2\2TU\3\2\2")
-        buf.write("\2U`\3\2\2\2VT\3\2\2\2W\\\5\f\7\2XY\7\35\2\2Y[\5\16\b")
-        buf.write("\2ZX\3\2\2\2[^\3\2\2\2\\Z\3\2\2\2\\]\3\2\2\2]`\3\2\2\2")
-        buf.write("^\\\3\2\2\2_O\3\2\2\2_W\3\2\2\2`\13\3\2\2\2ab\7\13\2\2")
-        buf.write("be\5\16\b\2cd\7\16\2\2df\5\16\b\2ec\3\2\2\2fg\3\2\2\2")
-        buf.write("ge\3\2\2\2gh\3\2\2\2hi\3\2\2\2ij\7\37\2\2j\r\3\2\2\2k")
-        buf.write("l\7#\2\2ln\7\7\2\2mk\3\2\2\2mn\3\2\2\2no\3\2\2\2op\5\20")
-        buf.write("\t\2p\17\3\2\2\2qv\5\22\n\2rs\7\6\2\2st\5\30\r\2tu\7\b")
-        buf.write("\2\2uw\3\2\2\2vr\3\2\2\2vw\3\2\2\2w\21\3\2\2\2xy\b\n\1")
-        buf.write("\2yz\7!\2\2z\u0081\5\22\n\6{|\7\13\2\2|}\5\22\n\2}~\7")
-        buf.write("\37\2\2~\u0081\3\2\2\2\177\u0081\7#\2\2\u0080x\3\2\2\2")
-        buf.write("\u0080{\3\2\2\2\u0080\177\3\2\2\2\u0081\u008a\3\2\2\2")
-        buf.write("\u0082\u0083\f\5\2\2\u0083\u0084\7 \2\2\u0084\u0089\5")
-        buf.write("\22\n\6\u0085\u0086\f\4\2\2\u0086\u0087\7\33\2\2\u0087")
-        buf.write("\u0089\5\22\n\5\u0088\u0082\3\2\2\2\u0088\u0085\3\2\2")
-        buf.write("\2\u0089\u008c\3\2\2\2\u008a\u0088\3\2\2\2\u008a\u008b")
-        buf.write("\3\2\2\2\u008b\23\3\2\2\2\u008c\u008a\3\2\2\2\u008d\u0092")
-        buf.write("\5\26\f\2\u008e\u008f\7\33\2\2\u008f\u0091\5\26\f\2\u0090")
-        buf.write("\u008e\3\2\2\2\u0091\u0094\3\2\2\2\u0092\u0090\3\2\2\2")
-        buf.write("\u0092\u0093\3\2\2\2\u0093\25\3\2\2\2\u0094\u0092\3\2")
-        buf.write("\2\2\u0095\u009a\7#\2\2\u0096\u0097\7\6\2\2\u0097\u0098")
-        buf.write("\5\"\22\2\u0098\u0099\7\b\2\2\u0099\u009b\3\2\2\2\u009a")
-        buf.write("\u0096\3\2\2\2\u009a\u009b\3\2\2\2\u009b\27\3\2\2\2\u009c")
-        buf.write("\u009d\b\r\1\2\u009d\u009e\7!\2\2\u009e\u00aa\5\30\r\7")
-        buf.write("\u009f\u00a0\7\13\2\2\u00a0\u00a1\5\30\r\2\u00a1\u00a2")
-        buf.write("\7\37\2\2\u00a2\u00aa\3\2\2\2\u00a3\u00a4\5\34\17\2\u00a4")
-        buf.write("\u00a5\7\r\2\2\u00a5\u00a6\7#\2\2\u00a6\u00aa\3\2\2\2")
-        buf.write("\u00a7\u00aa\5\32\16\2\u00a8\u00aa\5\34\17\2\u00a9\u009c")
-        buf.write("\3\2\2\2\u00a9\u009f\3\2\2\2\u00a9\u00a3\3\2\2\2\u00a9")
-        buf.write("\u00a7\3\2\2\2\u00a9\u00a8\3\2\2\2\u00aa\u00b3\3\2\2\2")
-        buf.write("\u00ab\u00ac\f\6\2\2\u00ac\u00ad\7 \2\2\u00ad\u00b2\5")
-        buf.write("\30\r\7\u00ae\u00af\f\5\2\2\u00af\u00b0\7\33\2\2\u00b0")
-        buf.write("\u00b2\5\30\r\6\u00b1\u00ab\3\2\2\2\u00b1\u00ae\3\2\2")
-        buf.write("\2\u00b2\u00b5\3\2\2\2\u00b3\u00b1\3\2\2\2\u00b3\u00b4")
-        buf.write("\3\2\2\2\u00b4\31\3\2\2\2\u00b5\u00b3\3\2\2\2\u00b6\u00b7")
-        buf.write("\5\24\13\2\u00b7\u00ba\7\22\2\2\u00b8\u00bb\7#\2\2\u00b9")
-        buf.write("\u00bb\5\20\t\2\u00ba\u00b8\3\2\2\2\u00ba\u00b9\3\2\2")
-        buf.write("\2\u00bb\u00ce\3\2\2\2\u00bc\u00bd\5\24\13\2\u00bd\u00c0")
-        buf.write("\7\20\2\2\u00be\u00c1\7#\2\2\u00bf\u00c1\5\20\t\2\u00c0")
-        buf.write("\u00be\3\2\2\2\u00c0\u00bf\3\2\2\2\u00c1\u00ce\3\2\2\2")
-        buf.write("\u00c2\u00c3\5\24\13\2\u00c3\u00c6\7\f\2\2\u00c4\u00c7")
-        buf.write("\7#\2\2\u00c5\u00c7\5\20\t\2\u00c6\u00c4\3\2\2\2\u00c6")
-        buf.write("\u00c5\3\2\2\2\u00c7\u00c8\3\2\2\2\u00c8\u00cb\7 \2\2")
-        buf.write("\u00c9\u00cc\7#\2\2\u00ca\u00cc\5\20\t\2\u00cb\u00c9\3")
-        buf.write("\2\2\2\u00cb\u00ca\3\2\2\2\u00cc\u00ce\3\2\2\2\u00cd\u00b6")
-        buf.write("\3\2\2\2\u00cd\u00bc\3\2\2\2\u00cd\u00c2\3\2\2\2\u00ce")
-        buf.write("\33\3\2\2\2\u00cf\u00d0\b\17\1\2\u00d0\u00d1\7\"\2\2\u00d1")
-        buf.write("\u00d5\5\34\17\7\u00d2\u00d5\5 \21\2\u00d3\u00d5\5\36")
-        buf.write("\20\2\u00d4\u00cf\3\2\2\2\u00d4\u00d2\3\2\2\2\u00d4\u00d3")
-        buf.write("\3\2\2\2\u00d5\u00de\3\2\2\2\u00d6\u00d7\f\6\2\2\u00d7")
-        buf.write("\u00d8\t\4\2\2\u00d8\u00dd\5\34\17\7\u00d9\u00da\f\5\2")
-        buf.write("\2\u00da\u00db\t\5\2\2\u00db\u00dd\5\34\17\6\u00dc\u00d6")
-        buf.write("\3\2\2\2\u00dc\u00d9\3\2\2\2\u00dd\u00e0\3\2\2\2\u00de")
-        buf.write("\u00dc\3\2\2\2\u00de\u00df\3\2\2\2\u00df\35\3\2\2\2\u00e0")
-        buf.write("\u00de\3\2\2\2\u00e1\u00e5\7$\2\2\u00e2\u00e5\7%\2\2\u00e3")
-        buf.write("\u00e5\5&\24\2\u00e4\u00e1\3\2\2\2\u00e4\u00e2\3\2\2\2")
-        buf.write("\u00e4\u00e3\3\2\2\2\u00e5\37\3\2\2\2\u00e6\u00e7\b\21")
-        buf.write("\1\2\u00e7\u00ef\7#\2\2\u00e8\u00eb\7\13\2\2\u00e9\u00ec")
-        buf.write("\5\36\20\2\u00ea\u00ec\5\20\t\2\u00eb\u00e9\3\2\2\2\u00eb")
-        buf.write("\u00ea\3\2\2\2\u00ec\u00ed\3\2\2\2\u00ed\u00ee\7\37\2")
-        buf.write("\2\u00ee\u00f0\3\2\2\2\u00ef\u00e8\3\2\2\2\u00ef\u00f0")
-        buf.write("\3\2\2\2\u00f0\u00ff\3\2\2\2\u00f1\u00f2\f\4\2\2\u00f2")
-        buf.write("\u00f3\7\17\2\2\u00f3\u00fb\7#\2\2\u00f4\u00f7\7\13\2")
-        buf.write("\2\u00f5\u00f8\5\36\20\2\u00f6\u00f8\5\20\t\2\u00f7\u00f5")
-        buf.write("\3\2\2\2\u00f7\u00f6\3\2\2\2\u00f8\u00f9\3\2\2\2\u00f9")
-        buf.write("\u00fa\7\37\2\2\u00fa\u00fc\3\2\2\2\u00fb\u00f4\3\2\2")
-        buf.write("\2\u00fb\u00fc\3\2\2\2\u00fc\u00fe\3\2\2\2\u00fd\u00f1")
-        buf.write("\3\2\2\2\u00fe\u0101\3\2\2\2\u00ff\u00fd\3\2\2\2\u00ff")
-        buf.write("\u0100\3\2\2\2\u0100!\3\2\2\2\u0101\u00ff\3\2\2\2\u0102")
-        buf.write("\u010b\7$\2\2\u0103\u0104\7$\2\2\u0104\u0105\7\16\2\2")
-        buf.write("\u0105\u010b\7$\2\2\u0106\u0107\7\16\2\2\u0107\u010b\7")
-        buf.write("$\2\2\u0108\u0109\7$\2\2\u0109\u010b\7\16\2\2\u010a\u0102")
-        buf.write("\3\2\2\2\u010a\u0103\3\2\2\2\u010a\u0106\3\2\2\2\u010a")
-        buf.write("\u0108\3\2\2\2\u010b#\3\2\2\2\u010c\u010e\7\6\2\2\u010d")
-        buf.write("\u010f\5\b\5\2\u010e\u010d\3\2\2\2\u010f\u0110\3\2\2\2")
-        buf.write("\u0110\u010e\3\2\2\2\u0110\u0111\3\2\2\2\u0111\u0112\3")
-        buf.write("\2\2\2\u0112\u0113\7\b\2\2\u0113%\3\2\2\2\u0114\u0115")
-        buf.write("\7\25\2\2\u0115\u011a\5(\25\2\u0116\u0117\7\16\2\2\u0117")
-        buf.write("\u0119\5(\25\2\u0118\u0116\3\2\2\2\u0119\u011c\3\2\2\2")
-        buf.write("\u011a\u0118\3\2\2\2\u011a\u011b\3\2\2\2\u011b\u011d\3")
-        buf.write("\2\2\2\u011c\u011a\3\2\2\2\u011d\u011e\7\31\2\2\u011e")
-        buf.write("\'\3\2\2\2\u011f\u0124\7$\2\2\u0120\u0124\7%\2\2\u0121")
-        buf.write("\u0124\5\20\t\2\u0122\u0124\7#\2\2\u0123\u011f\3\2\2\2")
-        buf.write("\u0123\u0120\3\2\2\2\u0123\u0121\3\2\2\2\u0123\u0122\3")
-        buf.write("\2\2\2\u0124)\3\2\2\2%-\65MT\\_gmv\u0080\u0088\u008a\u0092")
-        buf.write("\u009a\u00a9\u00b1\u00b3\u00ba\u00c0\u00c6\u00cb\u00cd")
-        buf.write("\u00d4\u00dc\u00de\u00e4\u00eb\u00ef\u00f7\u00fb\u00ff")
-        buf.write("\u010a\u0110\u011a\u0123")
+        buf.write("\4\24\t\24\3\2\7\2*\n\2\f\2\16\2-\13\2\3\3\3\3\3\3\7\3")
+        buf.write("\62\n\3\f\3\16\3\65\13\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3")
+        buf.write("\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\5\4J\n")
+        buf.write("\4\3\5\3\5\3\5\7\5O\n\5\f\5\16\5R\13\5\3\5\3\5\3\5\7\5")
+        buf.write("W\n\5\f\5\16\5Z\13\5\5\5\\\n\5\3\6\3\6\3\6\3\6\6\6b\n")
+        buf.write("\6\r\6\16\6c\3\6\3\6\3\7\3\7\5\7j\n\7\3\7\3\7\3\b\3\b")
+        buf.write("\3\b\3\b\3\b\5\bs\n\b\3\t\3\t\3\t\3\t\3\t\3\t\3\t\3\t")
+        buf.write("\5\t}\n\t\3\t\3\t\3\t\3\t\3\t\3\t\7\t\u0085\n\t\f\t\16")
+        buf.write("\t\u0088\13\t\3\n\3\n\3\n\7\n\u008d\n\n\f\n\16\n\u0090")
+        buf.write("\13\n\3\13\3\13\3\13\3\13\3\13\5\13\u0097\n\13\3\f\3\f")
+        buf.write("\3\f\3\f\3\f\3\f\3\f\3\f\3\f\5\f\u00a2\n\f\3\f\3\f\3\f")
+        buf.write("\3\f\3\f\3\f\7\f\u00aa\n\f\f\f\16\f\u00ad\13\f\3\r\3\r")
+        buf.write("\3\r\3\r\3\r\3\r\3\r\3\r\5\r\u00b7\n\r\3\r\3\r\3\r\3\r")
+        buf.write("\5\r\u00bd\n\r\3\r\3\r\3\r\5\r\u00c2\n\r\5\r\u00c4\n\r")
+        buf.write("\3\16\3\16\3\16\3\16\3\16\5\16\u00cb\n\16\3\16\3\16\3")
+        buf.write("\16\3\16\3\16\3\16\7\16\u00d3\n\16\f\16\16\16\u00d6\13")
+        buf.write("\16\3\17\3\17\3\17\3\17\5\17\u00dc\n\17\3\20\3\20\3\20")
+        buf.write("\3\20\3\20\5\20\u00e3\n\20\3\20\3\20\5\20\u00e7\n\20\3")
+        buf.write("\20\3\20\3\20\3\20\3\20\3\20\5\20\u00ef\n\20\3\20\3\20")
+        buf.write("\5\20\u00f3\n\20\7\20\u00f5\n\20\f\20\16\20\u00f8\13\20")
+        buf.write("\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\5\21\u0102\n")
+        buf.write("\21\3\22\3\22\6\22\u0106\n\22\r\22\16\22\u0107\3\22\3")
+        buf.write("\22\3\23\3\23\3\23\3\23\7\23\u0110\n\23\f\23\16\23\u0113")
+        buf.write("\13\23\3\23\3\23\3\24\3\24\3\24\5\24\u011a\n\24\3\24\2")
+        buf.write("\6\20\26\32\36\25\2\4\6\b\n\f\16\20\22\24\26\30\32\34")
+        buf.write("\36 \"$&\2\7\4\2\4\4\n\n\4\2\23\23\35\35\4\2\20\20\22")
+        buf.write("\22\6\2\5\5\t\t\26\30\32\32\5\2\3\3\24\24\34\35\u0135")
+        buf.write("\2+\3\2\2\2\4.\3\2\2\2\6I\3\2\2\2\b[\3\2\2\2\n]\3\2\2")
+        buf.write("\2\fi\3\2\2\2\16m\3\2\2\2\20|\3\2\2\2\22\u0089\3\2\2\2")
+        buf.write("\24\u0091\3\2\2\2\26\u00a1\3\2\2\2\30\u00c3\3\2\2\2\32")
+        buf.write("\u00ca\3\2\2\2\34\u00db\3\2\2\2\36\u00dd\3\2\2\2 \u0101")
+        buf.write("\3\2\2\2\"\u0103\3\2\2\2$\u010b\3\2\2\2&\u0119\3\2\2\2")
+        buf.write("(*\5\4\3\2)(\3\2\2\2*-\3\2\2\2+)\3\2\2\2+,\3\2\2\2,\3")
+        buf.write("\3\2\2\2-+\3\2\2\2./\7$\2\2/\63\7\6\2\2\60\62\5\6\4\2")
+        buf.write("\61\60\3\2\2\2\62\65\3\2\2\2\63\61\3\2\2\2\63\64\3\2\2")
+        buf.write("\2\64\66\3\2\2\2\65\63\3\2\2\2\66\67\7\b\2\2\67\5\3\2")
+        buf.write("\2\289\7\n\2\29:\5\b\5\2:;\7\36\2\2;<\7&\2\2<J\3\2\2\2")
+        buf.write("=>\7\4\2\2>?\5\26\f\2?@\7\36\2\2@A\7&\2\2AJ\3\2\2\2BC")
+        buf.write("\7\21\2\2CD\5\b\5\2DE\t\2\2\2EF\5\26\f\2FG\7\36\2\2GH")
+        buf.write("\7&\2\2HJ\3\2\2\2I8\3\2\2\2I=\3\2\2\2IB\3\2\2\2J\7\3\2")
+        buf.write("\2\2KP\5\f\7\2LM\t\3\2\2MO\5\f\7\2NL\3\2\2\2OR\3\2\2\2")
+        buf.write("PN\3\2\2\2PQ\3\2\2\2Q\\\3\2\2\2RP\3\2\2\2SX\5\n\6\2TU")
+        buf.write("\7\35\2\2UW\5\f\7\2VT\3\2\2\2WZ\3\2\2\2XV\3\2\2\2XY\3")
+        buf.write("\2\2\2Y\\\3\2\2\2ZX\3\2\2\2[K\3\2\2\2[S\3\2\2\2\\\t\3")
+        buf.write("\2\2\2]^\7\13\2\2^a\5\f\7\2_`\7\16\2\2`b\5\f\7\2a_\3\2")
+        buf.write("\2\2bc\3\2\2\2ca\3\2\2\2cd\3\2\2\2de\3\2\2\2ef\7\37\2")
+        buf.write("\2f\13\3\2\2\2gh\7$\2\2hj\7\7\2\2ig\3\2\2\2ij\3\2\2\2")
+        buf.write("jk\3\2\2\2kl\5\16\b\2l\r\3\2\2\2mr\5\20\t\2no\7\6\2\2")
+        buf.write("op\5\26\f\2pq\7\b\2\2qs\3\2\2\2rn\3\2\2\2rs\3\2\2\2s\17")
+        buf.write("\3\2\2\2tu\b\t\1\2uv\7!\2\2v}\5\20\t\6wx\7\13\2\2xy\5")
+        buf.write("\20\t\2yz\7\37\2\2z}\3\2\2\2{}\7$\2\2|t\3\2\2\2|w\3\2")
+        buf.write("\2\2|{\3\2\2\2}\u0086\3\2\2\2~\177\f\5\2\2\177\u0080\7")
+        buf.write(" \2\2\u0080\u0085\5\20\t\6\u0081\u0082\f\4\2\2\u0082\u0083")
+        buf.write("\7\33\2\2\u0083\u0085\5\20\t\5\u0084~\3\2\2\2\u0084\u0081")
+        buf.write("\3\2\2\2\u0085\u0088\3\2\2\2\u0086\u0084\3\2\2\2\u0086")
+        buf.write("\u0087\3\2\2\2\u0087\21\3\2\2\2\u0088\u0086\3\2\2\2\u0089")
+        buf.write("\u008e\5\24\13\2\u008a\u008b\7\33\2\2\u008b\u008d\5\24")
+        buf.write("\13\2\u008c\u008a\3\2\2\2\u008d\u0090\3\2\2\2\u008e\u008c")
+        buf.write("\3\2\2\2\u008e\u008f\3\2\2\2\u008f\23\3\2\2\2\u0090\u008e")
+        buf.write("\3\2\2\2\u0091\u0096\7$\2\2\u0092\u0093\7\6\2\2\u0093")
+        buf.write("\u0094\5 \21\2\u0094\u0095\7\b\2\2\u0095\u0097\3\2\2\2")
+        buf.write("\u0096\u0092\3\2\2\2\u0096\u0097\3\2\2\2\u0097\25\3\2")
+        buf.write("\2\2\u0098\u0099\b\f\1\2\u0099\u009a\7!\2\2\u009a\u00a2")
+        buf.write("\5\26\f\7\u009b\u009c\7\13\2\2\u009c\u009d\5\26\f\2\u009d")
+        buf.write("\u009e\7\37\2\2\u009e\u00a2\3\2\2\2\u009f\u00a2\5\30\r")
+        buf.write("\2\u00a0\u00a2\5\32\16\2\u00a1\u0098\3\2\2\2\u00a1\u009b")
+        buf.write("\3\2\2\2\u00a1\u009f\3\2\2\2\u00a1\u00a0\3\2\2\2\u00a2")
+        buf.write("\u00ab\3\2\2\2\u00a3\u00a4\f\6\2\2\u00a4\u00a5\7 \2\2")
+        buf.write("\u00a5\u00aa\5\26\f\7\u00a6\u00a7\f\5\2\2\u00a7\u00a8")
+        buf.write("\7\33\2\2\u00a8\u00aa\5\26\f\6\u00a9\u00a3\3\2\2\2\u00a9")
+        buf.write("\u00a6\3\2\2\2\u00aa\u00ad\3\2\2\2\u00ab\u00a9\3\2\2\2")
+        buf.write("\u00ab\u00ac\3\2\2\2\u00ac\27\3\2\2\2\u00ad\u00ab\3\2")
+        buf.write("\2\2\u00ae\u00af\5\32\16\2\u00af\u00b0\7\r\2\2\u00b0\u00b1")
+        buf.write("\7$\2\2\u00b1\u00c4\3\2\2\2\u00b2\u00b3\5\22\n\2\u00b3")
+        buf.write("\u00b6\t\4\2\2\u00b4\u00b7\7$\2\2\u00b5\u00b7\5\16\b\2")
+        buf.write("\u00b6\u00b4\3\2\2\2\u00b6\u00b5\3\2\2\2\u00b7\u00c4\3")
+        buf.write("\2\2\2\u00b8\u00b9\5\22\n\2\u00b9\u00bc\7\f\2\2\u00ba")
+        buf.write("\u00bd\7$\2\2\u00bb\u00bd\5\16\b\2\u00bc\u00ba\3\2\2\2")
+        buf.write("\u00bc\u00bb\3\2\2\2\u00bd\u00be\3\2\2\2\u00be\u00c1\7")
+        buf.write(" \2\2\u00bf\u00c2\7$\2\2\u00c0\u00c2\5\16\b\2\u00c1\u00bf")
+        buf.write("\3\2\2\2\u00c1\u00c0\3\2\2\2\u00c2\u00c4\3\2\2\2\u00c3")
+        buf.write("\u00ae\3\2\2\2\u00c3\u00b2\3\2\2\2\u00c3\u00b8\3\2\2\2")
+        buf.write("\u00c4\31\3\2\2\2\u00c5\u00c6\b\16\1\2\u00c6\u00c7\7\"")
+        buf.write("\2\2\u00c7\u00cb\5\32\16\7\u00c8\u00cb\5\36\20\2\u00c9")
+        buf.write("\u00cb\5\34\17\2\u00ca\u00c5\3\2\2\2\u00ca\u00c8\3\2\2")
+        buf.write("\2\u00ca\u00c9\3\2\2\2\u00cb\u00d4\3\2\2\2\u00cc\u00cd")
+        buf.write("\f\6\2\2\u00cd\u00ce\t\5\2\2\u00ce\u00d3\5\32\16\7\u00cf")
+        buf.write("\u00d0\f\5\2\2\u00d0\u00d1\t\6\2\2\u00d1\u00d3\5\32\16")
+        buf.write("\6\u00d2\u00cc\3\2\2\2\u00d2\u00cf\3\2\2\2\u00d3\u00d6")
+        buf.write("\3\2\2\2\u00d4\u00d2\3\2\2\2\u00d4\u00d5\3\2\2\2\u00d5")
+        buf.write("\33\3\2\2\2\u00d6\u00d4\3\2\2\2\u00d7\u00dc\7#\2\2\u00d8")
+        buf.write("\u00dc\7%\2\2\u00d9\u00dc\7&\2\2\u00da\u00dc\5$\23\2\u00db")
+        buf.write("\u00d7\3\2\2\2\u00db\u00d8\3\2\2\2\u00db\u00d9\3\2\2\2")
+        buf.write("\u00db\u00da\3\2\2\2\u00dc\35\3\2\2\2\u00dd\u00de\b\20")
+        buf.write("\1\2\u00de\u00e6\7$\2\2\u00df\u00e2\7\13\2\2\u00e0\u00e3")
+        buf.write("\5\34\17\2\u00e1\u00e3\5\16\b\2\u00e2\u00e0\3\2\2\2\u00e2")
+        buf.write("\u00e1\3\2\2\2\u00e3\u00e4\3\2\2\2\u00e4\u00e5\7\37\2")
+        buf.write("\2\u00e5\u00e7\3\2\2\2\u00e6\u00df\3\2\2\2\u00e6\u00e7")
+        buf.write("\3\2\2\2\u00e7\u00f6\3\2\2\2\u00e8\u00e9\f\4\2\2\u00e9")
+        buf.write("\u00ea\7\17\2\2\u00ea\u00f2\7$\2\2\u00eb\u00ee\7\13\2")
+        buf.write("\2\u00ec\u00ef\5\34\17\2\u00ed\u00ef\5\16\b\2\u00ee\u00ec")
+        buf.write("\3\2\2\2\u00ee\u00ed\3\2\2\2\u00ef\u00f0\3\2\2\2\u00f0")
+        buf.write("\u00f1\7\37\2\2\u00f1\u00f3\3\2\2\2\u00f2\u00eb\3\2\2")
+        buf.write("\2\u00f2\u00f3\3\2\2\2\u00f3\u00f5\3\2\2\2\u00f4\u00e8")
+        buf.write("\3\2\2\2\u00f5\u00f8\3\2\2\2\u00f6\u00f4\3\2\2\2\u00f6")
+        buf.write("\u00f7\3\2\2\2\u00f7\37\3\2\2\2\u00f8\u00f6\3\2\2\2\u00f9")
+        buf.write("\u0102\7%\2\2\u00fa\u00fb\7%\2\2\u00fb\u00fc\7\16\2\2")
+        buf.write("\u00fc\u0102\7%\2\2\u00fd\u00fe\7\16\2\2\u00fe\u0102\7")
+        buf.write("%\2\2\u00ff\u0100\7%\2\2\u0100\u0102\7\16\2\2\u0101\u00f9")
+        buf.write("\3\2\2\2\u0101\u00fa\3\2\2\2\u0101\u00fd\3\2\2\2\u0101")
+        buf.write("\u00ff\3\2\2\2\u0102!\3\2\2\2\u0103\u0105\7\6\2\2\u0104")
+        buf.write("\u0106\5\6\4\2\u0105\u0104\3\2\2\2\u0106\u0107\3\2\2\2")
+        buf.write("\u0107\u0105\3\2\2\2\u0107\u0108\3\2\2\2\u0108\u0109\3")
+        buf.write("\2\2\2\u0109\u010a\7\b\2\2\u010a#\3\2\2\2\u010b\u010c")
+        buf.write("\7\25\2\2\u010c\u0111\5&\24\2\u010d\u010e\7\16\2\2\u010e")
+        buf.write("\u0110\5&\24\2\u010f\u010d\3\2\2\2\u0110\u0113\3\2\2\2")
+        buf.write("\u0111\u010f\3\2\2\2\u0111\u0112\3\2\2\2\u0112\u0114\3")
+        buf.write("\2\2\2\u0113\u0111\3\2\2\2\u0114\u0115\7\31\2\2\u0115")
+        buf.write("%\3\2\2\2\u0116\u011a\7%\2\2\u0117\u011a\7&\2\2\u0118")
+        buf.write("\u011a\5\16\b\2\u0119\u0116\3\2\2\2\u0119\u0117\3\2\2")
+        buf.write("\2\u0119\u0118\3\2\2\2\u011a\'\3\2\2\2$+\63IPX[cir|\u0084")
+        buf.write("\u0086\u008e\u0096\u00a1\u00a9\u00ab\u00b6\u00bc\u00c1")
+        buf.write("\u00c3\u00ca\u00d2\u00d4\u00db\u00e2\u00e6\u00ee\u00f2")
+        buf.write("\u00f6\u0101\u0107\u0111\u0119")
         return buf.getvalue()
 		
 
@@ -190,47 +184,47 @@ class cocoParser ( Parser ):
     T__2=30
     T__1=31
     T__0=32
-    Identifier=33
-    Integer=34
-    String=35
-    Comment=36
-    LineComment=37
-    WS=38
+    Boolean=33
+    Identifier=34
+    Integer=35
+    String=36
+    Comment=37
+    LineComment=38
+    WS=39
 
     tokenNames = [ "<INVALID>", "'not match'", "'require'", "'!='", "'{'", 
                    "'='", "'}'", "'<='", "'forbid'", "'('", "'between'", 
                    "'is'", "','", "'.'", "'after'", "'find'", "'before'", 
                    "'next-to'", "'not in'", "'['", "'>='", "'=='", "'<'", 
                    "']'", "'>'", "'or'", "'match'", "'in'", "'message'", 
-                   "')'", "'and'", "'not'", "'-'", "Identifier", "Integer", 
-                   "String", "Comment", "LineComment", "WS" ]
+                   "')'", "'and'", "'not'", "'-'", "Boolean", "Identifier", 
+                   "Integer", "String", "Comment", "LineComment", "WS" ]
 
     RULE_stylesheet = 0
     RULE_context = 1
-    RULE_declaration = 2
-    RULE_convention = 3
-    RULE_pattern = 4
-    RULE_fork_pattern = 5
-    RULE_node_declaration = 6
-    RULE_semantic_node = 7
-    RULE_type_expression = 8
-    RULE_whitespace_variation = 9
-    RULE_whitespace_node = 10
-    RULE_logic_expr = 11
-    RULE_type_expr = 12
-    RULE_calls_expr = 13
-    RULE_element = 14
-    RULE_call_expression = 15
-    RULE_repeater = 16
-    RULE_convention_group = 17
-    RULE_list_ = 18
-    RULE_list_element = 19
+    RULE_convention = 2
+    RULE_pattern = 3
+    RULE_fork_pattern = 4
+    RULE_node_declaration = 5
+    RULE_semantic_node = 6
+    RULE_node_type = 7
+    RULE_whitespace_variation = 8
+    RULE_whitespace_node = 9
+    RULE_logic_expr = 10
+    RULE_type_expr = 11
+    RULE_arithmetic_expr = 12
+    RULE_element = 13
+    RULE_call_expr = 14
+    RULE_repeater = 15
+    RULE_convention_group = 16
+    RULE_list_ = 17
+    RULE_list_element = 18
 
-    ruleNames =  [ "stylesheet", "context", "declaration", "convention", 
-                   "pattern", "fork_pattern", "node_declaration", "semantic_node", 
-                   "type_expression", "whitespace_variation", "whitespace_node", 
-                   "logic_expr", "type_expr", "calls_expr", "element", "call_expression", 
-                   "repeater", "convention_group", "list_", "list_element" ]
+    ruleNames =  [ "stylesheet", "context", "convention", "pattern", "fork_pattern", 
+                   "node_declaration", "semantic_node", "node_type", "whitespace_variation", 
+                   "whitespace_node", "logic_expr", "type_expr", "arithmetic_expr", 
+                   "element", "call_expr", "repeater", "convention_group", 
+                   "list_", "list_element" ]
 
     def __init__(self, input:TokenStream):
         super().__init__(input)
@@ -272,13 +266,13 @@ class cocoParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 43
+            self.state = 41
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==cocoParser.Identifier:
-                self.state = 40 
+                self.state = 38 
                 self.context()
-                self.state = 45
+                self.state = 43
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -300,11 +294,11 @@ class cocoParser ( Parser ):
         def Identifier(self):
             return self.getToken(cocoParser.Identifier, 0)
 
-        def declaration(self, i:int=None):
+        def convention(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(cocoParser.DeclarationContext)
+                return self.getTypedRuleContexts(cocoParser.ConventionContext)
             else:
-                return self.getTypedRuleContext(cocoParser.DeclarationContext,i)
+                return self.getTypedRuleContext(cocoParser.ConventionContext,i)
 
 
         def getRuleIndex(self):
@@ -326,60 +320,22 @@ class cocoParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 46
+            self.state = 44
             localctx.name = self.match(self.Identifier)
-            self.state = 47
+            self.state = 45
             self.match(self.T__28)
-            self.state = 51
+            self.state = 49
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << self.T__30) | (1 << self.T__24) | (1 << self.T__17))) != 0):
-                self.state = 48 
-                self.declaration()
-                self.state = 53
+                self.state = 46 
+                self.convention()
+                self.state = 51
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 54
+            self.state = 52
             self.match(self.T__26)
-        except RecognitionException as re:
-            localctx.exception = re
-            self._errHandler.reportError(self, re)
-            self._errHandler.recover(self, re)
-        finally:
-            self.exitRule()
-        return localctx
-
-    class DeclarationContext(ParserRuleContext):
-
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
-            super().__init__(parent, invokingState)
-            self.parser = parser
-
-        def convention(self):
-            return self.getTypedRuleContext(cocoParser.ConventionContext,0)
-
-
-        def getRuleIndex(self):
-            return cocoParser.RULE_declaration
-
-        def accept(self, visitor:ParseTreeVisitor):
-            if isinstance( visitor, cocoVisitor ):
-                return visitor.visitDeclaration(self)
-            else:
-                return visitor.visitChildren(self)
-
-
-
-
-    def declaration(self):
-
-        localctx = cocoParser.DeclarationContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 4, self.RULE_declaration)
-        try:
-            self.enterOuterAlt(localctx, 1)
-            self.state = 56 
-            self.convention()
         except RecognitionException as re:
             localctx.exception = re
             self._errHandler.reportError(self, re)
@@ -425,50 +381,50 @@ class cocoParser ( Parser ):
     def convention(self):
 
         localctx = cocoParser.ConventionContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 6, self.RULE_convention)
+        self.enterRule(localctx, 4, self.RULE_convention)
         self._la = 0 # Token type
         try:
-            self.state = 75
+            self.state = 71
             token = self._input.LA(1)
             if token in [self.T__24]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 58
+                self.state = 54
                 localctx.action = self.match(self.T__24)
-                self.state = 59 
+                self.state = 55 
                 localctx.target = self.pattern()
-                self.state = 60
+                self.state = 56
                 self.match(self.T__4)
-                self.state = 61
+                self.state = 57
                 localctx.message = self.match(self.String)
 
             elif token in [self.T__30]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 63
+                self.state = 59
                 localctx.action = self.match(self.T__30)
-                self.state = 64 
+                self.state = 60 
                 localctx.requirement = self.logic_expr(0)
-                self.state = 65
+                self.state = 61
                 self.match(self.T__4)
-                self.state = 66
+                self.state = 62
                 localctx.message = self.match(self.String)
 
             elif token in [self.T__17]:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 68
+                self.state = 64
                 localctx.find = self.match(self.T__17)
-                self.state = 69 
+                self.state = 65 
                 localctx.target = self.pattern()
-                self.state = 70
+                self.state = 66
                 localctx.action = self._input.LT(1)
                 _la = self._input.LA(1)
                 if not(_la==cocoParser.T__30 or _la==cocoParser.T__24):
                     localctx.action = self._errHandler.recoverInline(self)
                 self.consume()
-                self.state = 71 
+                self.state = 67 
                 localctx.requirement = self.logic_expr(0)
-                self.state = 72
+                self.state = 68
                 self.match(self.T__4)
-                self.state = 73
+                self.state = 69
                 localctx.message = self.match(self.String)
 
             else:
@@ -517,28 +473,28 @@ class cocoParser ( Parser ):
     def pattern(self):
 
         localctx = cocoParser.PatternContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 8, self.RULE_pattern)
+        self.enterRule(localctx, 6, self.RULE_pattern)
         self._la = 0 # Token type
         try:
-            self.state = 93
+            self.state = 89
             la_ = self._interp.adaptivePredict(self._input,5,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 77 
+                self.state = 73 
                 localctx.simple = self.node_declaration()
-                self.state = 82
+                self.state = 78
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 while _la==cocoParser.T__15 or _la==cocoParser.T__5:
-                    self.state = 78
+                    self.state = 74
                     localctx.relation = self._input.LT(1)
                     _la = self._input.LA(1)
                     if not(_la==cocoParser.T__15 or _la==cocoParser.T__5):
                         localctx.relation = self._errHandler.recoverInline(self)
                     self.consume()
-                    self.state = 79 
+                    self.state = 75 
                     self.node_declaration()
-                    self.state = 84
+                    self.state = 80
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
@@ -546,17 +502,17 @@ class cocoParser ( Parser ):
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 85 
+                self.state = 81 
                 localctx.fork = self.fork_pattern()
-                self.state = 90
+                self.state = 86
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 while _la==cocoParser.T__5:
-                    self.state = 86
+                    self.state = 82
                     localctx.relation = self.match(self.T__5)
-                    self.state = 87 
+                    self.state = 83 
                     self.node_declaration()
-                    self.state = 92
+                    self.state = 88
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
 
@@ -599,29 +555,29 @@ class cocoParser ( Parser ):
     def fork_pattern(self):
 
         localctx = cocoParser.Fork_patternContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 10, self.RULE_fork_pattern)
+        self.enterRule(localctx, 8, self.RULE_fork_pattern)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 95
+            self.state = 91
             self.match(self.T__23)
-            self.state = 96 
+            self.state = 92 
             self.node_declaration()
-            self.state = 99 
+            self.state = 95 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
-                self.state = 97
+                self.state = 93
                 self.match(self.T__20)
-                self.state = 98 
+                self.state = 94 
                 self.node_declaration()
-                self.state = 101 
+                self.state = 97 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if not (_la==cocoParser.T__20):
                     break
 
-            self.state = 103
+            self.state = 99
             self.match(self.T__3)
         except RecognitionException as re:
             localctx.exception = re
@@ -661,19 +617,19 @@ class cocoParser ( Parser ):
     def node_declaration(self):
 
         localctx = cocoParser.Node_declarationContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 12, self.RULE_node_declaration)
+        self.enterRule(localctx, 10, self.RULE_node_declaration)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 107
+            self.state = 103
             la_ = self._interp.adaptivePredict(self._input,7,self._ctx)
             if la_ == 1:
-                self.state = 105
+                self.state = 101
                 localctx.variable = self.match(self.Identifier)
-                self.state = 106
+                self.state = 102
                 self.match(self.T__27)
 
 
-            self.state = 109 
+            self.state = 105 
             localctx.node = self.semantic_node()
         except RecognitionException as re:
             localctx.exception = re
@@ -688,15 +644,15 @@ class cocoParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
-            self.node_type = None # Type_expressionContext
+            self.type_ = None # Node_typeContext
             self.constraint = None # Logic_exprContext
+
+        def node_type(self):
+            return self.getTypedRuleContext(cocoParser.Node_typeContext,0)
+
 
         def logic_expr(self):
             return self.getTypedRuleContext(cocoParser.Logic_exprContext,0)
-
-
-        def type_expression(self):
-            return self.getTypedRuleContext(cocoParser.Type_expressionContext,0)
 
 
         def getRuleIndex(self):
@@ -714,19 +670,19 @@ class cocoParser ( Parser ):
     def semantic_node(self):
 
         localctx = cocoParser.Semantic_nodeContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 14, self.RULE_semantic_node)
+        self.enterRule(localctx, 12, self.RULE_semantic_node)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 111 
-            localctx.node_type = self.type_expression(0)
-            self.state = 116
+            self.state = 107 
+            localctx.type_ = self.node_type(0)
+            self.state = 112
             la_ = self._interp.adaptivePredict(self._input,8,self._ctx)
             if la_ == 1:
-                self.state = 112
+                self.state = 108
                 self.match(self.T__28)
-                self.state = 113 
+                self.state = 109 
                 localctx.constraint = self.logic_expr(0)
-                self.state = 114
+                self.state = 110
                 self.match(self.T__26)
 
 
@@ -738,73 +694,73 @@ class cocoParser ( Parser ):
             self.exitRule()
         return localctx
 
-    class Type_expressionContext(ParserRuleContext):
+    class Node_typeContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
-            self.left = None # Type_expressionContext
+            self.left = None # Node_typeContext
             self.operator = None # Token
-            self.operand = None # Type_expressionContext
-            self.parenthesis = None # Type_expressionContext
+            self.operand = None # Node_typeContext
+            self.parenthesis = None # Node_typeContext
             self.primary = None # Token
-            self.right = None # Type_expressionContext
+            self.right = None # Node_typeContext
 
         def Identifier(self):
             return self.getToken(cocoParser.Identifier, 0)
 
-        def type_expression(self, i:int=None):
+        def node_type(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(cocoParser.Type_expressionContext)
+                return self.getTypedRuleContexts(cocoParser.Node_typeContext)
             else:
-                return self.getTypedRuleContext(cocoParser.Type_expressionContext,i)
+                return self.getTypedRuleContext(cocoParser.Node_typeContext,i)
 
 
         def getRuleIndex(self):
-            return cocoParser.RULE_type_expression
+            return cocoParser.RULE_node_type
 
         def accept(self, visitor:ParseTreeVisitor):
             if isinstance( visitor, cocoVisitor ):
-                return visitor.visitType_expression(self)
+                return visitor.visitNode_type(self)
             else:
                 return visitor.visitChildren(self)
 
 
 
-    def type_expression(self, _p:int=0):
+    def node_type(self, _p:int=0):
         _parentctx = self._ctx
         _parentState = self.state
-        localctx = cocoParser.Type_expressionContext(self, self._ctx, _parentState)
+        localctx = cocoParser.Node_typeContext(self, self._ctx, _parentState)
         _prevctx = localctx
-        _startState = 16
-        self.enterRecursionRule(localctx, 16, self.RULE_type_expression, _p)
+        _startState = 14
+        self.enterRecursionRule(localctx, 14, self.RULE_node_type, _p)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 126
+            self.state = 122
             token = self._input.LA(1)
             if token in [self.T__1]:
-                self.state = 119
+                self.state = 115
                 localctx.operator = self.match(self.T__1)
-                self.state = 120 
-                localctx.operand = self.type_expression(4)
+                self.state = 116 
+                localctx.operand = self.node_type(4)
 
             elif token in [self.T__23]:
-                self.state = 121
+                self.state = 117
                 self.match(self.T__23)
-                self.state = 122 
-                localctx.parenthesis = self.type_expression(0)
-                self.state = 123
+                self.state = 118 
+                localctx.parenthesis = self.node_type(0)
+                self.state = 119
                 self.match(self.T__3)
 
             elif token in [self.Identifier]:
-                self.state = 125
+                self.state = 121
                 localctx.primary = self.match(self.Identifier)
 
             else:
                 raise NoViableAltException(self)
 
             self._ctx.stop = self._input.LT(-1)
-            self.state = 136
+            self.state = 132
             self._errHandler.sync(self)
             _alt = self._interp.adaptivePredict(self._input,11,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
@@ -812,36 +768,36 @@ class cocoParser ( Parser ):
                     if self._parseListeners is not None:
                         self.triggerExitRuleEvent()
                     _prevctx = localctx
-                    self.state = 134
+                    self.state = 130
                     la_ = self._interp.adaptivePredict(self._input,10,self._ctx)
                     if la_ == 1:
-                        localctx = cocoParser.Type_expressionContext(self, _parentctx, _parentState)
+                        localctx = cocoParser.Node_typeContext(self, _parentctx, _parentState)
                         localctx.left = _prevctx
-                        self.pushNewRecursionContext(localctx, _startState, self.RULE_type_expression)
-                        self.state = 128
+                        self.pushNewRecursionContext(localctx, _startState, self.RULE_node_type)
+                        self.state = 124
                         if not self.precpred(self._ctx, 3):
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 3)")
-                        self.state = 129
+                        self.state = 125
                         localctx.operator = self.match(self.T__2)
-                        self.state = 130 
-                        localctx.right = self.type_expression(4)
+                        self.state = 126 
+                        localctx.right = self.node_type(4)
                         pass
 
                     elif la_ == 2:
-                        localctx = cocoParser.Type_expressionContext(self, _parentctx, _parentState)
+                        localctx = cocoParser.Node_typeContext(self, _parentctx, _parentState)
                         localctx.left = _prevctx
-                        self.pushNewRecursionContext(localctx, _startState, self.RULE_type_expression)
-                        self.state = 131
+                        self.pushNewRecursionContext(localctx, _startState, self.RULE_node_type)
+                        self.state = 127
                         if not self.precpred(self._ctx, 2):
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 2)")
-                        self.state = 132
+                        self.state = 128
                         localctx.operator = self.match(self.T__7)
-                        self.state = 133 
-                        localctx.right = self.type_expression(3)
+                        self.state = 129 
+                        localctx.right = self.node_type(3)
                         pass
 
              
-                self.state = 138
+                self.state = 134
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,11,self._ctx)
 
@@ -881,21 +837,21 @@ class cocoParser ( Parser ):
     def whitespace_variation(self):
 
         localctx = cocoParser.Whitespace_variationContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 18, self.RULE_whitespace_variation)
+        self.enterRule(localctx, 16, self.RULE_whitespace_variation)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 139 
+            self.state = 135 
             self.whitespace_node()
-            self.state = 144
+            self.state = 140
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==cocoParser.T__7:
-                self.state = 140
+                self.state = 136
                 self.match(self.T__7)
-                self.state = 141 
+                self.state = 137 
                 self.whitespace_node()
-                self.state = 146
+                self.state = 142
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -912,7 +868,7 @@ class cocoParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
-            self.node_type = None # Token
+            self.type_ = None # Token
             self.quantifier = None # RepeaterContext
 
         def Identifier(self):
@@ -937,20 +893,20 @@ class cocoParser ( Parser ):
     def whitespace_node(self):
 
         localctx = cocoParser.Whitespace_nodeContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 20, self.RULE_whitespace_node)
+        self.enterRule(localctx, 18, self.RULE_whitespace_node)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 147
-            localctx.node_type = self.match(self.Identifier)
-            self.state = 152
+            self.state = 143
+            localctx.type_ = self.match(self.Identifier)
+            self.state = 148
             _la = self._input.LA(1)
             if _la==cocoParser.T__28:
-                self.state = 148
+                self.state = 144
                 self.match(self.T__28)
-                self.state = 149 
+                self.state = 145 
                 localctx.quantifier = self.repeater()
-                self.state = 150
+                self.state = 146
                 self.match(self.T__26)
 
 
@@ -971,16 +927,12 @@ class cocoParser ( Parser ):
             self.operator = None # Token
             self.operand = None # Logic_exprContext
             self.parenthesis = None # Logic_exprContext
-            self.node_type = None # Token
-            self.primary_type = None # Type_exprContext
-            self.primary_call = None # Calls_exprContext
+            self.type_ = None # Type_exprContext
+            self.call = None # Arithmetic_exprContext
             self.right = None # Logic_exprContext
 
-        def Identifier(self):
-            return self.getToken(cocoParser.Identifier, 0)
-
-        def calls_expr(self):
-            return self.getTypedRuleContext(cocoParser.Calls_exprContext,0)
+        def arithmetic_expr(self):
+            return self.getTypedRuleContext(cocoParser.Arithmetic_exprContext,0)
 
 
         def type_expr(self):
@@ -1010,50 +962,41 @@ class cocoParser ( Parser ):
         _parentState = self.state
         localctx = cocoParser.Logic_exprContext(self, self._ctx, _parentState)
         _prevctx = localctx
-        _startState = 22
-        self.enterRecursionRule(localctx, 22, self.RULE_logic_expr, _p)
+        _startState = 20
+        self.enterRecursionRule(localctx, 20, self.RULE_logic_expr, _p)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 167
+            self.state = 159
             la_ = self._interp.adaptivePredict(self._input,14,self._ctx)
             if la_ == 1:
-                self.state = 155
+                self.state = 151
                 localctx.operator = self.match(self.T__1)
-                self.state = 156 
+                self.state = 152 
                 localctx.operand = self.logic_expr(5)
                 pass
 
             elif la_ == 2:
-                self.state = 157
+                self.state = 153
                 self.match(self.T__23)
-                self.state = 158 
+                self.state = 154 
                 localctx.parenthesis = self.logic_expr(0)
-                self.state = 159
+                self.state = 155
                 self.match(self.T__3)
                 pass
 
             elif la_ == 3:
-                self.state = 161 
-                localctx.operand = self.calls_expr(0)
-                self.state = 162
-                localctx.operator = self.match(self.T__21)
-                self.state = 163
-                localctx.node_type = self.match(self.Identifier)
+                self.state = 157 
+                localctx.type_ = self.type_expr()
                 pass
 
             elif la_ == 4:
-                self.state = 165 
-                localctx.primary_type = self.type_expr()
-                pass
-
-            elif la_ == 5:
-                self.state = 166 
-                localctx.primary_call = self.calls_expr(0)
+                self.state = 158 
+                localctx.call = self.arithmetic_expr(0)
                 pass
 
 
             self._ctx.stop = self._input.LT(-1)
-            self.state = 177
+            self.state = 169
             self._errHandler.sync(self)
             _alt = self._interp.adaptivePredict(self._input,16,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
@@ -1061,18 +1004,18 @@ class cocoParser ( Parser ):
                     if self._parseListeners is not None:
                         self.triggerExitRuleEvent()
                     _prevctx = localctx
-                    self.state = 175
+                    self.state = 167
                     la_ = self._interp.adaptivePredict(self._input,15,self._ctx)
                     if la_ == 1:
                         localctx = cocoParser.Logic_exprContext(self, _parentctx, _parentState)
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_logic_expr)
-                        self.state = 169
+                        self.state = 161
                         if not self.precpred(self._ctx, 4):
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 4)")
-                        self.state = 170
+                        self.state = 162
                         localctx.operator = self.match(self.T__2)
-                        self.state = 171 
+                        self.state = 163 
                         localctx.right = self.logic_expr(5)
                         pass
 
@@ -1080,17 +1023,17 @@ class cocoParser ( Parser ):
                         localctx = cocoParser.Logic_exprContext(self, _parentctx, _parentState)
                         localctx.left = _prevctx
                         self.pushNewRecursionContext(localctx, _startState, self.RULE_logic_expr)
-                        self.state = 172
+                        self.state = 164
                         if not self.precpred(self._ctx, 3):
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 3)")
-                        self.state = 173
+                        self.state = 165
                         localctx.operator = self.match(self.T__7)
-                        self.state = 174 
+                        self.state = 166 
                         localctx.right = self.logic_expr(4)
                         pass
 
              
-                self.state = 179
+                self.state = 171
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,16,self._ctx)
 
@@ -1107,10 +1050,11 @@ class cocoParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
-            self.variation = None # Whitespace_variationContext
+            self.operand = None # Arithmetic_exprContext
             self.operator = None # Token
+            self.type_ = None # Token
+            self.variation = None # Whitespace_variationContext
             self.variable = None # Token
-            self.operand = None # Semantic_nodeContext
             self.second_variable = None # Token
             self.second_operand = None # Semantic_nodeContext
 
@@ -1125,6 +1069,10 @@ class cocoParser ( Parser ):
                 return self.getTypedRuleContexts(cocoParser.Semantic_nodeContext)
             else:
                 return self.getTypedRuleContext(cocoParser.Semantic_nodeContext,i)
+
+
+        def arithmetic_expr(self):
+            return self.getTypedRuleContext(cocoParser.Arithmetic_exprContext,0)
 
 
         def whitespace_variation(self):
@@ -1146,46 +1094,40 @@ class cocoParser ( Parser ):
     def type_expr(self):
 
         localctx = cocoParser.Type_exprContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 24, self.RULE_type_expr)
+        self.enterRule(localctx, 22, self.RULE_type_expr)
+        self._la = 0 # Token type
         try:
-            self.state = 203
-            la_ = self._interp.adaptivePredict(self._input,21,self._ctx)
+            self.state = 193
+            la_ = self._interp.adaptivePredict(self._input,20,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 180 
-                localctx.variation = self.whitespace_variation()
-                self.state = 181
-                localctx.operator = self.match(self.T__16)
-                self.state = 184
-                la_ = self._interp.adaptivePredict(self._input,17,self._ctx)
-                if la_ == 1:
-                    self.state = 182
-                    localctx.variable = self.match(self.Identifier)
-                    pass
-
-                elif la_ == 2:
-                    self.state = 183 
-                    localctx.operand = self.semantic_node()
-                    pass
-
-
+                self.state = 172 
+                localctx.operand = self.arithmetic_expr(0)
+                self.state = 173
+                localctx.operator = self.match(self.T__21)
+                self.state = 174
+                localctx.type_ = self.match(self.Identifier)
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 186 
+                self.state = 176 
                 localctx.variation = self.whitespace_variation()
-                self.state = 187
-                localctx.operator = self.match(self.T__18)
-                self.state = 190
-                la_ = self._interp.adaptivePredict(self._input,18,self._ctx)
+                self.state = 177
+                localctx.operator = self._input.LT(1)
+                _la = self._input.LA(1)
+                if not(_la==cocoParser.T__18 or _la==cocoParser.T__16):
+                    localctx.operator = self._errHandler.recoverInline(self)
+                self.consume()
+                self.state = 180
+                la_ = self._interp.adaptivePredict(self._input,17,self._ctx)
                 if la_ == 1:
-                    self.state = 188
+                    self.state = 178
                     localctx.variable = self.match(self.Identifier)
                     pass
 
                 elif la_ == 2:
-                    self.state = 189 
+                    self.state = 179 
                     localctx.operand = self.semantic_node()
                     pass
 
@@ -1194,34 +1136,34 @@ class cocoParser ( Parser ):
 
             elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 192 
+                self.state = 182 
                 localctx.variation = self.whitespace_variation()
-                self.state = 193
+                self.state = 183
                 localctx.operator = self.match(self.T__22)
-                self.state = 196
-                la_ = self._interp.adaptivePredict(self._input,19,self._ctx)
+                self.state = 186
+                la_ = self._interp.adaptivePredict(self._input,18,self._ctx)
                 if la_ == 1:
-                    self.state = 194
+                    self.state = 184
                     localctx.variable = self.match(self.Identifier)
                     pass
 
                 elif la_ == 2:
-                    self.state = 195 
+                    self.state = 185 
                     localctx.operand = self.semantic_node()
                     pass
 
 
-                self.state = 198
+                self.state = 188
                 self.match(self.T__2)
-                self.state = 201
-                la_ = self._interp.adaptivePredict(self._input,20,self._ctx)
+                self.state = 191
+                la_ = self._interp.adaptivePredict(self._input,19,self._ctx)
                 if la_ == 1:
-                    self.state = 199
+                    self.state = 189
                     localctx.second_variable = self.match(self.Identifier)
                     pass
 
                 elif la_ == 2:
-                    self.state = 200 
+                    self.state = 190 
                     localctx.second_operand = self.semantic_node()
                     pass
 
@@ -1237,122 +1179,122 @@ class cocoParser ( Parser ):
             self.exitRule()
         return localctx
 
-    class Calls_exprContext(ParserRuleContext):
+    class Arithmetic_exprContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
-            self.left = None # Calls_exprContext
+            self.left = None # Arithmetic_exprContext
             self.operator = None # Token
-            self.operand = None # Calls_exprContext
-            self.primary_call = None # Call_expressionContext
+            self.operand = None # Arithmetic_exprContext
+            self.call = None # Call_exprContext
             self.primary = None # ElementContext
-            self.right = None # Calls_exprContext
-
-        def call_expression(self):
-            return self.getTypedRuleContext(cocoParser.Call_expressionContext,0)
-
+            self.right = None # Arithmetic_exprContext
 
         def element(self):
             return self.getTypedRuleContext(cocoParser.ElementContext,0)
 
 
-        def calls_expr(self, i:int=None):
+        def call_expr(self):
+            return self.getTypedRuleContext(cocoParser.Call_exprContext,0)
+
+
+        def arithmetic_expr(self, i:int=None):
             if i is None:
-                return self.getTypedRuleContexts(cocoParser.Calls_exprContext)
+                return self.getTypedRuleContexts(cocoParser.Arithmetic_exprContext)
             else:
-                return self.getTypedRuleContext(cocoParser.Calls_exprContext,i)
+                return self.getTypedRuleContext(cocoParser.Arithmetic_exprContext,i)
 
 
         def getRuleIndex(self):
-            return cocoParser.RULE_calls_expr
+            return cocoParser.RULE_arithmetic_expr
 
         def accept(self, visitor:ParseTreeVisitor):
             if isinstance( visitor, cocoVisitor ):
-                return visitor.visitCalls_expr(self)
+                return visitor.visitArithmetic_expr(self)
             else:
                 return visitor.visitChildren(self)
 
 
 
-    def calls_expr(self, _p:int=0):
+    def arithmetic_expr(self, _p:int=0):
         _parentctx = self._ctx
         _parentState = self.state
-        localctx = cocoParser.Calls_exprContext(self, self._ctx, _parentState)
+        localctx = cocoParser.Arithmetic_exprContext(self, self._ctx, _parentState)
         _prevctx = localctx
-        _startState = 26
-        self.enterRecursionRule(localctx, 26, self.RULE_calls_expr, _p)
+        _startState = 24
+        self.enterRecursionRule(localctx, 24, self.RULE_arithmetic_expr, _p)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 210
+            self.state = 200
             token = self._input.LA(1)
             if token in [self.T__0]:
-                self.state = 206
+                self.state = 196
                 localctx.operator = self.match(self.T__0)
-                self.state = 207 
-                localctx.operand = self.calls_expr(5)
+                self.state = 197 
+                localctx.operand = self.arithmetic_expr(5)
 
             elif token in [self.Identifier]:
-                self.state = 208 
-                localctx.primary_call = self.call_expression(0)
+                self.state = 198 
+                localctx.call = self.call_expr(0)
 
-            elif token in [self.T__13, self.Integer, self.String]:
-                self.state = 209 
+            elif token in [self.T__13, self.Boolean, self.Integer, self.String]:
+                self.state = 199 
                 localctx.primary = self.element()
 
             else:
                 raise NoViableAltException(self)
 
             self._ctx.stop = self._input.LT(-1)
-            self.state = 220
+            self.state = 210
             self._errHandler.sync(self)
-            _alt = self._interp.adaptivePredict(self._input,24,self._ctx)
+            _alt = self._interp.adaptivePredict(self._input,23,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
                     if self._parseListeners is not None:
                         self.triggerExitRuleEvent()
                     _prevctx = localctx
-                    self.state = 218
-                    la_ = self._interp.adaptivePredict(self._input,23,self._ctx)
+                    self.state = 208
+                    la_ = self._interp.adaptivePredict(self._input,22,self._ctx)
                     if la_ == 1:
-                        localctx = cocoParser.Calls_exprContext(self, _parentctx, _parentState)
+                        localctx = cocoParser.Arithmetic_exprContext(self, _parentctx, _parentState)
                         localctx.left = _prevctx
-                        self.pushNewRecursionContext(localctx, _startState, self.RULE_calls_expr)
-                        self.state = 212
+                        self.pushNewRecursionContext(localctx, _startState, self.RULE_arithmetic_expr)
+                        self.state = 202
                         if not self.precpred(self._ctx, 4):
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 4)")
-                        self.state = 213
+                        self.state = 203
                         localctx.operator = self._input.LT(1)
                         _la = self._input.LA(1)
                         if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << self.T__29) | (1 << self.T__25) | (1 << self.T__12) | (1 << self.T__11) | (1 << self.T__10) | (1 << self.T__8))) != 0)):
                             localctx.operator = self._errHandler.recoverInline(self)
                         self.consume()
-                        self.state = 214 
-                        localctx.right = self.calls_expr(5)
+                        self.state = 204 
+                        localctx.right = self.arithmetic_expr(5)
                         pass
 
                     elif la_ == 2:
-                        localctx = cocoParser.Calls_exprContext(self, _parentctx, _parentState)
+                        localctx = cocoParser.Arithmetic_exprContext(self, _parentctx, _parentState)
                         localctx.left = _prevctx
-                        self.pushNewRecursionContext(localctx, _startState, self.RULE_calls_expr)
-                        self.state = 215
+                        self.pushNewRecursionContext(localctx, _startState, self.RULE_arithmetic_expr)
+                        self.state = 205
                         if not self.precpred(self._ctx, 3):
                             raise FailedPredicateException(self, "self.precpred(self._ctx, 3)")
-                        self.state = 216
+                        self.state = 206
                         localctx.operator = self._input.LT(1)
                         _la = self._input.LA(1)
                         if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << self.T__31) | (1 << self.T__14) | (1 << self.T__6) | (1 << self.T__5))) != 0)):
                             localctx.operator = self._errHandler.recoverInline(self)
                         self.consume()
-                        self.state = 217 
-                        localctx.right = self.calls_expr(4)
+                        self.state = 207 
+                        localctx.right = self.arithmetic_expr(4)
                         pass
 
              
-                self.state = 222
+                self.state = 212
                 self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input,24,self._ctx)
+                _alt = self._interp.adaptivePredict(self._input,23,self._ctx)
 
         except RecognitionException as re:
             localctx.exception = re
@@ -1367,6 +1309,7 @@ class cocoParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+            self.primary_bool = None # Token
             self.primary_int = None # Token
             self.primary_str = None # Token
             self.primary_list = None # List_Context
@@ -1376,6 +1319,9 @@ class cocoParser ( Parser ):
 
         def Integer(self):
             return self.getToken(cocoParser.Integer, 0)
+
+        def Boolean(self):
+            return self.getToken(cocoParser.Boolean, 0)
 
         def list_(self):
             return self.getTypedRuleContext(cocoParser.List_Context,0)
@@ -1396,23 +1342,28 @@ class cocoParser ( Parser ):
     def element(self):
 
         localctx = cocoParser.ElementContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 28, self.RULE_element)
+        self.enterRule(localctx, 26, self.RULE_element)
         try:
-            self.state = 226
+            self.state = 217
             token = self._input.LA(1)
-            if token in [self.Integer]:
+            if token in [self.Boolean]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 223
+                self.state = 213
+                localctx.primary_bool = self.match(self.Boolean)
+
+            elif token in [self.Integer]:
+                self.enterOuterAlt(localctx, 2)
+                self.state = 214
                 localctx.primary_int = self.match(self.Integer)
 
             elif token in [self.String]:
-                self.enterOuterAlt(localctx, 2)
-                self.state = 224
+                self.enterOuterAlt(localctx, 3)
+                self.state = 215
                 localctx.primary_str = self.match(self.String)
 
             elif token in [self.T__13]:
-                self.enterOuterAlt(localctx, 3)
-                self.state = 225 
+                self.enterOuterAlt(localctx, 4)
+                self.state = 216 
                 localctx.primary_list = self.list_()
 
             else:
@@ -1426,22 +1377,18 @@ class cocoParser ( Parser ):
             self.exitRule()
         return localctx
 
-    class Call_expressionContext(ParserRuleContext):
+    class Call_exprContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
-            self.operand = None # Call_expressionContext
+            self.operand = None # Call_exprContext
             self.call = None # Token
             self.argument = None # ElementContext
             self.abstract = None # Semantic_nodeContext
 
         def semantic_node(self):
             return self.getTypedRuleContext(cocoParser.Semantic_nodeContext,0)
-
-
-        def call_expression(self):
-            return self.getTypedRuleContext(cocoParser.Call_expressionContext,0)
 
 
         def Identifier(self):
@@ -1451,94 +1398,98 @@ class cocoParser ( Parser ):
             return self.getTypedRuleContext(cocoParser.ElementContext,0)
 
 
+        def call_expr(self):
+            return self.getTypedRuleContext(cocoParser.Call_exprContext,0)
+
+
         def getRuleIndex(self):
-            return cocoParser.RULE_call_expression
+            return cocoParser.RULE_call_expr
 
         def accept(self, visitor:ParseTreeVisitor):
             if isinstance( visitor, cocoVisitor ):
-                return visitor.visitCall_expression(self)
+                return visitor.visitCall_expr(self)
             else:
                 return visitor.visitChildren(self)
 
 
 
-    def call_expression(self, _p:int=0):
+    def call_expr(self, _p:int=0):
         _parentctx = self._ctx
         _parentState = self.state
-        localctx = cocoParser.Call_expressionContext(self, self._ctx, _parentState)
+        localctx = cocoParser.Call_exprContext(self, self._ctx, _parentState)
         _prevctx = localctx
-        _startState = 30
-        self.enterRecursionRule(localctx, 30, self.RULE_call_expression, _p)
+        _startState = 28
+        self.enterRecursionRule(localctx, 28, self.RULE_call_expr, _p)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 229
+            self.state = 220
             localctx.call = self.match(self.Identifier)
-            self.state = 237
-            la_ = self._interp.adaptivePredict(self._input,27,self._ctx)
+            self.state = 228
+            la_ = self._interp.adaptivePredict(self._input,26,self._ctx)
             if la_ == 1:
-                self.state = 230
+                self.state = 221
                 self.match(self.T__23)
-                self.state = 233
+                self.state = 224
                 token = self._input.LA(1)
-                if token in [self.T__13, self.Integer, self.String]:
-                    self.state = 231 
+                if token in [self.T__13, self.Boolean, self.Integer, self.String]:
+                    self.state = 222 
                     localctx.argument = self.element()
 
                 elif token in [self.T__23, self.T__1, self.Identifier]:
-                    self.state = 232 
+                    self.state = 223 
                     localctx.abstract = self.semantic_node()
 
                 else:
                     raise NoViableAltException(self)
 
-                self.state = 235
+                self.state = 226
                 self.match(self.T__3)
 
 
             self._ctx.stop = self._input.LT(-1)
-            self.state = 253
+            self.state = 244
             self._errHandler.sync(self)
-            _alt = self._interp.adaptivePredict(self._input,30,self._ctx)
+            _alt = self._interp.adaptivePredict(self._input,29,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
                 if _alt==1:
                     if self._parseListeners is not None:
                         self.triggerExitRuleEvent()
                     _prevctx = localctx
-                    localctx = cocoParser.Call_expressionContext(self, _parentctx, _parentState)
+                    localctx = cocoParser.Call_exprContext(self, _parentctx, _parentState)
                     localctx.operand = _prevctx
-                    self.pushNewRecursionContext(localctx, _startState, self.RULE_call_expression)
-                    self.state = 239
+                    self.pushNewRecursionContext(localctx, _startState, self.RULE_call_expr)
+                    self.state = 230
                     if not self.precpred(self._ctx, 2):
                         raise FailedPredicateException(self, "self.precpred(self._ctx, 2)")
-                    self.state = 240
+                    self.state = 231
                     self.match(self.T__19)
-                    self.state = 241
+                    self.state = 232
                     localctx.call = self.match(self.Identifier)
-                    self.state = 249
-                    la_ = self._interp.adaptivePredict(self._input,29,self._ctx)
+                    self.state = 240
+                    la_ = self._interp.adaptivePredict(self._input,28,self._ctx)
                     if la_ == 1:
-                        self.state = 242
+                        self.state = 233
                         self.match(self.T__23)
-                        self.state = 245
+                        self.state = 236
                         token = self._input.LA(1)
-                        if token in [self.T__13, self.Integer, self.String]:
-                            self.state = 243 
+                        if token in [self.T__13, self.Boolean, self.Integer, self.String]:
+                            self.state = 234 
                             localctx.argument = self.element()
 
                         elif token in [self.T__23, self.T__1, self.Identifier]:
-                            self.state = 244 
+                            self.state = 235 
                             localctx.abstract = self.semantic_node()
 
                         else:
                             raise NoViableAltException(self)
 
-                        self.state = 247
+                        self.state = 238
                         self.match(self.T__3)
 
              
-                self.state = 255
+                self.state = 246
                 self._errHandler.sync(self)
-                _alt = self._interp.adaptivePredict(self._input,30,self._ctx)
+                _alt = self._interp.adaptivePredict(self._input,29,self._ctx)
 
         except RecognitionException as re:
             localctx.exception = re
@@ -1578,39 +1529,39 @@ class cocoParser ( Parser ):
     def repeater(self):
 
         localctx = cocoParser.RepeaterContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 32, self.RULE_repeater)
+        self.enterRule(localctx, 30, self.RULE_repeater)
         try:
-            self.state = 264
-            la_ = self._interp.adaptivePredict(self._input,31,self._ctx)
+            self.state = 255
+            la_ = self._interp.adaptivePredict(self._input,30,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 256
+                self.state = 247
                 localctx.exact = self.match(self.Integer)
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 257
+                self.state = 248
                 localctx.lower = self.match(self.Integer)
-                self.state = 258
+                self.state = 249
                 self.match(self.T__20)
-                self.state = 259
+                self.state = 250
                 localctx.upper = self.match(self.Integer)
                 pass
 
             elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 260
+                self.state = 251
                 self.match(self.T__20)
-                self.state = 261
+                self.state = 252
                 localctx.upper = self.match(self.Integer)
                 pass
 
             elif la_ == 4:
                 self.enterOuterAlt(localctx, 4)
-                self.state = 262
+                self.state = 253
                 localctx.lower = self.match(self.Integer)
-                self.state = 263
+                self.state = 254
                 self.match(self.T__20)
                 pass
 
@@ -1651,25 +1602,25 @@ class cocoParser ( Parser ):
     def convention_group(self):
 
         localctx = cocoParser.Convention_groupContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 34, self.RULE_convention_group)
+        self.enterRule(localctx, 32, self.RULE_convention_group)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 266
+            self.state = 257
             self.match(self.T__28)
-            self.state = 268 
+            self.state = 259 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
-                self.state = 267 
+                self.state = 258 
                 self.convention()
-                self.state = 270 
+                self.state = 261 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if not ((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << self.T__30) | (1 << self.T__24) | (1 << self.T__17))) != 0)):
                     break
 
-            self.state = 272
+            self.state = 263
             self.match(self.T__26)
         except RecognitionException as re:
             localctx.exception = re
@@ -1707,27 +1658,27 @@ class cocoParser ( Parser ):
     def list_(self):
 
         localctx = cocoParser.List_Context(self, self._ctx, self.state)
-        self.enterRule(localctx, 36, self.RULE_list_)
+        self.enterRule(localctx, 34, self.RULE_list_)
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 274
+            self.state = 265
             self.match(self.T__13)
-            self.state = 275 
+            self.state = 266 
             self.list_element()
-            self.state = 280
+            self.state = 271
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==cocoParser.T__20:
-                self.state = 276
+                self.state = 267
                 self.match(self.T__20)
-                self.state = 277 
+                self.state = 268 
                 self.list_element()
-                self.state = 282
+                self.state = 273
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 283
+            self.state = 274
             self.match(self.T__9)
         except RecognitionException as re:
             localctx.exception = re
@@ -1745,14 +1696,10 @@ class cocoParser ( Parser ):
             self.element_int = None # Token
             self.element_str = None # Token
             self.element_desc = None # Semantic_nodeContext
-            self.element_id = None # Token
 
         def semantic_node(self):
             return self.getTypedRuleContext(cocoParser.Semantic_nodeContext,0)
 
-
-        def Identifier(self):
-            return self.getToken(cocoParser.Identifier, 0)
 
         def String(self):
             return self.getToken(cocoParser.String, 0)
@@ -1775,34 +1722,27 @@ class cocoParser ( Parser ):
     def list_element(self):
 
         localctx = cocoParser.List_elementContext(self, self._ctx, self.state)
-        self.enterRule(localctx, 38, self.RULE_list_element)
+        self.enterRule(localctx, 36, self.RULE_list_element)
         try:
-            self.state = 289
-            la_ = self._interp.adaptivePredict(self._input,34,self._ctx)
-            if la_ == 1:
+            self.state = 279
+            token = self._input.LA(1)
+            if token in [self.Integer]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 285
+                self.state = 276
                 localctx.element_int = self.match(self.Integer)
-                pass
 
-            elif la_ == 2:
+            elif token in [self.String]:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 286
+                self.state = 277
                 localctx.element_str = self.match(self.String)
-                pass
 
-            elif la_ == 3:
+            elif token in [self.T__23, self.T__1, self.Identifier]:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 287 
+                self.state = 278 
                 localctx.element_desc = self.semantic_node()
-                pass
 
-            elif la_ == 4:
-                self.enterOuterAlt(localctx, 4)
-                self.state = 288
-                localctx.element_id = self.match(self.Identifier)
-                pass
-
+            else:
+                raise NoViableAltException(self)
 
         except RecognitionException as re:
             localctx.exception = re
@@ -1817,17 +1757,26 @@ class cocoParser ( Parser ):
     def sempred(self, localctx:RuleContext, ruleIndex:int, predIndex:int):
         if self._predicates == None:
             self._predicates = dict()
-        self._predicates[8] = self.type_expression_sempred
-        self._predicates[11] = self.logic_expr_sempred
-        self._predicates[13] = self.calls_expr_sempred
-        self._predicates[15] = self.call_expression_sempred
+        self._predicates[7] = self.node_type_sempred
+        self._predicates[10] = self.logic_expr_sempred
+        self._predicates[12] = self.arithmetic_expr_sempred
+        self._predicates[14] = self.call_expr_sempred
         pred = self._predicates.get(ruleIndex, None)
         if pred is None:
             raise Exception("No predicate with index:" + str(ruleIndex))
         else:
             return pred(localctx, predIndex)
 
-    def calls_expr_sempred(self, localctx:Calls_exprContext, predIndex:int):
+    def node_type_sempred(self, localctx:Node_typeContext, predIndex:int):
+            if predIndex == 0:
+                return self.precpred(self._ctx, 3)
+         
+
+            if predIndex == 1:
+                return self.precpred(self._ctx, 2)
+         
+
+    def arithmetic_expr_sempred(self, localctx:Arithmetic_exprContext, predIndex:int):
             if predIndex == 4:
                 return self.precpred(self._ctx, 4)
          
@@ -1836,17 +1785,8 @@ class cocoParser ( Parser ):
                 return self.precpred(self._ctx, 3)
          
 
-    def call_expression_sempred(self, localctx:Call_expressionContext, predIndex:int):
+    def call_expr_sempred(self, localctx:Call_exprContext, predIndex:int):
             if predIndex == 6:
-                return self.precpred(self._ctx, 2)
-         
-
-    def type_expression_sempred(self, localctx:Type_expressionContext, predIndex:int):
-            if predIndex == 0:
-                return self.precpred(self._ctx, 3)
-         
-
-            if predIndex == 1:
                 return self.precpred(self._ctx, 2)
          
 

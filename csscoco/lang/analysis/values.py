@@ -1,4 +1,4 @@
-from csscoco.coco import visitor_decorator as vis
+from csscoco.lang import visitor_decorator as vis
 
 
 class Value(object):

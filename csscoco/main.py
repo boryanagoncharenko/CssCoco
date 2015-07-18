@@ -5,12 +5,12 @@ import sys
 
 import antlr4
 
-from csscoco.coco.syntax.ast_builder import *
-import csscoco.coco.syntax.cocoLexer as cocoLexer
-import csscoco.coco.syntax.cocoParser as cocoParser
+from csscoco.lang.syntax.ast_builder import *
+import csscoco.lang.syntax.cocoLexer as cocoLexer
+import csscoco.lang.syntax.cocoParser as cocoParser
 import csscoco.css.parser as parser
 import csscoco.css.parse_tree as css
-import csscoco.coco.analysis.violations as violations
+import csscoco.lang.analysis.violations as violations
 
 
 def get_css_parse_tree():

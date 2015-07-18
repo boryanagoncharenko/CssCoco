@@ -1,7 +1,7 @@
-from csscoco.coco.ast import ast as ast
-import csscoco.coco.analysis.expressions as expr
-import csscoco.coco.visitor_decorator as vis
-import csscoco.coco.analysis.pattern_matcher as p_matcher
+from csscoco.lang.ast import ast as ast
+import csscoco.lang.analysis.expressions as expr
+import csscoco.lang.visitor_decorator as vis
+import csscoco.lang.analysis.pattern_matcher as p_matcher
 
 
 class Violations(object):
@@ -71,48 +71,48 @@ class ViolationsFinder(object):
         counter = 0
         filter_ = p_matcher.Filter(self._get_current_context().get_ignored_and_target_patterns())
         matcher = p_matcher.PatternMatcher(filter_)
-        all_ = matcher.find_pattern_in_tree(self._tree, find_require.target_pattern)
+        all_ = matcher.find_pattern_in_tree(self._tree, find_require.pattern)
         for id_node_table in all_:
             constraint_filter = p_matcher.Filter(self._get_current_context().get_ignored_patterns())
             eval_context = expr.ConstraintContext(p_matcher.PatternMatcher(constraint_filter), id_node_table)
             is_fulfilled = expr.ExprEvaluator.evaluate(find_require.constraint, eval_context)
             if not is_fulfilled.value:
-                anchor_desc = find_require.target_pattern.get_anchors()[0]
+                anchor_desc = find_require.pattern.get_anchors()[0]
                 anchor_node = id_node_table[anchor_desc]
-                self._violations.add_violation(Violation(find_require.message, anchor_node.start_position.line))
+                self._violations.add_violation(Violation(find_require.description, anchor_node.start_position.line))
                 counter += 1
         if counter > 0:
-            print(str(counter) + ' : ' + find_require.message)
+            print(str(counter) + ' : ' + find_require.description)
 
     @vis.visitor(ast.ForbidConvention)
     def visit(self, forbid):
         counter = 0
         filter_seq = p_matcher.Filter(self._get_current_context().get_ignored_patterns())
         matcher = p_matcher.PatternMatcher(filter_seq)
-        for id_node_table in matcher.find_pattern_in_tree(self._tree, forbid.target_pattern):
-            anchor_desc = forbid.target_pattern.get_anchors()[0]
+        for id_node_table in matcher.find_pattern_in_tree(self._tree, forbid.pattern):
+            anchor_desc = forbid.pattern.get_anchors()[0]
             anchor_node = id_node_table[anchor_desc]
-            self._violations.add_violation(Violation(forbid.message, anchor_node.start_position.line))
+            self._violations.add_violation(Violation(forbid.description, anchor_node.start_position.line))
             counter += 1
         if counter > 0:
-            print(str(counter) + ' : ' + forbid.message)
+            print(str(counter) + ' : ' + forbid.description)
 
     @vis.visitor(ast.FindForbidConvention)
     def visit(self, find_forbid):
         counter = 0
         filter_ = p_matcher.Filter(self._get_current_context().get_ignored_and_target_patterns())
         matcher = p_matcher.PatternMatcher(filter_)
-        all_ = matcher.find_pattern_in_tree(self._tree, find_forbid.target_pattern)
+        all_ = matcher.find_pattern_in_tree(self._tree, find_forbid.pattern)
         for id_node_table in all_:
             constraint_filter = p_matcher.Filter(self._get_current_context().get_ignored_patterns())
             eval_context = expr.ConstraintContext(p_matcher.PatternMatcher(constraint_filter), id_node_table)
             is_fulfilled = expr.ExprEvaluator.evaluate(find_forbid.constraint, eval_context)
             if is_fulfilled.value:
-                anchor_desc = find_forbid.target_pattern.get_anchors()[0]
+                anchor_desc = find_forbid.pattern.get_anchors()[0]
                 anchor_node = id_node_table[anchor_desc]
-                self._violations.add_violation(Violation(find_forbid.message, anchor_node.start_position.line))
+                self._violations.add_violation(Violation(find_forbid.description, anchor_node.start_position.line))
                 counter += 1
         if counter > 0:
-            print(str(counter) + ' : ' + find_forbid.message)
+            print(str(counter) + ' : ' + find_forbid.description)
         # return expr.ExprEvaluator.evaluate(find_forbid.constraint, self._context[0])
 

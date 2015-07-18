@@ -17,7 +17,7 @@ Semantic
   require p.name match lowercase
   message 'All id and class names should be lowercase'
 
-  find p=property{not is-vendor-specific}
+  find p=property{is-vendor-specific == false}
   require p.name match lowercase
   message 'Properties should be lowercase (vendor-specific properties are exception)'
 

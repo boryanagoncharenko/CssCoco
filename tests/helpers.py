@@ -1,4 +1,4 @@
-from csscoco.coco.ast import ast as ast
+from csscoco.lang.ast import ast as ast
 import csscoco.css.parse_tree as parse
 
 
@@ -36,17 +36,17 @@ class PatternConstructor(object):
 
     @staticmethod
     def build_node_desc(type_):
-        return ast.NodeExprWrapper(ast.NodeDescriptor(type_=type_))
+        return ast.Node(ast.NodeDescriptor(type_=type_))
 
     @staticmethod
     def build_seq_desc(repeater):
-        return ast.NodeSequenceExprWrapper(ast.NodeDescriptor(), repeater)
+        return ast.WhitespaceNode(ast.NodeDescriptor(), repeater)
 
     @staticmethod
     def build_seq_desc_type(type_, repeater):
-        return ast.NodeSequenceExprWrapper(ast.NodeDescriptor(type_=type_), repeater)
+        return ast.WhitespaceNode(ast.NodeDescriptor(type_=type_), repeater)
 
     @staticmethod
     def single_node(type_):
         node_expr = PatternConstructor.build_node_desc(type_)
-        return ast.PatternExpr(node_expr, [node_expr], ast.Relations())
+        return ast.Pattern(node_expr, [node_expr], ast.NodeRelations())
