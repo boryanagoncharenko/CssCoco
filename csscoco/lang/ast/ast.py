@@ -44,9 +44,9 @@ class WhitespaceContext(Context):
 
     def get_ignored_patterns(self):
         # return []
-        return [SequencePattern([Node(NodeDescriptor('newline')),
-                                     WhitespaceNode(NodeDescriptor('indent'), Repeater(1, 1)),
-                                     Node(NodeDescriptor('comment'))]),
+        return [SequencePattern([Node(NodeTypeDescriptor('newline')),
+                                     WhitespaceNode(NodeTypeDescriptor('indent'), Repeater(1, 1)),
+                                     Node(NodeTypeDescriptor('comment'))]),
                 SequencePattern.build_simple_seq('newline', 'comment'),
                 SequencePattern.build_simple_seq('indent'),
                 SequencePattern.build_simple_seq('comment')
@@ -122,7 +122,7 @@ class FindForbidConvention(FindConvention):
         super(FindForbidConvention, self).__init__(pattern, description, constraint)
 
 
-class Pattern(AstNode):
+class PatternDescriptor(AstNode):
     def __init__(self, root, nodes, relations):
         self.root = root
         self.nodes = nodes
@@ -172,7 +172,7 @@ class NodeRelations(object):
 NodeRelations.EMPTY = NodeRelations()
 
 
-class SequencePattern(Pattern):
+class SequencePattern(PatternDescriptor):
     """
     A Sequence is a specific type of pattern with nodes that are only adjacent siblings
     """
@@ -189,7 +189,7 @@ class SequencePattern(Pattern):
         res = []
         for node_type in node_type_expr:
             # is_expr = IsExpr(ImplicitVariableExpr.DEFAULT, node_type)
-            res.append(Node(NodeDescriptor.build_type(node_type)))
+            res.append(Node(NodeTypeDescriptor.build_type(node_type)))
         return SequencePattern(res)
 
 
@@ -227,7 +227,7 @@ class IsNextSiblingOf(NodeRelation):
         super(IsNextSiblingOf, self).__init__(target_node)
 
 
-class NodeBase(AstNode):
+class NodeDescriptor(AstNode):
     def __init__(self, descriptor):
         self.descriptor = descriptor
 
@@ -238,7 +238,7 @@ class NodeBase(AstNode):
         pass
 
 
-class WhitespaceNode(NodeBase):
+class WhitespaceNode(NodeDescriptor):
     def __init__(self, descriptor, repeater):
         super(WhitespaceNode, self).__init__(descriptor)
         self.repeater = repeater
@@ -276,8 +276,7 @@ class Repeater(object):
 Repeater.DEFAULT = Repeater()
 
 
-class Node(NodeBase):
-    # TODO: should this be NodeExpr?
+class Node(NodeDescriptor):
     def __init__(self, descriptor, constraint=None, identifier=None):
         super(Node, self).__init__(descriptor)
         self.constraint = constraint
@@ -483,22 +482,22 @@ class BetweenExpr(NodeQueryWithArgExpr):
         self.second_operand = right_operand
 
 
-class NodeDescriptor(AstNode):
+class NodeTypeDescriptor(AstNode):
     def __init__(self, type_=None, func=None):
         self.type_ = type_
         self.func = func
 
     @staticmethod
     def build_any():
-        return NodeDescriptor()
+        return NodeTypeDescriptor()
 
     @staticmethod
     def build_type(type_):
-        return NodeDescriptor(type_=type_)
+        return NodeTypeDescriptor(type_=type_)
 
     @staticmethod
     def build_expr(f):
-        return NodeDescriptor(func=f)
+        return NodeTypeDescriptor(func=f)
 
     def is_any(self):
         return not self.type_ and not self.func

@@ -17,7 +17,7 @@ def real_case_expr():
     rule_node = ast.Node(ast.AndExpr(attr_expr1, attr_expr2))
 
     relations = ast.NodeRelations()
-    pattern = ast.Pattern(rule_node, [rule_node], relations)
+    pattern = ast.PatternDescriptor(rule_node, [rule_node], relations)
 
     convention = ast.ForbidConvention(pattern, "Do leave empty ruleset")
     context = ast.SemanticContext([convention], None)

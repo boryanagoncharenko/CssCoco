@@ -1,7 +1,12 @@
 from csscoco.lang.analysis import values as values
 
 
-class Node(object):
+class CssPattern(object):
+    # this is the matched pattern of actual nodes
+    pass
+
+
+class CssNode(object):
 
     _print_indent = '  '
 
@@ -53,7 +58,7 @@ class Node(object):
         return self.parent is not None
 
     def pretty_print(self, level=0, verbose=False):
-        s = ''.join(['\n', Node._print_indent*level, self._type, ':'])
+        s = ''.join(['\n', CssNode._print_indent*level, self._type, ':'])
         if verbose:
             s = ''.join([s, self.get_position_str()])
         for child in self.value:
@@ -79,13 +84,13 @@ class Node(object):
             yield from child._get_terminal_nodes()
 
 
-class TerminalNode(Node):
+class TerminalCssNode(CssNode):
 
     def __init__(self, type_, value, categories=None):
-        super(TerminalNode, self).__init__(type_, value, categories)
+        super(TerminalCssNode, self).__init__(type_, value, categories)
 
     def _register_api(self):
-        super(TerminalNode, self)._register_api()
+        super(TerminalCssNode, self)._register_api()
         self._api['value'] = self._get_value
 
     def _to_string(self):
@@ -95,7 +100,7 @@ class TerminalNode(Node):
         return False
 
     def pretty_print(self, level=0, verbose=False):
-        s = ''.join(['\n', Node._print_indent*level, self._type, ': \'', self.value, '\''])
+        s = ''.join(['\n', CssNode._print_indent*level, self._type, ': \'', self.value, '\''])
         if verbose:
             s = ''.join([s, self.get_position_str()])
         return s
@@ -110,7 +115,7 @@ class TerminalNode(Node):
         return values.String(self.value)
 
 
-class Declaration(Node):
+class Declaration(CssNode):
 
     def __init__(self, value):
         super(Declaration, self).__init__('declaration', value)
@@ -127,7 +132,7 @@ class Declaration(Node):
 
     def _get_value(self):
         for i in range(1, len(self.value), 1):
-            if type(self.value[-i]) is not TerminalNode:
+            if type(self.value[-i]) is not TerminalCssNode:
                 return values.Node(self.value[-i])
 
     def is_vendor_specific(self):
@@ -137,7 +142,7 @@ class Declaration(Node):
         return values.String(param.value)
 
 
-class Property(TerminalNode):
+class Property(TerminalCssNode):
 
     _vendor_prefixes = {'-ms-', 'mso-', '-moz-', '-o-', '-atsc-', '-wap-', '-webkit-', '-khtml-'}
 
@@ -178,7 +183,7 @@ class Property(TerminalNode):
         return self._get_name()
 
 
-class CombinatorSelector(Node):
+class CombinatorSelector(CssNode):
     pass
 
 
@@ -198,7 +203,7 @@ class GeneralSiblingSelector(CombinatorSelector):
     pass
 
 
-class SimpleSelector(TerminalNode):
+class SimpleSelector(TerminalCssNode):
     def __init__(self, type_, name):
         super(SimpleSelector, self).__init__(type_, name)
 
@@ -251,7 +256,7 @@ class ClassSelector(SimpleSelector):
         return values.String(self._name)
 
 
-class AttributeSelector(Node):
+class AttributeSelector(CssNode):
     def __init__(self, children):
         super(AttributeSelector, self).__init__('attribute-selector', children)
         self.attribute = children[0]
@@ -268,7 +273,7 @@ class AttributeSelector(Node):
         return values.Undefined.VALUE
 
 
-class Attribute(TerminalNode):
+class Attribute(TerminalCssNode):
     def __init__(self, value):
         super(Attribute, self).__init__('attribute', value)
 
@@ -281,7 +286,7 @@ class PseudoSelector(SimpleSelector):
     pass
 
 
-class Function(Node):
+class Function(CssNode):
     def __init__(self, value):
         super(Function, self).__init__(value[0].value, value, categories=['function'])
 
@@ -293,7 +298,7 @@ class Function(Node):
         return values.String(self.value[0].value)
 
 
-class Hex(TerminalNode):
+class Hex(TerminalCssNode):
     def __init__(self, value):
         super(Hex, self).__init__('hex', value)
         self._is_long = len(self.value) > 4
@@ -306,7 +311,7 @@ class Hex(TerminalNode):
         return values.Boolean.build(self._is_long)
 
 
-class Number(TerminalNode):
+class Number(TerminalCssNode):
     def __init__(self, value, float_value):
         super(Number, self).__init__('number', value)
         self.float_value = float_value
@@ -319,7 +324,7 @@ class Number(TerminalNode):
         return values.Decimal(self.float_value)
 
 
-class String(TerminalNode):
+class String(TerminalCssNode):
 
     def __init__(self, value):
         super(String, self).__init__('string', value)
@@ -339,7 +344,7 @@ class String(TerminalNode):
         return values.Boolean.build(self.value[0] == '"')
 
 
-class AtRule(Node):
+class AtRule(CssNode):
     pass
 
 
@@ -379,7 +384,7 @@ class ParseTreeBuilder(object):
 
     def _build(self, l):
         if type(l) is not list:
-            return TerminalNode('symbol', l)
+            return TerminalCssNode('symbol', l)
         if len(l) == 0:
             raise ValueError('Argument must be a non-empty list')
 
@@ -399,7 +404,7 @@ class ParseTreeBuilder(object):
                 return String(node_value)
             if node_type == 'delim':
                 pass
-            return TerminalNode(node_type, node_value)
+            return TerminalCssNode(node_type, node_value)
 
         children = []
         for i in range(1, len(l)):
@@ -431,7 +436,7 @@ class ParseTreeBuilder(object):
             if keyword == 'import':
                 children.pop(0)
                 return Import(children)
-        return Node(node_type, children)
+        return CssNode(node_type, children)
 
     def _is_terminal(self, l):
         return len(l) == 2 and type(l[1]) is not list

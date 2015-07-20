@@ -79,11 +79,11 @@ class ToGo(object):
     @staticmethod
     def conv1():
         msg = 'Use em instead of pt, px, cm'
-        dim = Node(NodeDescriptor('dimension'))
-        id = Node(NodeDescriptor('ident'), identifier='i')
+        dim = Node(NodeTypeDescriptor('dimension'))
+        id = Node(NodeTypeDescriptor('ident'), identifier='i')
         relations = NodeRelations()
         relations.register_relation(dim, IsParentOf(id))
-        pattern = Pattern(dim, [dim, id], relations)
+        pattern = PatternDescriptor(dim, [dim, id], relations)
 
         requirement = EqualExpr(PropertyExpr(VariableExpr('i'), PropertyExpr('value')), StringExpr('em'))
 
@@ -94,8 +94,8 @@ class ToGo(object):
     def conv2():
         msg = 'Avoid using z-index property'
         name_expr = EqualExpr(PropertyExpr(VariableExpr('current'), StringExpr('name')), StringExpr('z-index'))
-        and_ = Node(NodeDescriptor('property'), name_expr)
-        pattern = Pattern(and_, [and_], NodeRelations())
+        and_ = Node(NodeTypeDescriptor('property'), name_expr)
+        pattern = PatternDescriptor(and_, [and_], NodeRelations())
 
         return ForbidConvention(pattern, msg)
 
@@ -103,25 +103,25 @@ class ToGo(object):
     @staticmethod
     def conv3():
         msg = 'Do not use !important'
-        node = Node(NodeDescriptor('important'))
-        pattern = Pattern(node, [node], NodeRelations())
+        node = Node(NodeTypeDescriptor('important'))
+        pattern = PatternDescriptor(node, [node], NodeRelations())
 
         return ForbidConvention(pattern, msg)
 
     @staticmethod
     def conv4():
         msg = 'Do not use ids'
-        node = Node(NodeDescriptor('id'))
-        pattern = Pattern(node, [node], NodeRelations())
+        node = Node(NodeTypeDescriptor('id'))
+        pattern = PatternDescriptor(node, [node], NodeRelations())
 
         return ForbidConvention(pattern, msg)
 
     @staticmethod
     def conv5():
         msg = 'Id and class names should be lowercase'
-        node = Node(NodeDescriptor.build_expr(lambda n: 'class' in n.search_labels or 'id' in n.search_labels),
+        node = Node(NodeTypeDescriptor.build_expr(lambda n: 'class' in n.search_labels or 'id' in n.search_labels),
                                identifier='n')
-        pattern = Pattern(node, [node], NodeRelations())
+        pattern = PatternDescriptor(node, [node], NodeRelations())
         requirement = MatchExpr(PropertyExpr(VariableExpr('n'), 'name'), StringExpr('^[a-z\-]+$'))
 
         return FindRequireConvention(pattern, msg, requirement)
@@ -130,10 +130,10 @@ class ToGo(object):
     def conv6():
         msg = 'Properties should be lowercase; vendor-specific properties are exception'
         attr = NotExpr(PropertyExpr(VariableExpr('current'), 'is-vendor-specific'))
-        node = Node(NodeDescriptor.build_type('property'),
+        node = Node(NodeTypeDescriptor.build_type('property'),
                                constraint=attr,
                                identifier='p')
-        pattern = Pattern(node, [node], NodeRelations())
+        pattern = PatternDescriptor(node, [node], NodeRelations())
         requirement = MatchExpr(PropertyExpr(VariableExpr('p'), 'name'), StringExpr('^[^A-Z]+$'))
 
         return FindRequireConvention(pattern, msg, requirement)
@@ -141,12 +141,12 @@ class ToGo(object):
     @staticmethod
     def conv7():
         msg = 'All values except the contents of strings should be lowercase'
-        value_part_node = Node(NodeDescriptor.build_expr(lambda n: 'string' not in n.search_labels),
+        value_part_node = Node(NodeTypeDescriptor.build_expr(lambda n: 'string' not in n.search_labels),
                                           identifier='n')
-        value_node = Node(NodeDescriptor.build_type('value'))
+        value_node = Node(NodeTypeDescriptor.build_type('value'))
         relations = NodeRelations()
         relations.register_relation(value_node, IsAncestorOf(value_part_node))
-        pattern = Pattern(value_node, [value_node, value_part_node], relations)
+        pattern = PatternDescriptor(value_node, [value_node, value_part_node], relations)
         requirement = MatchExpr(PropertyExpr(VariableExpr('n'), 'string'), StringExpr('^[^A-Z]+$'))
 
         return FindRequireConvention(pattern, msg, requirement)
@@ -154,11 +154,11 @@ class ToGo(object):
     @staticmethod
     def conv8():
         msg = 'Attribute selectors and their values should be lowercase'
-        attr_selector = Node(NodeDescriptor.build_type('attribute-selector'))
-        any_selector = Node(NodeDescriptor.build_any(), identifier='a')
+        attr_selector = Node(NodeTypeDescriptor.build_type('attribute-selector'))
+        any_selector = Node(NodeTypeDescriptor.build_any(), identifier='a')
         relations = NodeRelations()
         relations.register_relation(attr_selector, IsParentOf(any_selector))
-        pattern = Pattern(attr_selector, [attr_selector, any_selector], relations)
+        pattern = PatternDescriptor(attr_selector, [attr_selector, any_selector], relations)
         requirement = MatchExpr(PropertyExpr(VariableExpr('a'), 'string'), StringExpr('^[^A-Z]+$'))
 
         return FindRequireConvention(pattern, msg, requirement)
@@ -166,8 +166,8 @@ class ToGo(object):
     @staticmethod
     def conv9():
         msg = 'Html tags should be lowercase'
-        node = Node(NodeDescriptor.build_type('tag'), identifier='t')
-        pattern = Pattern(node, [node], NodeRelations())
+        node = Node(NodeTypeDescriptor.build_type('tag'), identifier='t')
+        pattern = PatternDescriptor(node, [node], NodeRelations())
         requirement = MatchExpr(PropertyExpr(VariableExpr('t'), 'name'), StringExpr('^[^A-Z]+$'))
 
         return FindRequireConvention(pattern, msg, requirement)
@@ -175,8 +175,8 @@ class ToGo(object):
     @staticmethod
     def conv10():
         msg = 'Put a ; at the end of declarations'
-        node = Node(NodeDescriptor.build_type('declaration'), identifier='d')
-        pattern = Pattern(node, [node], NodeRelations())
+        node = Node(NodeTypeDescriptor.build_type('declaration'), identifier='d')
+        pattern = PatternDescriptor(node, [node], NodeRelations())
         requirement = EqualExpr(PropertyExpr(
             PropertyExpr(VariableExpr('d'), MethodExpr('child', -1)), 'string'), StringExpr(';'))
 
@@ -185,11 +185,11 @@ class ToGo(object):
     @staticmethod
     def conv11():
         msg = 'Do not put quotes in url declarations'
-        url = Node(NodeDescriptor.build_type('uri'))
-        string = Node(NodeDescriptor.build_type('string'))
+        url = Node(NodeTypeDescriptor.build_type('uri'))
+        string = Node(NodeTypeDescriptor.build_type('string'))
         relations = NodeRelations()
         relations.register_relation(url, IsParentOf(string))
-        pattern = Pattern(url, [url, string], relations)
+        pattern = PatternDescriptor(url, [url, string], relations)
 
         return ForbidConvention(pattern, msg)
 
@@ -200,8 +200,8 @@ class ToGo(object):
         match_short = MatchExpr(PropertyExpr(VariableExpr(''), 'string'),
                                 StringExpr('(?P<gr1>[0-9a-f])(?P=gr1)(?P<gr2>[0-9a-f])(?P=gr2)(?P<gr3>[0-9a-f])(?P=gr3)'))
         attr = AndExpr(is_long, match_short)
-        hex_value = Node(NodeDescriptor.build_type('hex'), constraint=attr)
-        pattern = Pattern(hex_value, [hex_value], NodeRelations())
+        hex_value = Node(NodeTypeDescriptor.build_type('hex'), constraint=attr)
+        pattern = PatternDescriptor(hex_value, [hex_value], NodeRelations())
 
         return ForbidConvention(pattern, msg)
 
@@ -209,26 +209,26 @@ class ToGo(object):
     def conv13():
         msg = 'Use the shorthand margin property instead'
         attr = ContainsAllExpr(VariableExpr(''), ListExpr([
-            Node(NodeDescriptor.build_type('property'), EqualExpr(PropertyExpr(VariableExpr(''), 'name'), StringExpr('margin-right'))),
-            Node(NodeDescriptor.build_type('property'), EqualExpr(PropertyExpr(VariableExpr(''), 'name'), StringExpr('margin-left'))),
-            Node(NodeDescriptor.build_type('property'), EqualExpr(PropertyExpr(VariableExpr(''), 'name'), StringExpr('margin-top'))),
-            Node(NodeDescriptor.build_type('property'), EqualExpr(PropertyExpr(VariableExpr(''), 'name'), StringExpr('margin-bottom'))),
+            Node(NodeTypeDescriptor.build_type('property'), EqualExpr(PropertyExpr(VariableExpr(''), 'name'), StringExpr('margin-right'))),
+            Node(NodeTypeDescriptor.build_type('property'), EqualExpr(PropertyExpr(VariableExpr(''), 'name'), StringExpr('margin-left'))),
+            Node(NodeTypeDescriptor.build_type('property'), EqualExpr(PropertyExpr(VariableExpr(''), 'name'), StringExpr('margin-top'))),
+            Node(NodeTypeDescriptor.build_type('property'), EqualExpr(PropertyExpr(VariableExpr(''), 'name'), StringExpr('margin-bottom'))),
         ]))
-        rule = Node(NodeDescriptor.build_type('ruleset'), constraint=attr)
+        rule = Node(NodeTypeDescriptor.build_type('ruleset'), constraint=attr)
 
-        pattern = Pattern(rule, [rule], NodeRelations())
+        pattern = PatternDescriptor(rule, [rule], NodeRelations())
 
         return ForbidConvention(pattern, msg)
 
     @staticmethod
     def conv14():
         msg = 'Do not use units after 0 values'
-        dim = Node(NodeDescriptor('dimension'))
+        dim = Node(NodeTypeDescriptor('dimension'))
         value_zero = EqualExpr(PropertyExpr(VariableExpr(''), 'value'), IntegerExpr(0))
-        num = Node(NodeDescriptor('number'), constraint=value_zero)
+        num = Node(NodeTypeDescriptor('number'), constraint=value_zero)
         relations = NodeRelations()
         relations.register_relation(dim, IsParentOf(num))
-        pattern = Pattern(dim, [dim, num], relations)
+        pattern = PatternDescriptor(dim, [dim, num], relations)
 
         return ForbidConvention(pattern, msg)
 
@@ -237,8 +237,8 @@ class ToGo(object):
         msg = 'Use a leading zero for decimal values'
         value_btw = AndExpr(GreaterThanExpr(PropertyExpr(VariableExpr(''), 'value'), IntegerExpr(-1)),
                             LessThanExpr(PropertyExpr(VariableExpr(''), 'value'), IntegerExpr(1)))
-        node = Node(NodeDescriptor.build_type('number'), constraint=value_btw, identifier='n')
-        pattern = Pattern(node, [node], NodeRelations())
+        node = Node(NodeTypeDescriptor.build_type('number'), constraint=value_btw, identifier='n')
+        pattern = PatternDescriptor(node, [node], NodeRelations())
         requirement = MatchExpr(PropertyExpr(VariableExpr('n'), 'string'), StringExpr('^0.*'))
 
         return FindRequireConvention(pattern, msg, requirement)
@@ -246,8 +246,8 @@ class ToGo(object):
     @staticmethod
     def conv16():
         msg = 'Use single quotes in attribute selectors'
-        node = Node(NodeDescriptor.build_type('attribute-value'), identifier='v')
-        pattern = Pattern(node, [node], NodeRelations())
+        node = Node(NodeTypeDescriptor.build_type('attribute-value'), identifier='v')
+        pattern = PatternDescriptor(node, [node], NodeRelations())
         requirement = AndExpr(IsExpr(VariableExpr('v'), NodeTypeExpr('string')),
                               PropertyExpr(VariableExpr('v'), 'has-single-quotes'))
 
@@ -256,11 +256,11 @@ class ToGo(object):
     @staticmethod
     def conv17():
         msg = 'Use single quotes in charsets'
-        charset = Node(NodeDescriptor('charset'))
-        string = Node(NodeDescriptor('string'), identifier='s')
+        charset = Node(NodeTypeDescriptor('charset'))
+        string = Node(NodeTypeDescriptor('string'), identifier='s')
         relations = NodeRelations()
         relations.register_relation(charset, IsParentOf(string))
-        pattern = Pattern(charset, [charset, string], relations)
+        pattern = PatternDescriptor(charset, [charset, string], relations)
         requirement = PropertyExpr(VariableExpr('s'), StringExpr('has-double-quotes'))
 
         return FindRequireConvention(pattern, msg, requirement)
@@ -268,11 +268,11 @@ class ToGo(object):
     @staticmethod
     def conv18():
         msg = 'Use single quotes in values'
-        value = Node(NodeDescriptor('value'))
-        string = Node(NodeDescriptor('string'), identifier='s')
+        value = Node(NodeTypeDescriptor('value'))
+        string = Node(NodeTypeDescriptor('string'), identifier='s')
         relations = NodeRelations()
         relations.register_relation(value, IsParentOf(string))
-        pattern = Pattern(value, [value, string], relations)
+        pattern = PatternDescriptor(value, [value, string], relations)
         requirement = PropertyExpr(VariableExpr('s'), StringExpr('has-single-quotes'))
 
         return FindRequireConvention(pattern, msg, requirement)
@@ -280,19 +280,19 @@ class ToGo(object):
     @staticmethod
     def conv19():
         msg = 'Do not specify the encoding of style sheets as these assume UTF-8.'
-        charset = Node(NodeDescriptor('charset'))
-        pattern = Pattern(charset, [charset], NodeRelations())
+        charset = Node(NodeTypeDescriptor('charset'))
+        pattern = PatternDescriptor(charset, [charset], NodeRelations())
 
         return ForbidConvention(pattern, msg)
 
     @staticmethod
     def conv20():
         msg = 'Omit the protocol http(s) in url'
-        url = Node(NodeDescriptor('uri'))
-        raw = Node(NodeDescriptor('raw'), identifier='r')
+        url = Node(NodeTypeDescriptor('uri'))
+        raw = Node(NodeTypeDescriptor('raw'), identifier='r')
         relations = NodeRelations()
         relations.register_relation(url, IsParentOf(raw))
-        pattern = Pattern(url, [url, raw], relations)
+        pattern = PatternDescriptor(url, [url, raw], relations)
         requirement = NotExpr(MatchExpr(PropertyExpr(VariableExpr('r'), StringExpr('string')), StringExpr('(?i)https?:.*')))
 
         return FindRequireConvention(pattern, msg, requirement)
@@ -303,8 +303,8 @@ class ToGo(object):
         # the convention is forbid tag (class or id), and it is cool to be like that, however, that is a variation
         # and not a sequence
         msg = 'Do not overqualify classes and ids with html tags'
-        seq = SequencePattern([Node(NodeDescriptor.build_type('tag')),
-                                   Node(NodeDescriptor.build_expr(lambda n: 'id' in n.search_labels
+        seq = SequencePattern([Node(NodeTypeDescriptor.build_type('tag')),
+                                   Node(NodeTypeDescriptor.build_expr(lambda n: 'id' in n.search_labels
                                                                              or 'class' in n.search_labels))
                                    ])
 
@@ -314,11 +314,11 @@ class ToGo(object):
     def conv22():
         msg = 'Put one or two blank lines between rules'
 
-        seq = SequencePattern([Node(NodeDescriptor.build_type('ruleset'), identifier='r1'),
-                                   Node(NodeDescriptor.build_type('ruleset'), identifier='r2')])
+        seq = SequencePattern([Node(NodeTypeDescriptor.build_type('ruleset'), identifier='r1'),
+                                   Node(NodeTypeDescriptor.build_type('ruleset'), identifier='r2')])
         requirement = BetweenExpr(VariableExpr('r1'),
                                   WhitespaceVariation([SequencePattern([
-                                      WhitespaceNode(NodeDescriptor.build_type('newline'), Repeater(2, 3))])]),
+                                      WhitespaceNode(NodeTypeDescriptor.build_type('newline'), Repeater(2, 3))])]),
                                   VariableExpr('r2'))
         return FindRequireConvention(seq, msg, requirement)
 
@@ -326,11 +326,11 @@ class ToGo(object):
     def conv23():
         msg = 'Put one space between the colon and the value of a declaration.'
 
-        seq = SequencePattern([Node(NodeDescriptor.build_type('colon'), identifier='i1'),
-                                   Node(NodeDescriptor.build_type('value'), identifier='i2')])
+        seq = SequencePattern([Node(NodeTypeDescriptor.build_type('colon'), identifier='i1'),
+                                   Node(NodeTypeDescriptor.build_type('value'), identifier='i2')])
         requirement = BetweenExpr(VariableExpr('i1'),
                                   WhitespaceVariation([SequencePattern([
-                                      Node(NodeDescriptor.build_type('space'))])]),
+                                      Node(NodeTypeDescriptor.build_type('space'))])]),
                                   VariableExpr('i2'))
         return FindRequireConvention(seq, msg, requirement)
 
@@ -338,11 +338,11 @@ class ToGo(object):
     def conv24():
         msg = 'Put one space between the last selector and the block.'
 
-        seq = SequencePattern([Node(NodeDescriptor.build_type('selector'), identifier='i1'),
-                                   Node(NodeDescriptor.build_type('block'), identifier='i2')])
+        seq = SequencePattern([Node(NodeTypeDescriptor.build_type('selector'), identifier='i1'),
+                                   Node(NodeTypeDescriptor.build_type('block'), identifier='i2')])
         requirement = BetweenExpr(VariableExpr('i1'),
                                   WhitespaceVariation([SequencePattern([
-                                      Node(NodeDescriptor.build_type('space'))])]),
+                                      Node(NodeTypeDescriptor.build_type('space'))])]),
                                   VariableExpr('i2'))
         return FindRequireConvention(seq, msg, requirement)
 
@@ -350,11 +350,11 @@ class ToGo(object):
     def conv25():
         msg = 'One selector per line.'
 
-        seq = SequencePattern([Node(NodeDescriptor.build_type('delim'), identifier='d1'),
-                                   Node(NodeDescriptor.build_type('simpleselector'), identifier='d2')])
+        seq = SequencePattern([Node(NodeTypeDescriptor.build_type('delim'), identifier='d1'),
+                                   Node(NodeTypeDescriptor.build_type('simpleselector'), identifier='d2')])
         requirement = BetweenExpr(VariableExpr('d1'),
                                   WhitespaceVariation([SequencePattern([
-                                    Node(NodeDescriptor.build_type('newline'))])]),
+                                    Node(NodeTypeDescriptor.build_type('newline'))])]),
                                   VariableExpr('d2')
                                   )
         return FindRequireConvention(seq, msg, requirement)
@@ -363,8 +363,8 @@ class ToGo(object):
     def conv26():
         msg = 'No trailing spaces.'
 
-        seq = SequencePattern([Node(NodeDescriptor.build_type('space')),
-                                   Node(NodeDescriptor.build_expr(lambda n: 'newline' in n.search_labels
+        seq = SequencePattern([Node(NodeTypeDescriptor.build_type('space')),
+                                   Node(NodeTypeDescriptor.build_expr(lambda n: 'newline' in n.search_labels
                                                                              or 'eof' in n.search_labels))])
 
         return ForbidConvention(seq, msg)
@@ -373,8 +373,8 @@ class ToGo(object):
     def conv27():
         msg = 'Use 4 spaces for indentation, no tabs.'
 
-        indent = Node(NodeDescriptor.build_type('indent'), identifier='i')
-        pattern = Pattern(indent, [indent], NodeRelations())
+        indent = Node(NodeTypeDescriptor.build_type('indent'), identifier='i')
+        pattern = PatternDescriptor(indent, [indent], NodeRelations())
         requirement = EqualExpr(PropertyExpr(VariableExpr('i'), StringExpr('string')), StringExpr('    '))
         return FindRequireConvention(pattern, msg, requirement)
 
@@ -382,8 +382,8 @@ class ToGo(object):
     def conv27():
         msg = 'Do not use @import'
 
-        at_import = Node(NodeDescriptor.build_type('import'))
-        pattern = Pattern(at_import, [at_import], NodeRelations())
+        at_import = Node(NodeTypeDescriptor.build_type('import'))
+        pattern = PatternDescriptor(at_import, [at_import], NodeRelations())
         return ForbidConvention(pattern, msg)
 
     @staticmethod
@@ -391,9 +391,9 @@ class ToGo(object):
         msg = "Warning if a rule contains width and border, border-left, " \
               "border-right, padding, padding-left, or padding-right"
 
-        width = Node(NodeDescriptor.build_type('property'),
+        width = Node(NodeTypeDescriptor.build_type('property'),
                                 EqualExpr(PropertyExpr(VariableExpr('anything'), StringExpr('name')), StringExpr('width')))
-        border = Node(NodeDescriptor.build_type('property'),
+        border = Node(NodeTypeDescriptor.build_type('property'),
                                  InExpr(PropertyExpr(VariableExpr('anything'), StringExpr('name')),
                                         ListExpr([StringExpr('border'),
                                                   StringExpr('border-left'),
@@ -402,11 +402,11 @@ class ToGo(object):
                                                   StringExpr('padding-left'),
                                                   StringExpr('padding-right'),
                                                   ])))
-        rule = Node(NodeDescriptor.build_type('ruleset'),
+        rule = Node(NodeTypeDescriptor.build_type('ruleset'),
                                constraint=AndExpr(ContainsExpr(VariableExpr(''), width),
                                                  ContainsExpr(VariableExpr(''), border)))
 
-        pattern = Pattern(rule, [rule], NodeRelations())
+        pattern = PatternDescriptor(rule, [rule], NodeRelations())
 
         return ForbidConvention(pattern, msg)
 
@@ -415,9 +415,9 @@ class ToGo(object):
         msg = "Warning if a rule contains height and border, border-top, " \
               "border-bottom, padding, padding-top, or padding-bottom"
 
-        width = Node(NodeDescriptor.build_type('property'),
+        width = Node(NodeTypeDescriptor.build_type('property'),
                                 EqualExpr(PropertyExpr(VariableExpr('anything'), StringExpr('name')), StringExpr('height')))
-        border = Node(NodeDescriptor.build_type('property'),
+        border = Node(NodeTypeDescriptor.build_type('property'),
                                  InExpr(PropertyExpr(VariableExpr('anything'), StringExpr('name')),
                                         ListExpr([StringExpr('border'),
                                                   StringExpr('border-top'),
@@ -426,11 +426,11 @@ class ToGo(object):
                                                   StringExpr('padding-top'),
                                                   StringExpr('padding-bottom'),
                                                   ])))
-        rule = Node(NodeDescriptor.build_type('ruleset'),
+        rule = Node(NodeTypeDescriptor.build_type('ruleset'),
                                constraint=AndExpr(ContainsExpr(VariableExpr(''), width),
                                                  ContainsExpr(VariableExpr(''), border)))
 
-        pattern = Pattern(rule, [rule], NodeRelations())
+        pattern = PatternDescriptor(rule, [rule], NodeRelations())
 
         return ForbidConvention(pattern, msg)
 
@@ -438,17 +438,17 @@ class ToGo(object):
     def conv30():
         msg = 'A rule that has display: inline-block should not use float'
 
-        float_ = Node(NodeDescriptor.build_type('property'),
+        float_ = Node(NodeTypeDescriptor.build_type('property'),
                                  EqualExpr(PropertyExpr(VariableExpr('anything'), 'name'), StringExpr('float')))
-        decl = Node(NodeDescriptor.build_type('declaration'),
+        decl = Node(NodeTypeDescriptor.build_type('declaration'),
                                AndExpr(EqualExpr(PropertyExpr(PropertyExpr(VariableExpr('anything'), StringExpr('property')), StringExpr('name')), StringExpr('display')),
                                        EqualExpr(PropertyExpr(PropertyExpr(VariableExpr('anything'), StringExpr('value')), StringExpr('string')), StringExpr('inline-block'))))
 
-        rule = Node(NodeDescriptor.build_type('ruleset'),
+        rule = Node(NodeTypeDescriptor.build_type('ruleset'),
                                constraint=AndExpr(ContainsExpr(VariableExpr(''), float_),
                                                  ContainsExpr(VariableExpr(''), decl)))
 
-        pattern = Pattern(rule, [rule], NodeRelations())
+        pattern = PatternDescriptor(rule, [rule], NodeRelations())
 
         return ForbidConvention(pattern, msg)
 
@@ -456,17 +456,17 @@ class ToGo(object):
     def conv31():
         msg = 'A rule that has display: block should not use vertical-align'
 
-        float_ = Node(NodeDescriptor.build_type('property'),
+        float_ = Node(NodeTypeDescriptor.build_type('property'),
                                  EqualExpr(PropertyExpr(VariableExpr('anything'), 'name'), StringExpr('vertical-align')))
-        decl = Node(NodeDescriptor.build_type('declaration'),
+        decl = Node(NodeTypeDescriptor.build_type('declaration'),
                                AndExpr(EqualExpr(PropertyExpr(PropertyExpr(VariableExpr('anything'), StringExpr('property')), StringExpr('name')), StringExpr('display')),
                                        EqualExpr(PropertyExpr(PropertyExpr(VariableExpr('anything'), StringExpr('value')), StringExpr('string')), StringExpr('block'))))
 
-        rule = Node(NodeDescriptor.build_type('ruleset'),
+        rule = Node(NodeTypeDescriptor.build_type('ruleset'),
                                constraint=AndExpr(ContainsExpr(VariableExpr(''), float_),
                                                  ContainsExpr(VariableExpr(''), decl)))
 
-        pattern = Pattern(rule, [rule], NodeRelations())
+        pattern = PatternDescriptor(rule, [rule], NodeRelations())
 
         return ForbidConvention(pattern, msg)
 
@@ -474,14 +474,14 @@ class ToGo(object):
     def conv32():
         msg = 'Warning if a property is included in a rule twice and contains the same value.'
 
-        decl1 = Node(NodeDescriptor.build_type('declaration'), identifier='d1')
-        decl2 = Node(NodeDescriptor.build_type('declaration'), identifier='d2')
+        decl1 = Node(NodeTypeDescriptor.build_type('declaration'), identifier='d1')
+        decl2 = Node(NodeTypeDescriptor.build_type('declaration'), identifier='d2')
 
-        rule = Node(NodeDescriptor.build_type('ruleset'))
+        rule = Node(NodeTypeDescriptor.build_type('ruleset'))
         rs = NodeRelations()
         rs.register_relation(rule, IsAncestorOf(decl1))
         rs.register_relation(rule, IsAncestorOf(decl2))
-        pattern = Pattern(rule, [rule, decl1, decl2], rs)
+        pattern = PatternDescriptor(rule, [rule, decl1, decl2], rs)
 
         req = AndExpr(EqualExpr(PropertyExpr(PropertyExpr(VariableExpr('d1'), StringExpr('property')), StringExpr('name')),
                                  PropertyExpr(PropertyExpr(VariableExpr('d2'), StringExpr('property')), StringExpr('name'))),
@@ -495,16 +495,16 @@ class ToGo(object):
         # TODO: this rule is significantly slower than the other rules
         msg = 'A property is included twice and is separated by at least one other property.'
 
-        decl1 = Node(NodeDescriptor.build_type('declaration'), identifier='d1')
-        decl2 = Node(NodeDescriptor.build_type('declaration'), identifier='d2')
-        decl3 = Node(NodeDescriptor.build_type('declaration'), identifier='d3')
+        decl1 = Node(NodeTypeDescriptor.build_type('declaration'), identifier='d1')
+        decl2 = Node(NodeTypeDescriptor.build_type('declaration'), identifier='d2')
+        decl3 = Node(NodeTypeDescriptor.build_type('declaration'), identifier='d3')
 
-        rule = Node(NodeDescriptor.build_type('ruleset'))
+        rule = Node(NodeTypeDescriptor.build_type('ruleset'))
         rs = NodeRelations()
         rs.register_relation(rule, IsAncestorOf(decl1))
         rs.register_relation(rule, IsAncestorOf(decl2))
         rs.register_relation(rule, IsAncestorOf(decl3))
-        pattern = Pattern(rule, [rule, decl1, decl2, decl3], rs)
+        pattern = PatternDescriptor(rule, [rule, decl1, decl2, decl3], rs)
 
         req = AndExpr(EqualExpr(PropertyExpr(PropertyExpr(VariableExpr('d1'), StringExpr('property')), StringExpr('name')),
                                  PropertyExpr(PropertyExpr(VariableExpr('d3'), StringExpr('property')), StringExpr('name'))),
@@ -521,11 +521,11 @@ class ToGo(object):
     def conv34():
         msg = 'Forbid empty rules.'
 
-        decl = Node(NodeDescriptor.build_type('declaration'))
-        rule = Node(NodeDescriptor.build_type('ruleset'),
+        decl = Node(NodeTypeDescriptor.build_type('declaration'))
+        rule = Node(NodeTypeDescriptor.build_type('ruleset'),
                                constraint=NotExpr(ContainsExpr(VariableExpr(''), decl)))
                                # attr_expr=EqualsExpr(CountExpr(VariableExpr(''), decl), DecimalExpr(0)))
-        pattern = Pattern(rule, [rule], NodeRelations())
+        pattern = PatternDescriptor(rule, [rule], NodeRelations())
 
         return ForbidConvention(pattern, msg)
 
@@ -533,9 +533,9 @@ class ToGo(object):
     def conv35():
         msg = 'Warning if found a vendor-prefixed property without a standard property after it.'
 
-        decl1 = Node(NodeDescriptor.build_type('declaration'), identifier='d1',
+        decl1 = Node(NodeTypeDescriptor.build_type('declaration'), identifier='d1',
                                 constraint=PropertyExpr(PropertyExpr(VariableExpr(''), StringExpr('property')), StringExpr('is-vendor-specific')))
-        pattern = Pattern(decl1, [decl1], NodeRelations())
+        pattern = PatternDescriptor(decl1, [decl1], NodeRelations())
         req = AndExpr(IsExpr(NextSiblingExpr(VariableExpr('d1')), NodeTypeExpr('declaration')),
                       OrExpr(AndExpr(PropertyExpr(NextSiblingExpr(VariableExpr('d1')), StringExpr('is-vendor-specific')),
                                      EqualExpr(PropertyExpr(PropertyExpr(NextSiblingExpr(VariableExpr('d1')), StringExpr('property')), StringExpr('standard')),
@@ -554,10 +554,10 @@ class ToGo(object):
         msg = 'Require fallback color. A color property with a rgba(), hsl(), or hsla() color ' \
               'without a preceding color property that has an older color format.'
 
-        decl1 = Node(NodeDescriptor.build_type('declaration'), identifier='d1',
+        decl1 = Node(NodeTypeDescriptor.build_type('declaration'), identifier='d1',
                                 constraint=EqualExpr(PropertyExpr(PropertyExpr(VariableExpr(''), StringExpr('property')), StringExpr('name')),
                                                      StringExpr('color')))
-        func = Node(NodeDescriptor.build_type('function'),
+        func = Node(NodeTypeDescriptor.build_type('function'),
                                constraint=InExpr(PropertyExpr(VariableExpr(''), StringExpr('name')),
                                                 ListExpr([StringExpr('rgb'),
                                                           StringExpr('rgba'),
@@ -567,12 +567,12 @@ class ToGo(object):
                                )
         relations = NodeRelations()
         relations.register_relation(decl1, IsAncestorOf(func))
-        pattern = Pattern(decl1, [decl1, func], relations)
+        pattern = PatternDescriptor(decl1, [decl1, func], relations)
 
         req = AndExpr(AndExpr(IsExpr(PreviousSiblingExpr(VariableExpr('d1')), NodeTypeExpr('declaration')),
                               EqualExpr(PropertyExpr(PropertyExpr(PreviousSiblingExpr(VariableExpr('d1')), StringExpr('property')), StringExpr('name')),
                                          StringExpr('color'))),
-                      ContainsExpr(PreviousSiblingExpr(VariableExpr('d1')), Node(NodeDescriptor.build_expr(
+                      ContainsExpr(PreviousSiblingExpr(VariableExpr('d1')), Node(NodeTypeDescriptor.build_expr(
                           lambda n: 'hex' in n.search_labels or 'color-name' in n.search_labels
                       )))
         )

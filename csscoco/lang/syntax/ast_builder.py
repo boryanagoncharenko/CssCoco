@@ -108,7 +108,7 @@ class CocoCustomVisitor(cocoVisitor):
     def handle_simple_pattern(self, context):
         if len(context.children) == 1:
             wrapper = self.visitNode_declaration(context.children[0])
-            return Pattern(wrapper, [wrapper], NodeRelations.EMPTY)
+            return PatternDescriptor(wrapper, [wrapper], NodeRelations.EMPTY)
         wrappers = []
         for i in range(0, len(context.children), 2):
             wrapper = self.visitNode_declaration(context.children[i])
@@ -122,13 +122,13 @@ class CocoCustomVisitor(cocoVisitor):
         relations = NodeRelations()
         for i in range(1, len(wrappers)):
             relations.register_relation(wrappers[i], IsAncestorOf(wrappers[i-1]))
-        return Pattern(wrappers[-1], wrappers, relations)
+        return PatternDescriptor(wrappers[-1], wrappers, relations)
 
     def build_next_pattern(self, wrappers):
         relations = NodeRelations()
         for i in range(1, len(wrappers)):
             relations.register_relation(wrappers[i-1], IsPreviousSiblingOf(wrappers[i]))
-        return Pattern(wrappers[0], wrappers, relations)
+        return PatternDescriptor(wrappers[0], wrappers, relations)
 
     def handle_fork_pattern(self, context):
         fork_wrappers = self.visitFork_pattern(context.fork)
@@ -141,7 +141,7 @@ class CocoCustomVisitor(cocoVisitor):
             relations.register_relation(in_wrappers[i], IsAncestorOf(in_wrappers[i-1]))
         for fork in fork_wrappers:
             relations.register_relation(in_wrappers[0], IsAncestorOf(fork))
-        return Pattern(in_wrappers[-1], in_wrappers + fork_wrappers, relations)
+        return PatternDescriptor(in_wrappers[-1], in_wrappers + fork_wrappers, relations)
 
 
     def visitFork_pattern(self, context):
@@ -435,12 +435,12 @@ class CocoCustomVisitor(cocoVisitor):
     def get_node_descriptor(self, ctx):
         lambda_string = self.get_type_expression_string(ctx)
         lambda_ = eval('lambda n: ' + lambda_string)
-        return NodeDescriptor(func=lambda_)
+        return NodeTypeDescriptor(func=lambda_)
 
     def get_ws_node_descriptor(self, text):
         string = ''.join(['lambda n: \'', text, '\' in n.search_labels'])
         lambda_ = eval(string)
-        return NodeDescriptor(func=lambda_)
+        return NodeTypeDescriptor(func=lambda_)
 
     def get_type_expression_string(self, ctx):
         if ctx.parenthesis:

@@ -31,7 +31,8 @@ def get_css_parse_tree():
 
 
 def get_coco_ast():
-    coco_filename = os.path.join('samples', 'one.coco')
+    # coco_filename = os.path.join('samples', 'one.coco')
+    coco_filename = sys.argv[2]
     coco_file = open(coco_filename)
     # cs = coco_file.read()
 

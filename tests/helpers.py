@@ -7,7 +7,7 @@ class ParseTreeConstructor(object):
     @staticmethod
     def add_root_to_siblings(*type_list):
         nodes = ParseTreeConstructor._create_nodes(*type_list)
-        root = parse.Node('root', nodes)
+        root = parse.CssNode('root', nodes)
         ParseTreeConstructor._annotate_children(root)
         return root
 
@@ -22,7 +22,7 @@ class ParseTreeConstructor(object):
     def _create_nodes(*type_list):
         nodes = []
         for i, type_ in enumerate(type_list):
-            nodes.append(parse.Node(type_, ''))
+            nodes.append(parse.CssNode(type_, ''))
         return nodes
 
     @staticmethod
@@ -36,17 +36,17 @@ class PatternConstructor(object):
 
     @staticmethod
     def build_node_desc(type_):
-        return ast.Node(ast.NodeDescriptor(type_=type_))
+        return ast.Node(ast.NodeTypeDescriptor(type_=type_))
 
     @staticmethod
     def build_seq_desc(repeater):
-        return ast.WhitespaceNode(ast.NodeDescriptor(), repeater)
+        return ast.WhitespaceNode(ast.NodeTypeDescriptor(), repeater)
 
     @staticmethod
     def build_seq_desc_type(type_, repeater):
-        return ast.WhitespaceNode(ast.NodeDescriptor(type_=type_), repeater)
+        return ast.WhitespaceNode(ast.NodeTypeDescriptor(type_=type_), repeater)
 
     @staticmethod
     def single_node(type_):
         node_expr = PatternConstructor.build_node_desc(type_)
-        return ast.Pattern(node_expr, [node_expr], ast.NodeRelations())
+        return ast.PatternDescriptor(node_expr, [node_expr], ast.NodeRelations())

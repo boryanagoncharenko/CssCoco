@@ -11,11 +11,11 @@ class WhitespaceMatcher(TestCase):
 
     def setUp(self):
         self.attr_expr = ast.BooleanExpr.build(True)
-        self.node0 = parse.TerminalNode('newline', '\n')
-        self.node1 = parse.TerminalNode('space', ' ')
-        self.node2 = parse.TerminalNode('tab', '\t')
-        self.node3 = parse.TerminalNode('indent', '    ')
-        self.node4 = parse.TerminalNode('comment', '/* Comment */')
+        self.node0 = parse.TerminalCssNode('newline', '\n')
+        self.node1 = parse.TerminalCssNode('space', ' ')
+        self.node2 = parse.TerminalCssNode('tab', '\t')
+        self.node3 = parse.TerminalCssNode('indent', '    ')
+        self.node4 = parse.TerminalCssNode('comment', '/* Comment */')
         self.nodes = [self.node0, self.node1, self.node2, self.node3, self.node4]
         self.matcher = matching.WhitespaceVariationMatcher(matching.Filter.EMPTY)
 
@@ -187,7 +187,7 @@ class HierarchicalMatcher(TestCase):
         child = PatternConstructor.build_node_desc('ruleset')
         relations = ast.NodeRelations()
         relations.register_relation(parent, ast.IsParentOf(child))
-        pattern = ast.Pattern(parent, [parent, child], relations)
+        pattern = ast.PatternDescriptor(parent, [parent, child], relations)
 
         result = self.matcher.find_pattern_in_tree(self.tree, pattern)
         assert len(result) == 1
@@ -197,7 +197,7 @@ class HierarchicalMatcher(TestCase):
         child = PatternConstructor.build_node_desc('newline')
         relations = ast.NodeRelations()
         relations.register_relation(parent, ast.IsAncestorOf(child))
-        pattern = ast.Pattern(parent, [parent, child], relations)
+        pattern = ast.PatternDescriptor(parent, [parent, child], relations)
 
         result = self.matcher.find_pattern_in_tree(self.tree, pattern)
         assert len(result) == 2
@@ -209,7 +209,7 @@ class HierarchicalMatcher(TestCase):
         relations = ast.NodeRelations()
         relations.register_relation(parent, ast.IsParentOf(child1))
         relations.register_relation(parent, ast.IsParentOf(child2))
-        pattern = ast.Pattern(parent, [parent, child1, child2], relations)
+        pattern = ast.PatternDescriptor(parent, [parent, child1, child2], relations)
 
         result = self.matcher.find_pattern_in_tree(self.tree, pattern)
         assert len(result) == 3
@@ -225,7 +225,7 @@ class HierarchicalMatcher(TestCase):
         relations.register_relation(parent, ast.IsParentOf(child1))
         relations.register_relation(parent, ast.IsParentOf(child2))
         relations.register_relation(parent, ast.IsParentOf(child3))
-        pattern = ast.Pattern(root, [root, parent, child1, child2, child3], relations)
+        pattern = ast.PatternDescriptor(root, [root, parent, child1, child2, child3], relations)
 
         result = self.matcher.find_pattern_in_tree(self.tree, pattern)
         assert len(result) == 1
