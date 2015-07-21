@@ -1,0 +1,14 @@
+Metadata-Version: 1.1
+Name: csscoco
+Version: 0.1.2
+Summary: A DSL for CSS Code Convetions
+Home-page: https://github.com/boryanagoncharenko/CssCoco
+Author: Boryana Goncharenko
+Author-email: boryana.goncharenko@gmail.com
+License: UNKNOWN
+Description: The package detects violations of CSS code conventions automatically. It contains a number of predefined conventons sets, however, it also comprises a domain-speicific language that is capable of expressing cusomt CSS conventions.
+Keywords: css code conventions web development
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3.4

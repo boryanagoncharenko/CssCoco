@@ -1,47 +1,41 @@
 from setuptools import setup, find_packages
-import sys, os
+from codecs import open
+from os import path
 
-version = '0.3'
+here = path.abspath(path.dirname(__file__))
 
-setup(name='csscoco',
-      version=version,
-      description="",
-      long_description="""This is a language for expressing CSS code conventions""",
-      classifiers=[
-        # How mature is this project? Common values are
-        #   3 - Alpha
-        #   4 - Beta
-        #   5 - Production/Stable
+setup(
+    name='csscoco',
+    version='0.1.2',
+    description='A DSL for CSS Code Convetions',
+    long_description="The package detects violations of CSS code conventions automatically. "\
+      "It contains a number of predefined conventons sets, however, it also comprises a "\
+      "domain-speicific language that is capable of expressing cusomt CSS conventions.",
+
+    url='https://github.com/boryanagoncharenko/CssCoco',
+    author='Boryana Goncharenko',
+    author_email='boryana.goncharenko@gmail.com',
+    license='',
+    classifiers=[
         'Development Status :: 3 - Alpha',
-
-        # Indicate who your project is intended for
         'Intended Audience :: Developers',
-        'Topic :: Software Development :: Build Tools',
-
-        # Pick your license as you wish (should match "license" above)
-        'License :: OSI Approved :: MIT License',
-
-        # Specify the Python versions you support here. In particular, ensure
-        # that you indicate whether you support Python 2, Python 3 or both.
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
-      ], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
-      keywords='css',
-      author='Boryana Goncharenko',
-      author_email='boryana.goncharenko@gmail.com',
-      url='https://github.com/boryanagoncharenko/CssCoco',
-      license='MIT',
-      packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
-      include_package_data=True,
-      zip_safe=False,
-      install_requires=[
-          # -*- Extra requirements: -*-
-      ],
-      entry_points= {
-        'console_scripts': [
-            'csscoco=csscoco:main',
-        ],
-      },
+    ],
+    keywords='css code conventions web development',
+    packages=find_packages(exclude=['contrib', 'docs', 'tests*']),
+    install_requires=['antlr4-python3-runtime'],
+    extras_require={},
+    package_data={
+        'csscoco': ['css/*.*',
+                    'node_modules/gonzales/*.*',
+                    'node_modules/gonzales/lib/*.*',
+                    'node_modules/gonzales/src/*.*', 
+                    'node_modules/gonzales/web/*.*'],
+    },
+    data_files=[],
+    entry_points={
+      'console_scripts': [
+              'csscoco=csscoco.main:main',
+          ],
+    },
 )

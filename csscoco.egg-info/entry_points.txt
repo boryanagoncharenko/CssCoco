@@ -1,0 +1,3 @@
+[console_scripts]
+csscoco = csscoco.main:main
+
