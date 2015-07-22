@@ -210,33 +210,35 @@ class CocoCustomVisitor(cocoVisitor):
             return self.visitArithmetic_expr(context.call)
 
         operator = context.operator.text
+        line = context.operator.line
         if operator == 'not':
             operand = self.visitLogic_expr(context.operand)
-            return NotExpr(operand)
+            return NotExpr(operand, line)
 
         left = self.visitLogic_expr(context.left)
         right = self.visitLogic_expr(context.right)
         if operator == 'and':
-            return AndExpr(left, right)
+            return AndExpr(left, right, line)
         if operator == 'or':
-            return OrExpr(left, right)
+            return OrExpr(left, right, line)
         raise ValueError('Unknown logic expression')
 
     def visitType_expr(self, context):
         operator = context.operator.text
+        line = context.operator.line
         if operator == 'is':
             operand = self.visitArithmetic_expr(context.operand)
             node_type = NodeTypeExpr(context.type_.text)
-            return IsExpr(operand, node_type)
+            return IsExpr(operand, node_type, line)
         variation = self.visitWhitespace_variation(context.variation)
         operand = self.get_type_expr_right(context.variable, context.operand)
         if operator == 'before':
-            return BeforeExpr(operand, variation)
+            return BeforeExpr(operand, variation, line)
         if operator == 'after':
-            return AfterExpr(operand, variation)
+            return AfterExpr(operand, variation, line)
         if operator == 'between':
             second_operand = self.get_type_expr_right(context.second_variable, context.second_operand)
-            return BetweenExpr(operand, variation, second_operand)
+            return BetweenExpr(operand, variation, second_operand, line)
         raise ValueError('Unknown type expression')
 
     def get_type_expr_right(self, variable, operand):
@@ -281,42 +283,46 @@ class CocoCustomVisitor(cocoVisitor):
             return self.visitCall_expr(context.call)
 
         operator = context.operator.text
+        line = context.operator.line
         if operator == '-':
             operand = self.visitArithmetic_expr(context.operand)
-            return UnaryMinusExpr(operand)
+            return UnaryMinusExpr(operand, line)
+        if operator == '+':
+            operand = self.visitArithmetic_expr(context.operand)
+            return UnaryPlusExpr(operand)
 
         left = self.visitArithmetic_expr(context.left)
         right = self.visitArithmetic_expr(context.right)
 
         if operator == '==':
-            return EqualExpr(left, right)
+            return EqualExpr(left, right, line)
         if operator == '!=':
-            return NotEqualExpr(left, right)
+            return NotEqualExpr(left, right, line)
         if operator == '<':
-            return LessThanExpr(left, right)
+            return LessThanExpr(left, right, line)
         if operator == '>':
-            return GreaterThanExpr(left, right)
+            return GreaterThanExpr(left, right, line)
         if operator == '<=':
-            return LessThanOrEqualExpr(left, right)
+            return LessThanOrEqualExpr(left, right, line)
         if operator == '>=':
-            return GreaterThanOrEqualExpr(left, right)
+            return GreaterThanOrEqualExpr(left, right, line)
 
         if operator == 'in':
-            return InExpr(left, right)
+            return InExpr(left, right, line)
         if operator == 'not in':
             raise NotImplementedError()
         if operator == 'match':
-            return MatchExpr(left, right)
+            return MatchExpr(left, right, line)
         if operator == 'not match':
-            return NotExpr(MatchExpr(left, right))
+            return NotExpr(MatchExpr(left, right, line))
 
     def visitElement(self, context):
         if context.primary_bool:
-            return BooleanExpr(bool(context.primary_bool.text))
+            return BooleanExpr(bool(context.primary_bool.text), context.primary_bool.line)
         if context.primary_int:
-            return IntegerExpr(int(context.primary_int.text))
+            return IntegerExpr(int(context.primary_int.text), context.primary_int.line)
         if context.primary_str:
-            return StringExpr(self.unescape_quotes(context.primary_str.text))
+            return StringExpr(self.unescape_quotes(context.primary_str.text), context.primary_str.line)
         if context.primary_list:
             return self.visitList_(context.primary_list)
         raise ValueError('Unknown element')
@@ -363,12 +369,13 @@ class CocoCustomVisitor(cocoVisitor):
 
     def visitCall_expr(self, ctx):
         identifier = ctx.call.text
+        line = ctx.call.line
         if identifier in self.identifiers:
-            return VariableExpr(identifier)
+            return VariableExpr(identifier, line)
         if identifier == 'lowercase':
-            return StringExpr('^[^A-Z]+$')
+            return StringExpr('^[^A-Z]+$', line)
         if identifier == 'shorten':
-            return StringExpr('(?P<gr1>[0-9a-f])(?P=gr1)(?P<gr2>[0-9a-f])(?P=gr2)(?P<gr3>[0-9a-f])(?P=gr3)')
+            return StringExpr('(?P<gr1>[0-9a-f])(?P=gr1)(?P<gr2>[0-9a-f])(?P=gr2)(?P<gr3>[0-9a-f])(?P=gr3)', line)
 
         operand = VariableExpr.DEFAULT
         if ctx.operand:
@@ -377,18 +384,38 @@ class CocoCustomVisitor(cocoVisitor):
         argument = self.visit_argument(ctx)
         if not argument:
             if identifier == 'next-sibling':
-                return NextSiblingExpr(operand)
+                return NextSiblingExpr(operand, line)
             if identifier == 'previous-sibling':
-                return PreviousSiblingExpr(operand)
-            return PropertyExpr(operand, ctx.call.text)
+                return PreviousSiblingExpr(operand, line)
+            if identifier == 'is-vendor-specific':
+                return IsVendorSpecificPropertyExpr(operand, line)
+            if identifier == 'string':
+                return StringPropertyExpr(operand, line)
+            if identifier == 'value':
+                return ValuePropertyExpr(operand, line)
+            if identifier == 'num-value':
+                return NumValuePropertyExpr(operand, line)
+            if identifier == 'property':
+                return PropertyPropertyExpr(operand, line)
+            if identifier == 'name':
+                return NamePropertyExpr(operand, line)
+            if identifier == 'is-long':
+                return IsLongPropertyExpr(operand, line)
+            if identifier == 'has-single-quotes':
+                return HasSingleQuotesPropertyExpr(operand, line)
+            if identifier == 'standard':
+                return StandardPropertyExpr(operand, line)
+            return InvalidPropertyExpr(operand, identifier, line)
 
         if identifier == 'contains-all':
-            return ContainsAllExpr(operand, argument)
+            return ContainsAllExpr(operand, argument, line)
         if identifier == 'contains':
-            return ContainsExpr(operand, argument)
+            return ContainsExpr(operand, argument, line)
         if identifier == 'count':
-            return CountExpr(operand, argument)
-        return MethodExpr(operand, ctx.call.text, argument)
+            return CountExpr(operand, argument, line)
+        if identifier == 'child':
+            return ChildMethodExpr(identifier, argument, line)
+        return InvalidMethodExpr(operand, ctx.call.text, argument, line)
 
     def visit_argument(self, context):
         if context.argument:
@@ -431,16 +458,15 @@ class CocoCustomVisitor(cocoVisitor):
             return NodeTypeExpr(ctx.primary.text)
         raise ValueError('Unknown type expression')
 
-
     def get_node_descriptor(self, ctx):
+        if ctx.primary:
+            return NodeTypeDescriptor(type_=ctx.primary.text)
         lambda_string = self.get_type_expression_string(ctx)
         lambda_ = eval('lambda n: ' + lambda_string)
         return NodeTypeDescriptor(func=lambda_)
 
     def get_ws_node_descriptor(self, text):
-        string = ''.join(['lambda n: \'', text, '\' in n.search_labels'])
-        lambda_ = eval(string)
-        return NodeTypeDescriptor(func=lambda_)
+        return NodeTypeDescriptor(type_=text)
 
     def get_type_expression_string(self, ctx):
         if ctx.parenthesis:

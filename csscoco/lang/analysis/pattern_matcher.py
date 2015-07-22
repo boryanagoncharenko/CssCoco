@@ -156,8 +156,8 @@ class Matcher(object):
 
     def _is_node_desc_match(self, desc, node):
         type_ = desc.descriptor.is_node_match(node)
-        if type_ and desc.has_constraints():
-            context = expr.ExprContext(self, node)
+        if type_ and desc.has_constraint():
+            context = expr.InnerNodeContext(self, node)
             result = expr.ExprEvaluator.evaluate(desc.constraint, context)
             return result.value
         return type_

@@ -380,6 +380,8 @@ class CocoCustomVisitor(cocoVisitor):
                 return NextSiblingExpr(operand)
             if identifier == 'previous-sibling':
                 return PreviousSiblingExpr(operand)
+            if ctx.call.text == 'is-vendor-specific':
+                return IsVendorSpecificExpr(operand)
             return PropertyExpr(operand, ctx.call.text)
 
         if identifier == 'contains-all':

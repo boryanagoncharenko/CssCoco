@@ -1,10 +1,5 @@
-    require rule newline{2} orrr newline{3} rule
-    require selector space block
-    require "{" newline declaration
-    require ":" space value
-
-    require declaration newline declaration
-	require declaration newline "}"
-
-	require newline eof_
-	require newline comment newline
+Semantic
+{
+  forbid declaration{property.name is string}
+  message 'Warning if a property is included in a rule twice and contains the same value.'
+}

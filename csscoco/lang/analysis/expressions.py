@@ -3,6 +3,7 @@ import re
 import csscoco
 from csscoco.lang.ast import ast as ast
 import csscoco.lang.analysis.values as values
+import csscoco.css.parse_tree as css
 import csscoco.lang.visitor_decorator as vis
 
 
@@ -17,9 +18,9 @@ class EvaluationContext(object):
         raise NotImplementedError()
 
 
-class ExprContext(EvaluationContext):
+class InnerNodeContext(EvaluationContext):
     def __init__(self, pattern_matcher, node):
-        super(ExprContext, self).__init__(pattern_matcher)
+        super(InnerNodeContext, self).__init__(pattern_matcher)
         assert node
         self._node = node
 
@@ -85,6 +86,7 @@ class ExprEvaluator(object):
     def visit(self, equals_expr):
         left = self.visit(equals_expr.left)
         right = self.visit(equals_expr.right)
+
         return left.equals(right)
 
     @vis.visitor(ast.NotEqualExpr)
@@ -179,6 +181,60 @@ class ExprEvaluator(object):
         node = self.visit(prop_expr.operand)
         real_node = node.value
         return real_node.invoke_property(prop_expr.value)
+
+    _vendor_prefixes = {'-ms-', 'mso-', '-moz-', '-o-', '-atsc-', '-wap-', '-webkit-', '-khtml-'}
+    #
+    # @vis.visitor(ast.IsVendorSpecificPropertyExpr)
+    # def visit(self, prop_expr):
+    #     node = self.visit(prop_expr.operand)
+    #     real_node = node.value
+    #     return self.evaluate_is_vendor(real_node)
+    #
+    # def _check_is_vendor(self, node):
+    #     for p in self._vendor_prefixes:
+    #         prefix_slice = node.value[:len(p)].lower()
+    #         if prefix_slice.startswith(p):
+    #             return p
+    #     return None
+    #
+    # @vis.visitor(css.Declaration)
+    # def evaluate_is_vendor(self, real_node):
+    #     prefix = self._check_is_vendor(real_node.value[0])
+    #     return values.Boolean.build(prefix)
+    #
+    # @vis.visitor(css.Property)
+    # def evaluate_is_vendor(self, real_node):
+    #     prefix = self._check_is_vendor(real_node)
+    #     return values.Boolean.build(prefix)
+    #
+    # @vis.visitor(ast.ValuePropertyExpr)
+    # def visit(self, prop_expr):
+    #     node = self.visit(prop_expr.operand)
+    #     real_node = node.value
+    #     return self.evaluate_value(real_node)
+    #
+    # @vis.visitor(css.Declaration)
+    # def evaluate_value(self, declaration):
+    #     for i in range(1, len(declaration.value), 1):
+    #         if declaration.value[-i].has_children():
+    #             return values.Node(declaration.value[-i])
+    #
+    # @vis.visitor(css.Number)
+    # def evaluate_value(self, real_node):
+    #     number_value = float(real_node.value)
+    #     return values.Decimal(number_value)
+    #
+    # @vis.visitor(ast.PropertyPropertyExpr)
+    # def visit(self, expr):
+    #     node = self.visit(expr.operand)
+    #     real_node = node.value
+    #     return values.Node(real_node.value[0])
+    #
+    # @vis.visitor(ast.IsLongPropertyExpr)
+    # def visit(self, expr):
+    #     node = self.visit(expr.operand)
+    #     real_node = node.value
+    #     return values.Boolean.build(len(real_node.value) > 4)
 
     @vis.visitor(ast.MethodExpr)
     def visit(self, method_expr):

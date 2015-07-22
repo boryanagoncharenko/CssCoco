@@ -1,7 +1,7 @@
 Semantic
 {
-
-  forbid ident{value in ['px', 'pt', 'cm']}
+/**/
+  forbid ident{string in ['px', 'pt', 'cm']}
   message 'Use em instead of pt, px, cm'
 
   forbid property{name=='z-index'}
@@ -28,11 +28,14 @@ Semantic
   find t=tag
   require t.name match lowercase
   message 'Html tags should be lowercase'
-/* Fix the element
+
+/*
+  Fix the element
   find d=declaration
   require d.child(-1).string == ';'
   message 'Put a ; at the end of declarations'
 */
+/* */
   forbid string in uri
   message 'Do not put quotes in url declarations'
 
@@ -47,10 +50,10 @@ Semantic
   ])}
   message 'Use the shorthand margin property instead'
 
-  forbid number{value == 0} in (dimension or percentage)
+  forbid number{num-value == 0} in (dimension or percentage)
   message 'Do not use units after 0 values'
 
-  find n=number{value < 1 and value > -1}
+  find n=number{num-value < 1 and num-value > -1}
   require n.string match '^0.*'
   message 'Use a leading zero for decimal values'
 
@@ -89,6 +92,8 @@ Semantic
                      'padding-right']})
                 }
   message 'Warning if a rule contains width and border, border-left, border-right, padding, padding-left, or padding-right'
+
+
 
   forbid ruleset{contains(property{name=='height'})
                  and contains(property{name in ['border',
@@ -134,6 +139,9 @@ Semantic
           d.previous-sibling.property.name == 'color' and
          (d.previous-sibling.contains(hex) or d.previous-sibling.contains(color-text))
   message 'No fallback color for properties with a rgba(), hsl(), or hsla() color.'
+
+/*
+*/
 }
 
 Whitespace

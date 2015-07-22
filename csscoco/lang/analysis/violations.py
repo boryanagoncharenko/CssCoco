@@ -4,7 +4,6 @@ import csscoco.lang.visitor_decorator as vis
 import csscoco.lang.analysis.pattern_matcher as p_matcher
 
 
-
 class Violations(object):
     def __init__(self):
         self._inner = []

@@ -60,8 +60,36 @@ def _visitor_impl(self, *arg):
     """
     Actual visitor method implementation.
     """
-    method = _methods[(_qualname(type(self)), type(arg[0]))]
-    return method(self, *arg)
+    q_name = _qualname(type(self))
+    cur_name = type(arg[0])
+    if (q_name, cur_name) in _methods:
+        method = _methods[(q_name, cur_name)]
+        return method(self, *arg)
+
+    for base_name in _get_base_classes_names(arg[0].__class__):
+        if (q_name, base_name) in _methods:
+            method = _methods[(q_name, base_name)]
+            return method(self, *arg)
+
+    error = ''.join(['You must add a method that visits type ', arg[0].__class__.__name__, ' in class ', q_name])
+    raise NotImplementedError(error)
+
+
+
+def _get_base_classes_names(class_):
+    result = []
+    base = _get_base_class_name(class_)
+    while base:
+        result.append(base)
+        base = _get_base_class_name(base)
+    return result
+
+
+def _get_base_class_name(class_):
+    bases = class_.__bases__
+    if bases:
+        return bases[0]
+    return None
 
 
 def visitor(arg_type):

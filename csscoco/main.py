@@ -11,6 +11,7 @@ import csscoco.lang.syntax.ast_builder as ast
 import csscoco.lang.syntax.cocoLexer as cocoLexer
 import csscoco.lang.syntax.cocoParser as cocoParser
 import csscoco.lang.analysis.violations as violations
+import csscoco.lang.analysis.type_checker as checker
 
 
 def get_css_parse_tree():
@@ -53,6 +54,10 @@ def main():
         exit()
 
     coco_ast = get_coco_ast()
+    errors = checker.TypeChecker.check(coco_ast)
+    if errors.contain_errors():
+        print(errors.string())
+        exit()
 
     # print('--- Parsed CSS for sec:', (time.time() - start_time))
     print('--- Detecting violations ---')
@@ -64,5 +69,5 @@ def main():
     print('--- Done ---')
     # print('--- Detected violations for secs:', (time.time() - start_time))
 
-# main()
+main()
 # cProfile.run('main()')
