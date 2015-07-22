@@ -1,6 +1,4 @@
-import os
 import json
-import time
 import sys
 
 import antlr4
@@ -14,9 +12,7 @@ import csscoco.lang.analysis.violations as violations
 import csscoco.lang.analysis.type_checker as checker
 
 
-def get_css_parse_tree():
-    filename = sys.argv[1]
-
+def get_css_parse_tree(filename):
     file = open(filename, encoding='utf-8')
     css_source = file.read()
     result = parser.Parser.parse_css(css_source)
@@ -30,44 +26,35 @@ def get_css_parse_tree():
     return a, ''
 
 
-def get_coco_ast():
-    coco_filename = sys.argv[2]
-    input_stream = antlr4.FileStream(coco_filename)
+def get_coco_ast(filename):
+    input_stream = antlr4.FileStream(filename)
     lexer = cocoLexer.cocoLexer(input_stream)
     stream = antlr4.CommonTokenStream(lexer)
     parser = cocoParser.cocoParser(stream)
     tree = parser.stylesheet()
     visitor = ast.CocoCustomVisitor()
     convention_set = visitor.visitStylesheet(tree)
-
     return convention_set
 
 
-def main():
+def main(*args):
     print('--- Parsing CSS ---')
-    # start_time = time.time()
-
-    # get_css_parse_tree()
-    css_tree, error = get_css_parse_tree()
+    css_tree, error = get_css_parse_tree(args[0])
     if error:
         print(error)
         exit()
 
-    coco_ast = get_coco_ast()
+    coco_ast = get_coco_ast(args[1])
     errors = checker.TypeChecker.check(coco_ast)
     if errors.contain_errors():
         print(errors.string())
         exit()
 
-    # print('--- Parsed CSS for sec:', (time.time() - start_time))
     print('--- Detecting violations ---')
-    # start_time = time.time()
-
-    # set = temp.ToGo.get_google_set()
-    # violations.ViolationsFinder.find(set, css_tree)
     violations.ViolationsFinder.find(coco_ast, css_tree)
     print('--- Done ---')
-    # print('--- Detected violations for secs:', (time.time() - start_time))
 
-main()
+if __name__=='__main__':
+    sys.exit(main(sys.argv[1], sys.argv[2]))
+
 # cProfile.run('main()')

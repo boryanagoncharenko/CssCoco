@@ -6,9 +6,6 @@ from csscoco.lang.ast import ast as ast
 
 class TypeCheckerTests(TestCase):
 
-    def setUp(self):
-        pass
-
     def wrap_convention_in_set(self, convention):
         return ast.ConventionSet([ast.SemanticContext([convention], [])])
 

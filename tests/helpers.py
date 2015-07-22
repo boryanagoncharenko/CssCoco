@@ -1,5 +1,12 @@
+import antlr4 as antlr4
+import json
+
 from csscoco.lang.ast import ast as ast
 import csscoco.css.parse_tree as parse
+import csscoco.css.parser as css_parser
+import csscoco.lang.syntax.ast_builder as builder
+import csscoco.lang.syntax.cocoLexer as lexer
+import csscoco.lang.syntax.cocoParser as parser
 
 
 class ParseTreeConstructor(object):
@@ -50,3 +57,27 @@ class PatternConstructor(object):
     def single_node(type_):
         node_expr = PatternConstructor.build_node_desc(type_)
         return ast.PatternDescriptor(node_expr, [node_expr], ast.NodeRelations())
+
+
+class ParseHelper(object):
+
+    @staticmethod
+    def parse_coco_string(data):
+        input_stream = antlr4.FileStream(data)
+        l = lexer.cocoLexer(input_stream)
+        stream = antlr4.CommonTokenStream(l)
+        p = parser.cocoParser(stream)
+        tree = p.stylesheet()
+        visitor = builder.CocoCustomVisitor()
+        convention_set = visitor.visitStylesheet(tree)
+        return convention_set
+
+    @staticmethod
+    def parse_css_string(css_source):
+        result = css_parser.Parser.parse_css(css_source)
+        try:
+            l = json.loads(result.decode('utf-8'))
+        except ValueError:
+            raise ValueError()
+        tr = css_parser.SExprTransformer.transform(l)
+        return parse.ParseTreeBuilder.build(tr)
