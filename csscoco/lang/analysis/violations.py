@@ -1,22 +1,7 @@
-from csscoco.lang.ast import ast as ast
+import csscoco.lang.ast.ast as ast
 import csscoco.lang.analysis.expressions as expr
 import csscoco.lang.visitor_decorator as vis
 import csscoco.lang.analysis.pattern_matcher as p_matcher
-
-
-class Violations(object):
-    def __init__(self):
-        self._inner = []
-
-    def add_violation(self, violation):
-        self._inner.append(violation)
-
-    def to_string(self):
-        vs = []
-        for v in self._inner:
-            vs.append('\n')
-            vs.append(v.to_string())
-        return ''.join(vs)
 
 
 class Violation(object):
@@ -28,11 +13,30 @@ class Violation(object):
         return ''.join(['Violation on line ', str(self._line), ': ', self._message])
 
 
-class ViolationsFinder(object):
+class ViolationLog(object):
+    def __init__(self):
+        self._inner = []
 
+    def add_violation(self, violation):
+        self._inner.append(violation)
+
+    def number_of_violations(self):
+        return len(self._inner)
+
+    def to_string(self):
+        if not self._inner:
+            return 'No violations discovered.'
+        vs = []
+        for v in self._inner:
+            vs.append('\n')
+            vs.append(v.to_string())
+        return ''.join(vs)
+
+
+class ViolationsFinder(object):
     def __init__(self, tree):
         assert tree
-        self._violations = Violations()
+        self._violations = ViolationLog()
         self._tree = tree
         self._context = None
 
@@ -40,79 +44,86 @@ class ViolationsFinder(object):
     def find(sheet, tree):
         finder = ViolationsFinder(tree)
         finder.visit(sheet)
-        print(finder._violations.to_string())
-        print(len(finder._violations._inner))
+        return finder._violations
 
     @vis.visitor(ast.ConventionSet)
     def visit(self, sheet):
         for context in sheet.contexts:
             self._set_current_context(context)
             for conv in context.conventions:
-                self.visit(conv)
-            self._reset_current_context()
+                css_patterns = self.get_matched_css_patterns(conv)
+                self.visit(conv, css_patterns)
 
-        # pool = ThreadPool(4)
-        # results = pool.map(self.visit, context.conventions)
-        #
-        # pool.close()
-        # # pool.join()
+    @vis.visitor(ast.FindRequireConvention)
+    def visit(self, convention, matched_patterns):
+        for css_pattern in matched_patterns:
+            is_fulfilled = self._evaluate_constraint(convention.constraint, css_pattern)
+            if not is_fulfilled.value:
+                self._log_violation(convention, css_pattern)
+
+    @vis.visitor(ast.ForbidConvention)
+    def visit(self, convention, matched_patterns):
+        for css_pattern in matched_patterns:
+            self._log_violation(convention, css_pattern)
+
+    @vis.visitor(ast.FindForbidConvention)
+    def visit(self, convention, matched_patterns):
+        for css_pattern in matched_patterns:
+            is_fulfilled = self._evaluate_constraint(convention.constraint, css_pattern)
+            if is_fulfilled.value:
+                self._log_violation(convention, css_pattern)
 
     def _set_current_context(self, context):
         self._context = context
 
-    def _reset_current_context(self):
-        self._context = None
+    def get_matched_css_patterns(self, convention):
+        ignored = self._context.get_ignored_patterns()
+        if convention.has_constraint():
+            ignored += ViolationsHelper.get_additional_constraint(convention.constraint)
+        matcher = p_matcher.PatternMatcher(p_matcher.Filter(ignored))
+        return matcher.find_pattern_in_tree(self._tree, convention.pattern)
 
-    def _get_current_context(self):
-        return self._context
+    def _evaluate_constraint(self, constraint, pattern):
+        constraint_filter = p_matcher.Filter(self._context.get_ignored_patterns())
+        eval_context = expr.ConventionConstraintContext(p_matcher.PatternMatcher(constraint_filter), pattern)
+        return expr.ExprEvaluator.evaluate(constraint, eval_context)
 
-    @vis.visitor(ast.FindRequireConvention)
-    def visit(self, find_require):
-        counter = 0
-        filter_ = p_matcher.Filter(self._get_current_context().get_ignored_and_target_patterns())
-        matcher = p_matcher.PatternMatcher(filter_)
-        all_ = matcher.find_pattern_in_tree(self._tree, find_require.pattern)
-        for id_node_table in all_:
-            constraint_filter = p_matcher.Filter(self._get_current_context().get_ignored_patterns())
-            eval_context = expr.ConstraintContext(p_matcher.PatternMatcher(constraint_filter), id_node_table)
-            is_fulfilled = expr.ExprEvaluator.evaluate(find_require.constraint, eval_context)
-            if not is_fulfilled.value:
-                anchor_desc = find_require.pattern.get_anchors()[0]
-                anchor_node = id_node_table[anchor_desc]
-                self._violations.add_violation(Violation(find_require.description, anchor_node.start_position.line))
-                counter += 1
-        if counter > 0:
-            print(str(counter) + ' : ' + find_require.description)
+    def _log_violation(self, convention, css_pattern):
+        anchor_desc = convention.pattern.get_anchors()[0]
+        anchor_node = css_pattern[anchor_desc]
+        self._violations.add_violation(Violation(convention.description, anchor_node.start_position.line))
 
-    @vis.visitor(ast.ForbidConvention)
-    def visit(self, forbid):
-        counter = 0
-        filter_seq = p_matcher.Filter(self._get_current_context().get_ignored_patterns())
-        matcher = p_matcher.PatternMatcher(filter_seq)
-        for id_node_table in matcher.find_pattern_in_tree(self._tree, forbid.pattern):
-            anchor_desc = forbid.pattern.get_anchors()[0]
-            anchor_node = id_node_table[anchor_desc]
-            self._violations.add_violation(Violation(forbid.description, anchor_node.start_position.line))
-            counter += 1
-        if counter > 0:
-            print(str(counter) + ' : ' + forbid.description)
 
-    @vis.visitor(ast.FindForbidConvention)
-    def visit(self, find_forbid):
-        counter = 0
-        filter_ = p_matcher.Filter(self._get_current_context().get_ignored_and_target_patterns())
-        matcher = p_matcher.PatternMatcher(filter_)
-        all_ = matcher.find_pattern_in_tree(self._tree, find_forbid.pattern)
-        for id_node_table in all_:
-            constraint_filter = p_matcher.Filter(self._get_current_context().get_ignored_patterns())
-            eval_context = expr.ConstraintContext(p_matcher.PatternMatcher(constraint_filter), id_node_table)
-            is_fulfilled = expr.ExprEvaluator.evaluate(find_forbid.constraint, eval_context)
-            if is_fulfilled.value:
-                anchor_desc = find_forbid.pattern.get_anchors()[0]
-                anchor_node = id_node_table[anchor_desc]
-                self._violations.add_violation(Violation(find_forbid.description, anchor_node.start_position.line))
-                counter += 1
-        if counter > 0:
-            print(str(counter) + ' : ' + find_forbid.description)
-        # return expr.ExprEvaluator.evaluate(find_forbid.constraint, self._context[0])
+class ViolationsHelper(object):
+    @staticmethod
+    def get_additional_constraint(e):
+        result = []
+        if ViolationsHelper()._visit(e):
+            result.append(ast.SequencePattern([ast.Node(ast.NodeTypeDescriptor.build_type(type_='space'))])),
+            result.append(ast.SequencePattern([ast.Node(ast.NodeTypeDescriptor.build_type(type_='newline'))])),
+            result.append(ast.SequencePattern([ast.Node(ast.NodeTypeDescriptor.build_type(type_='tab'))]))
+        return result
 
+    @vis.visitor(ast.BinaryExpr)
+    def _visit(self, e):
+        return self._visit(e.left) or self._visit(e.right)
+
+    @vis.visitor(ast.UnaryExpr)
+    def _visit(self, e):
+        return self._visit(e.operand)
+
+    @vis.visitor(ast.Expr)
+    def _visit(self, e):
+        return False
+
+    @vis.visitor(ast.BeforeExpr)
+    def _visit(self, e):
+        return True
+
+    @vis.visitor(ast.AfterExpr)
+    def _visit(self, e):
+        return True
+
+    @vis.visitor(ast.BetweenExpr)
+    def _visit(self, e):
+        return True

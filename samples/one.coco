@@ -1,4 +1,5 @@
 Semantic
+ignore space, newline, comment, indent, tab
 {
 /**/
   forbid ident{string in ['px', 'pt', 'cm']}
@@ -36,6 +37,7 @@ Semantic
   message 'Put a ; at the end of declarations'
 */
 /* */
+
   forbid string in uri
   message 'Do not put quotes in url declarations'
 
@@ -140,20 +142,18 @@ Semantic
          (d.previous-sibling.contains(hex) or d.previous-sibling.contains(color-text))
   message 'No fallback color for properties with a rgba(), hsl(), or hsla() color.'
 
-/*
-*/
 }
 
 Whitespace
+ignore newline indent comment, newline comment, indent, comment
 {
+  find c=colon next-to v=value
+  require space between c and v
+  message 'Put one space between the colon and the value of a declaration.'
 
   find r1=ruleset next-to r2=ruleset
   require newline{2,3} between r1 and r2
   message 'Put one or two blank lines between rules'
-
-  find c=colon next-to v=value
-  require space between c and v
-  message 'Put one space between the colon and the value of a declaration.'
 
   find s=selector next-to b=block
   require space between s and b
@@ -162,17 +162,16 @@ Whitespace
   find s1=delim next-to s2=simpleselector
   require newline between s1 and s2
   message 'One selector per line.'
+
 }
 
 Custom
 {
-
   forbid (space or indent) next-to (newline or eof)
   message 'No trailing spaces.'
 
   find i=indent
   require i.string match '^ {4}$'
   message 'Use 4 spaces for indentation, no tabs.'
-
 }
 

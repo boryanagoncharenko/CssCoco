@@ -23,79 +23,16 @@ class ConventionSet(AstNode):
 
 
 class Context(AstNode):
-    def __init__(self, conventions, exceptions):
+    def __init__(self, conventions, ignores):
         super(Context, self).__init__()
         self.conventions = conventions
-        self.exceptions = exceptions
-
-    def get_ignored_and_target_patterns(self):
-        """
-        What the context targets, i.e. whitespaces, indents, comments
-        """
-        return []
+        self._ignores = ignores
 
     def get_ignored_patterns(self):
         """
         What is completely ignored in the context
         """
-        return []
-
-
-class WhitespaceContext(Context):
-    def __init__(self, conventions, exceptions):
-        super(WhitespaceContext, self).__init__(conventions, exceptions)
-
-    def get_ignored_patterns(self):
-        # return []
-        return [SequencePattern([Node(NodeTypeDescriptor('newline')),
-                                     WhitespaceNode(NodeTypeDescriptor('indent'), Repeater(1, 1)),
-                                     Node(NodeTypeDescriptor('comment'))]),
-                SequencePattern.build_simple_seq('newline', 'comment'),
-                SequencePattern.build_simple_seq('indent'),
-                SequencePattern.build_simple_seq('comment')
-                ]
-
-    def get_ignored_and_target_patterns(self):
-        # return []
-        return self.get_ignored_patterns() + \
-            [SequencePattern.build_simple_seq('space'),
-             SequencePattern.build_simple_seq('newline'),
-             SequencePattern.build_simple_seq('tab')]
-
-
-class IndentContext(Context):
-    def __init__(self, conventions, exceptions):
-        super(IndentContext, self).__init__(conventions, exceptions)
-
-    def get_ignored_patterns(self):
-        return []
-
-    def get_ignored_and_target_patterns(self):
-        return []
-
-
-class CommentsContext(Context):
-    def __init__(self, conventions, exceptions):
-        super(CommentsContext, self).__init__(conventions, exceptions)
-
-
-class SemanticContext(Context):
-    def __init__(self, conventions, exceptions):
-        super(SemanticContext, self).__init__(conventions, exceptions)
-
-    # TODO: filters must be separated and applied sequentially: first the indent, then everything else
-    def get_ignored_patterns(self):
-        return [
-            SequencePattern.build_simple_seq('space'),
-            SequencePattern.build_simple_seq('newline'),
-            SequencePattern.build_simple_seq('comment'),
-            SequencePattern.build_simple_seq('indent'),
-            SequencePattern.build_simple_seq('tab'),
-        ]
-
-    def get_ignored_and_target_patterns(self):
-        return self.get_ignored_patterns() + \
-            []
+        return self._ignores
 
 
 class Convention(AstNode):
@@ -194,14 +131,6 @@ class SequencePattern(PatternDescriptor):
         super(SequencePattern, self).__init__(node_desc_list[0],
                                               node_desc_list,
                                               NodeRelations.build_sequence_relations(node_desc_list))
-
-    @staticmethod
-    def build_simple_seq(*node_type_expr):
-        res = []
-        for node_type in node_type_expr:
-            # is_expr = IsExpr(ImplicitVariableExpr.DEFAULT, node_type)
-            res.append(Node(NodeTypeDescriptor.build_type(node_type)))
-        return SequencePattern(res)
 
 
 class WhitespaceVariation(AstNode):
@@ -843,7 +772,7 @@ class BooleanType(Type):
         return True
 
 
-class CssNodeTypeType(Type):
+class CocoNodeTypeType(Type):
     def is_css_node_type(self):
         return True
 
@@ -880,6 +809,6 @@ StringType.TYPE = StringType()
 IntegerType.TYPE = IntegerType()
 BooleanType.TYPE = BooleanType()
 CssNodeType.TYPE = CssNodeType()
-CssNodeTypeType.TYPE = CssNodeTypeType()
+CocoNodeTypeType.TYPE = CocoNodeTypeType()
 CocoNodeType.TYPE = CocoNodeType()
 UndefinedType.TYPE = UndefinedType()

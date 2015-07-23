@@ -3,7 +3,6 @@ import re
 import csscoco
 from csscoco.lang.ast import ast as ast
 import csscoco.lang.analysis.values as values
-import csscoco.css.parse_tree as css
 import csscoco.lang.visitor_decorator as vis
 
 
@@ -18,9 +17,9 @@ class EvaluationContext(object):
         raise NotImplementedError()
 
 
-class InnerNodeContext(EvaluationContext):
+class NodeConstraintContext(EvaluationContext):
     def __init__(self, pattern_matcher, node):
-        super(InnerNodeContext, self).__init__(pattern_matcher)
+        super(NodeConstraintContext, self).__init__(pattern_matcher)
         assert node
         self._node = node
 
@@ -31,23 +30,22 @@ class InnerNodeContext(EvaluationContext):
         return self._node
 
 
-class ConstraintContext(EvaluationContext):
+class ConventionConstraintContext(EvaluationContext):
     def __init__(self, pattern_matcher, id_to_node_table):
-        super(ConstraintContext, self).__init__(pattern_matcher)
+        super(ConventionConstraintContext, self).__init__(pattern_matcher)
         self._id_node_table = id_to_node_table
 
     def get_node_by_id(self, identifier):
         for desc in self._id_node_table:
             if desc.has_identifier() and desc.identifier == identifier:
                 return self._id_node_table[desc]
-        raise ValueError('Identifier not in context')
+        raise ValueError('Usage of unknown identifier: ' + identifier)
 
     def get_node_by_desc(self, desc):
         return self._id_node_table[desc]
 
 
 class ExprEvaluator(object):
-
     def __init__(self, context):
         self._context = context
 
@@ -86,7 +84,6 @@ class ExprEvaluator(object):
     def visit(self, equals_expr):
         left = self.visit(equals_expr.left)
         right = self.visit(equals_expr.right)
-
         return left.equals(right)
 
     @vis.visitor(ast.NotEqualExpr)
@@ -144,12 +141,6 @@ class ExprEvaluator(object):
         node_expr = self.visit(is_expr.left)
         type_expr = self.visit(is_expr.right)
         return node_expr.is_(type_expr)
-        # if not wrapper.type_desc.is_node_match(operand.value):
-        #     return values.Boolean.FALSE
-        # if wrapper.attr_expr:
-        #     newContext = ExprContext(self._context.pattern_matcher, operand.value)
-        #     return ExprEvaluator.evaluate(wrapper.attr_expr, newContext)
-        # return values.Boolean.FALSE
 
     @vis.visitor(ast.MatchExpr)
     def visit(self, match_expr):
@@ -166,75 +157,12 @@ class ExprEvaluator(object):
         operand = self.visit(in_expr.left)
         list_ = self.visit(in_expr.right)
         return operand.in_(list_)
-    #
-    # @vis.visitor(ast.ApiCallExpr)
-    # def visit(self, api_call_expr):
-    #     node = self.visit(api_call_expr.operand)
-    #     real_node = node.value
-    #     return self.visit(api_call_expr.call, real_node)
-        # api_string = api_call_expr.call.value
-        # property_value = real_node.invoke_method(api_string)
-        # return property_value
 
     @vis.visitor(ast.PropertyExpr)
     def visit(self, prop_expr):
         node = self.visit(prop_expr.operand)
         real_node = node.value
         return real_node.invoke_property(prop_expr.value)
-
-    _vendor_prefixes = {'-ms-', 'mso-', '-moz-', '-o-', '-atsc-', '-wap-', '-webkit-', '-khtml-'}
-    #
-    # @vis.visitor(ast.IsVendorSpecificPropertyExpr)
-    # def visit(self, prop_expr):
-    #     node = self.visit(prop_expr.operand)
-    #     real_node = node.value
-    #     return self.evaluate_is_vendor(real_node)
-    #
-    # def _check_is_vendor(self, node):
-    #     for p in self._vendor_prefixes:
-    #         prefix_slice = node.value[:len(p)].lower()
-    #         if prefix_slice.startswith(p):
-    #             return p
-    #     return None
-    #
-    # @vis.visitor(css.Declaration)
-    # def evaluate_is_vendor(self, real_node):
-    #     prefix = self._check_is_vendor(real_node.value[0])
-    #     return values.Boolean.build(prefix)
-    #
-    # @vis.visitor(css.Property)
-    # def evaluate_is_vendor(self, real_node):
-    #     prefix = self._check_is_vendor(real_node)
-    #     return values.Boolean.build(prefix)
-    #
-    # @vis.visitor(ast.ValuePropertyExpr)
-    # def visit(self, prop_expr):
-    #     node = self.visit(prop_expr.operand)
-    #     real_node = node.value
-    #     return self.evaluate_value(real_node)
-    #
-    # @vis.visitor(css.Declaration)
-    # def evaluate_value(self, declaration):
-    #     for i in range(1, len(declaration.value), 1):
-    #         if declaration.value[-i].has_children():
-    #             return values.Node(declaration.value[-i])
-    #
-    # @vis.visitor(css.Number)
-    # def evaluate_value(self, real_node):
-    #     number_value = float(real_node.value)
-    #     return values.Decimal(number_value)
-    #
-    # @vis.visitor(ast.PropertyPropertyExpr)
-    # def visit(self, expr):
-    #     node = self.visit(expr.operand)
-    #     real_node = node.value
-    #     return values.Node(real_node.value[0])
-    #
-    # @vis.visitor(ast.IsLongPropertyExpr)
-    # def visit(self, expr):
-    #     node = self.visit(expr.operand)
-    #     real_node = node.value
-    #     return values.Boolean.build(len(real_node.value) > 4)
 
     @vis.visitor(ast.MethodExpr)
     def visit(self, method_expr):
@@ -254,7 +182,7 @@ class ExprEvaluator(object):
     def visit(self, contains_all_expr):
         node_value = self.visit(contains_all_expr.operand)
         list_value = contains_all_expr.argument
-        result =  self._context.pattern_matcher.find_all(node_value.value, list_value.value)
+        result = self._context.pattern_matcher.find_all(node_value.value, list_value.value)
         return values.Boolean.build(result)
 
     @vis.visitor(ast.CountExpr)
@@ -284,7 +212,7 @@ class ExprEvaluator(object):
     @vis.visitor(ast.BeforeExpr)
     def visit(self, before):
         operand_node_value = self.visit(before.operand)
-        _filter = self._context.pattern_matcher._filter
+        _filter = self._context.pattern_matcher.filter
         matcher = csscoco.lang.analysis.pattern_matcher.WhitespaceVariationMatcher(_filter)
         match = matcher.is_variation_before_node(before.argument, operand_node_value.value)
         return values.Boolean.build(match)
@@ -293,7 +221,7 @@ class ExprEvaluator(object):
     def visit(self, between):
         left_node_value = self.visit(between.operand)
         right_node_value = self.visit(between.second_operand)
-        _filter = self._context.pattern_matcher._filter
+        _filter = self._context.pattern_matcher.filter
         matcher = csscoco.lang.analysis.pattern_matcher.WhitespaceVariationMatcher(_filter)
         match = matcher.is_variation_between_nodes(between.argument, left_node_value.value, right_node_value.value)
         return values.Boolean.build(match)
@@ -301,7 +229,7 @@ class ExprEvaluator(object):
     @vis.visitor(ast.AfterExpr)
     def visit(self, after):
         operand_node_value = self.visit(after.operand)
-        _filter = self._context.pattern_matcher._filter
+        _filter = self._context.pattern_matcher.filter
         matcher = csscoco.lang.analysis.pattern_matcher.WhitespaceVariationMatcher(_filter)
         match = matcher.is_variation_after_node(after.argument, operand_node_value.value)
         return values.Boolean.build(match)

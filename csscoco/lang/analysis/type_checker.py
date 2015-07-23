@@ -4,25 +4,15 @@ import csscoco.lang.ast.ast as ast
 
 class TypeChecker(object):
     """
-    The class checks for types conformance. Specifically it checks for the following:
-    0. List has the same type elements
-    1. Unary operator accepts integers
-    2. Repeater is correct
-    3. Or And and Not have boolean operands
-    4. Eq and NotEq have operands of the same type
-    5. other comparison operators have integers
-    6. Is has node and node type
-    7. Match has a string and a string
-    8. In has a list of values
-    9. Call invokes stuff that is there
-    10. NodeQuery has a node
-    11. Contains and ContainsAll ?
-    12. Before After Between have a Whitespace variation and nodes
-    13. Whether identifiers in the constraint are defined
+    The class ensures that evaluation will not cause an error. Specifically it does the following:
+    1. Checks whether all unary and binary operators have operands of the allowed types
+    2. Checks whether a List has elements of the same type
+    3. Checks whether a Repeater has correct lower and upper limits
+    4. Checks whether undeclared identifiers are used
     """
     def __init__(self):
-        self._context = TypeCheckingContext()
-        self._errors = Errors(self._context)
+        self._type_checking_context = TypeCheckingContext()
+        self._errors = Errors(self._type_checking_context)
 
     @staticmethod
     def check(coco_ast):
@@ -32,14 +22,14 @@ class TypeChecker(object):
     @vis.visitor(ast.ConventionSet)
     def _visit(self, conv_set):
         for context in conv_set.contexts:
-            self._context.set_current_context(context)
+            self._type_checking_context.context = context
             self._visit(context)
         return self._errors
 
     @vis.visitor(ast.Context)
     def _visit(self, context):
         for convention in context.conventions:
-            self._context.set_current_convention(convention)
+            self._type_checking_context.convention = convention
             self._visit(convention)
 
     @vis.visitor(ast.Convention)
@@ -56,8 +46,8 @@ class TypeChecker(object):
     @vis.visitor(ast.Node)
     def _visit(self, node):
         if node.has_identifier():
-            self._context.register_identifier(node.identifier)
-        self._context.set_current_node(node.descriptor)
+            self._type_checking_context.identifiers_table.add(node.identifier)
+        self._type_checking_context.node_type = node.descriptor
         if node.has_constraint():
             constraint_type = self._visit(node.constraint)
             if not constraint_type.is_undefined() and not constraint_type.is_boolean():
@@ -138,7 +128,7 @@ class TypeChecker(object):
 
     @vis.visitor(ast.VariableExpr)
     def _visit(self, expr):
-        if expr.name != '' and not self._context.is_identifier_registered(expr.name):
+        if expr.name != '' and expr.name not in self._type_checking_context.identifiers_table:
             self._errors.log(ErrorMessageBuilder.unregistered_id_error(expr))
             return ast.UndefinedType.TYPE
         return ast.CssNodeType.TYPE
@@ -170,7 +160,7 @@ class TypeChecker(object):
 
     @vis.visitor(ast.NodeTypeExpr)
     def _visit(self, expr):
-        return ast.CssNodeTypeType.TYPE
+        return ast.CocoNodeTypeType.TYPE
 
     @vis.visitor(ast.NodeQueryExpr)
     def _visit(self, expr):
@@ -183,7 +173,7 @@ class Errors(object):
         self._inner = {}
 
     def log(self, error_msg):
-        conv = self._context.get_current_convention()
+        conv = self._context.convention
         if conv in self._inner:
             self._inner[conv].append(error_msg)
         else:
@@ -213,32 +203,19 @@ class Errors(object):
 
 class TypeCheckingContext(object):
     def __init__(self):
-        self._context = None
-        self._convention = None
-        self._node_type = None
-        self._id_table = set()
+        self.context = None
+        self.__convention = None
+        self.node_type = None
+        self.identifiers_table = set()
 
-    def set_current_context(self, context):
-        self._context = context
+    @property
+    def convention(self):
+        return self.__convention
 
-    def set_current_convention(self, convention):
-        self._convention = convention
-        self._id_table = set()
-
-    def set_current_node(self, node_type):
-        self._node_type = node_type
-
-    def get_current_convention(self):
-        return self._convention
-
-    def get_current_node(self):
-        return self._node_type
-
-    def register_identifier(self, i):
-        self._id_table.add(i)
-
-    def is_identifier_registered(self, i):
-        return i in self._id_table
+    @convention.setter
+    def convention(self, convention):
+        self.__convention = convention
+        self.identifiers_table = set()
 
 
 class ErrorMessageBuilder(object):

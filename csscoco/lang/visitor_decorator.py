@@ -75,7 +75,6 @@ def _visitor_impl(self, *arg):
     raise NotImplementedError(error)
 
 
-
 def _get_base_classes_names(class_):
     result = []
     base = _get_base_class_name(class_)

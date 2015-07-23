@@ -85,8 +85,8 @@ class cocoVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by cocoParser#convention_group.
-    def visitConvention_group(self, ctx):
+    # Visit a parse tree produced by cocoParser#ignore_clause.
+    def visitIgnore_clause(self, ctx):
         return self.visitChildren(ctx)
 
 

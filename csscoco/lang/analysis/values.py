@@ -191,7 +191,6 @@ class Boolean(Value):
     def not_equals_boolean(self, value):
         return Boolean.build(value.value != self.value)
 
-
     def in_(self, value):
         return value.is_in_list(self)
 
@@ -206,23 +205,9 @@ class NodeType(Value):
     def is_of_type(self, node_value):
         real_node = node_value.value
         return Boolean.build(real_node.matches(self.value))
-        # return self._is_type_match(real_node) and self._is_value_match(real_node)
-
-    def _is_type_match(self, node):
-        if not node:
-            pass
-        if self.type_:
-            return self.type_ == node.type_
-        return True
-
-    def _is_value_match(self, node):
-        if self.value:
-            return self.value == node.value
-        return True
 
 
 class Node(Value):
-    # TODO: this value should not be here
     def __init__(self, node):
         assert node
         self.value = node
@@ -243,7 +228,6 @@ class List(Value):
 
 
 class Undefined(Value):
-    def __init__(self):
-        self.value = None
+    pass
 
 Undefined.VALUE = Undefined()

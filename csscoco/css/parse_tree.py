@@ -1,10 +1,34 @@
 from csscoco.lang.analysis import values as values
-from csscoco.lang.ast import ast as ast
 
 
 class CssPattern(object):
-    # this is the matched pattern of actual nodes
-    pass
+    def __init__(self, keys=None):
+        self._id_to_node = {}
+        if keys:
+            self._id_to_node = keys
+
+    def register_node(self, identifier, node):
+        self._id_to_node[identifier] = node
+
+    def unregister_node(self, identifier):
+        self._id_to_node.pop(identifier)
+
+    def register_multi_nodes(self, relations, nodes):
+        for i, r in enumerate(relations):
+            self._id_to_node[r.target_node] = nodes[i]
+
+    def unregister_multi_nodes(self, relations):
+        for r in relations:
+            self._id_to_node.pop(r.target_node)
+
+    def __getitem__(self, item):
+        return self._id_to_node[item]
+
+    def __iter__(self):
+        return iter(self._id_to_node)
+
+    def copy(self):
+        return CssPattern(self._id_to_node.copy())
 
 
 class CssNode(object):
@@ -19,7 +43,7 @@ class CssNode(object):
         self.index = -1
         self.start_position = None
         self.end_position = None
-        self._api = ApiRegistry()
+        self._api = {}
         self._register_api()
 
     def initialize_labels(self, _type, categories):
@@ -31,10 +55,8 @@ class CssNode(object):
         return value in self.search_labels
 
     def _register_api(self):
-        self._api.register('string', self._to_string, ast.StringType.TYPE, None)
-        self._api.register('child', self._get_child, ast.Node, None)
-        # self._api['string'] = self._to_string
-        # self._api['child'] = self._get_child
+        self._api['string'] = self._to_string
+        self._api['child'] = self._get_child
 
     def _to_string(self):
         res = ''
@@ -49,13 +71,10 @@ class CssNode(object):
         return property_name in self._api
 
     def invoke_method(self, method_name, argument):
-        return self._api.invoke(method_name, argument)
+        return self._api[method_name](argument)
 
     def invoke_property(self, property_name):
-        return self._api.invoke(property_name)
-
-    def get_return_type(self, name):
-        return self._api.get_return_type(name)
+        return self._api[property_name]()
 
     def has_children(self):
         return True
@@ -99,7 +118,7 @@ class TerminalCssNode(CssNode):
 
     def _register_api(self):
         super(TerminalCssNode, self)._register_api()
-        self._api.register('value', self._get_value, ast.StringType.TYPE, None)
+        self._api['value'] = self._get_value
 
     def _to_string(self):
         return values.String(self.value)
@@ -130,9 +149,9 @@ class Declaration(CssNode):
 
     def _register_api(self):
         super(Declaration, self)._register_api()
-        self._api.register('property', self._get_property, ast.StringType.TYPE, None)
-        self._api.register('value', self._get_value, ast.StringType.TYPE, None)
-        self._api.register('is-vendor-specific', self.is_vendor_specific, ast.StringType.TYPE, None)
+        self._api['property'] = self._get_property
+        self._api['value'] = self._get_value
+        self._api['is-vendor-specific'] = self.is_vendor_specific
 
 
     def _get_property(self):
@@ -161,12 +180,9 @@ class Property(TerminalCssNode):
 
     def _register_api(self):
         super(Property, self)._register_api()
-        self._api.register('name', self._get_name, ast.StringType.TYPE, None)
-        self._api.register('is-vendor-specific', self._is_vendor_specific, ast.StringType.TYPE, None)
-        self._api.register('standard', self._get_standard, ast.StringType.TYPE, None)
-        # self._api['name'] = self._get_name
-        # self._api['is-vendor-specific'] = self._is_vendor_specific
-        # self._api['standard'] = self._get_standard
+        self._api['name'] = self._get_name
+        self._api['is-vendor-specific'] = self._is_vendor_specific
+        self._api['standard'] = self._get_standard
 
     def _to_string(self):
         return values.String(self._name)
@@ -226,7 +242,7 @@ class ElementSelector(SimpleSelector):
 
     def _register_api(self):
         super(ElementSelector, self)._register_api()
-        self._api.register('name', self._get_name, ast.StringType.TYPE, None)
+        self._api['name'] = self._get_name
 
     def _to_string(self):
         return values.String(self._name)
@@ -242,7 +258,7 @@ class IdSelector(SimpleSelector):
 
     def _register_api(self):
         super(IdSelector, self)._register_api()
-        self._api.register('name', self._get_name, ast.StringType.TYPE, None)
+        self._api['name'] = self._get_name
 
     def _to_string(self):
         return values.String(self._name)
@@ -258,8 +274,7 @@ class ClassSelector(SimpleSelector):
 
     def _register_api(self):
         super(ClassSelector, self)._register_api()
-        self._api.register('name', self._get_name, ast.StringType.TYPE, None)
-        # self._api['name'] = self._get_name
+        self._api['name'] = self._get_name
 
     def _to_string(self):
         return values.String(self._name)
@@ -277,7 +292,7 @@ class AttributeSelector(CssNode):
 
     def _register_api(self):
         super(AttributeSelector, self)._register_api()
-        self._api.register('value', self._get_value, ast.StringType.TYPE, None)
+        self._api['value'] = self._get_value
 
     def _get_value(self):
         if self.attr_value:
@@ -304,8 +319,7 @@ class Function(CssNode):
 
     def _register_api(self):
         super(Function, self)._register_api()
-        self._api.register('name', self._get_name, ast.StringType.TYPE, None)
-        # self._api['name'] = self._get_name
+        self._api['name'] = self._get_name
 
     def _get_name(self):
         return values.String(self.value[0].value)
@@ -318,8 +332,7 @@ class Hex(TerminalCssNode):
 
     def _register_api(self):
         super(Hex, self)._register_api()
-        self._api.register('is-long', self._get_is_long, ast.StringType.TYPE, None)
-        # self._api['is-long'] = self._get_is_long
+        self._api['is-long'] = self._get_is_long
 
     def _get_is_long(self):
         return values.Boolean.build(self._is_long)
@@ -332,7 +345,7 @@ class Number(TerminalCssNode):
 
     def _register_api(self):
         super(Number, self)._register_api()
-        self._api.register('num-value', self._get_value, ast.StringType.TYPE, None)
+        self._api['num-value'] = self._get_value
 
     def _get_value(self):
         return values.Decimal(self.float_value)
@@ -345,10 +358,8 @@ class String(TerminalCssNode):
 
     def _register_api(self):
         super(String, self)._register_api()
-        self._api.register('has-single-quotes', self._has_single_quotes, ast.StringType.TYPE, None)
-        self._api.register('has-double-quotes', self._has_double_quotes, ast.StringType.TYPE, None)
-        # self._api['has-single-quotes'] = self._has_single_quotes
-        # self._api['has-double-quotes'] = self._has_double_quotes
+        self._api['has-single-quotes'] = self._has_single_quotes
+        self._api['has-double-quotes'] = self._has_double_quotes
 
     def _to_string(self):
         return values.String(self.value)
@@ -487,33 +498,3 @@ class ParseTreeBuilder(object):
             last_child = node.value[-1]
             node.start_position = first_child.start_position
             node.end_position = last_child.end_position
-
-
-class ApiRegistry(object):
-    def __init__(self):
-        self._registry = {}
-
-
-    def register(self, key, method, return_type, param_type):
-        self._registry[key] = ApiEntry(method, return_type, param_type)
-
-    def invoke(self, name, arg=None):
-        if name not in self._registry:
-            raise ValueError('No method with name : ' + str(name))
-        if arg:
-            return self._registry[name].method(arg)
-        return self._registry[name].method()
-
-    def get_return_type(self, name):
-        return self._registry[name].return_type
-
-    def is_method_registered(self, name):
-        return name in self._registry
-
-
-class ApiEntry(object):
-    def __init__(self, method, return_type, param_type):
-        self.method = method
-        self.return_type = return_type
-        self.param_type = param_type
-

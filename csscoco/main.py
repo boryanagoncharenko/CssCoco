@@ -3,7 +3,7 @@ import sys
 
 import antlr4
 
-import csscoco.css.parser as parser
+import csscoco.css.parser as css_parser
 import csscoco.css.parse_tree as css
 import csscoco.lang.syntax.ast_builder as ast
 import csscoco.lang.syntax.cocoLexer as cocoLexer
@@ -15,12 +15,12 @@ import csscoco.lang.analysis.type_checker as checker
 def get_css_parse_tree(filename):
     file = open(filename, encoding='utf-8')
     css_source = file.read()
-    result = parser.Parser.parse_css(css_source)
+    result = css_parser.Parser.parse_css(css_source)
     try:
         l = json.loads(result.decode('utf-8'))
     except ValueError:
         return None, '-----\nPlease check the validity of the css block!\n-----'
-    tr = parser.SExprTransformer.transform(l)
+    tr = css_parser.SExprTransformer.transform(l)
     a = css.ParseTreeBuilder.build(tr)
     # print(a.pretty_print())
     return a, ''
@@ -51,7 +51,9 @@ def main(*args):
         exit()
 
     print('--- Detecting violations ---')
-    violations.ViolationsFinder.find(coco_ast, css_tree)
+    log = violations.ViolationsFinder.find(coco_ast, css_tree)
+    print(log.to_string())
+    print('Total number of violations found: ' + str(log.number_of_violations()))
     print('--- Done ---')
 
 if __name__=='__main__':

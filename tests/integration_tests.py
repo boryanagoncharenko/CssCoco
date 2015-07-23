@@ -8,19 +8,24 @@ import csscoco.lang.analysis.violations as violations
 
 class TypeCheckerTests(TestCase):
 
+    filename = 'test.coco'
+
     def setupFile(self, content):
-        fo = open("foo.coco", "w")
+        fo = open(self.filename, 'w')
         fo.write(content)
         fo.close()
         return fo
 
+    def get_coco_ast(self, data):
+        file = self.setupFile(data)
+        return helpers.ParseHelper.parse_coco_string(file.name)
+
     def test_diff_eq_argument_types(self):
 
-        file = self.setupFile('Semantic { forbid id message \'Do not use ids\' }')
-        coco_ast = helpers.ParseHelper.parse_coco_string(file.name)
+        coco_ast = self.get_coco_ast('Semantic { forbid id message \'Do not use ids\' }')
         css_tree = helpers.ParseHelper.parse_css_string('#a { z-index: 5; }')
 
-        errors = checker.TypeChecker.check(coco_ast)
         violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
 
-        os.remove(file.name)
+
+        os.remove(self.filename)

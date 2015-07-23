@@ -7,7 +7,7 @@ from csscoco.lang.ast import ast as ast
 class TypeCheckerTests(TestCase):
 
     def wrap_convention_in_set(self, convention):
-        return ast.ConventionSet([ast.SemanticContext([convention], [])])
+        return ast.ConventionSet([ast.Context([convention], [])])
 
     def test_diff_eq_argument_types(self):
         a = ast.ForbidConvention(ast.Node(descriptor=ast.NodeTypeDescriptor(type_='property'),

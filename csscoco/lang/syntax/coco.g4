@@ -2,7 +2,7 @@ grammar coco;
 
 stylesheet : context* ;
 
-context : name=Identifier '{' convention* '}' ;
+context : name=Identifier (ignore=ignore_clause)? '{' convention* '}' ;
 
 convention : action='forbid' target=pattern 'message' message=String
            | action='require' requirement=logic_expr 'message' message=String
@@ -67,7 +67,7 @@ repeater : exact=Integer
          | lower=Integer ','
          ;
 
-convention_group : '{' convention+ '}' ;
+ignore_clause : 'ignore' (whitespace_node)+ (',' (whitespace_node)+)* ;
 
 list_ : '[' list_element (',' list_element)* ']' ;
 

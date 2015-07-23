@@ -1,6 +1,7 @@
 import abc
 import itertools
 
+import csscoco.css.parse_tree as css
 import csscoco.lang.ast.ast as ast
 import csscoco.lang.analysis.expressions as expr
 import csscoco.lang.visitor_decorator as vis
@@ -80,21 +81,6 @@ class TreeWalker(object):
             if f(desc, child):
                 yield child
 
-    # @staticmethod
-    # def pass_test(child_type, desc):
-    #     d = desc.type_desc.type1
-    #     if child_type in ['indent', 'newline', 'comment', 'space', 'tab']:
-    #         return False
-    #     if child_type == 'block' and d in TreeWalker.selectors:
-    #         return False
-    #     if child_type == 'selector' and d in TreeWalker.blocks:
-    #         return False
-    #     return True
-    #
-    # selectors = {'id', 'class', 'selector', 'simple-selector', 'tag'}
-    #
-    # blocks = {'important', 'property', 'value'}
-
     @staticmethod
     def get_next_sibling(node, index):
         if not node.parent or len(node.parent.value) <= node.index + index:
@@ -142,7 +128,7 @@ class TreeWalker(object):
 
 class Matcher(object):
     def __init__(self, filter_):
-        self._filter = filter_
+        self.filter = filter_
 
     @abc.abstractmethod
     def find_pattern_in_tree(self, tree, pattern):
@@ -157,7 +143,7 @@ class Matcher(object):
     def _is_node_desc_match(self, desc, node):
         type_ = desc.descriptor.is_node_match(node)
         if type_ and desc.has_constraint():
-            context = expr.InnerNodeContext(self, node)
+            context = expr.NodeConstraintContext(self, node)
             result = expr.ExprEvaluator.evaluate(desc.constraint, context)
             return result.value
         return type_
@@ -183,7 +169,7 @@ class WhitespaceVariationMatcher(Matcher):
         Checks whether any of the given sequences appears before the given node. Filter is applied.
         Returns boolean
         """
-        prev_siblings = self._filter.apply(TreeWalker.get_previous_siblings_excluding(node))
+        prev_siblings = self.filter.apply(TreeWalker.get_previous_siblings_excluding(node))
         for i in range(0, len(prev_siblings)):
             rem_nodes = prev_siblings[i:]
             if self._is_variation_exact_nodes_match(variation, rem_nodes):
@@ -195,7 +181,7 @@ class WhitespaceVariationMatcher(Matcher):
         Checks if a variation appears after a given node. Filter is applied.
         Returns boolean
         """
-        next_sibling = self._filter.get_next_sibling(node)
+        next_sibling = self.filter.get_next_sibling(node)
         return self.is_start_of_variation(variation, next_sibling)
 
     def is_variation_between_nodes(self, variation, node1, node2):
@@ -203,7 +189,7 @@ class WhitespaceVariationMatcher(Matcher):
         Checks whether the inner siblings of two nodes match a variation. Filter is applied.
         Returns boolean
         """
-        inner_siblings = self._filter.apply(TreeWalker.get_siblings_between(node1, node2))
+        inner_siblings = self.filter.apply(TreeWalker.get_siblings_between(node1, node2))
         return self._is_variation_exact_nodes_match(variation, inner_siblings)
 
     def is_start_of_variation(self, variation, node):
@@ -315,29 +301,28 @@ class PatternMatcher(Matcher):
     def find_pattern_in_tree(self, tree, pattern):
         """
         The method searches a tree for occurrences of a given pattern
-        Returns a list of {desc: node} dictionaries
+        Returns a list of CssPatterns
         """
-        """ THE RESULT HAS TO BE OF TYPE PATTERN FOR ONTOLOGICAL CONFORMANCE. USE CssPattern CLASS"""
         result = []
-        current_result = {}
+        css_pattern = css.CssPattern()
         nodes = self._filter_by(tree, pattern.root, TreeWalker.traverse_current_and_descendants)
-        return self._process_nodes(nodes, pattern.root, pattern, current_result, result)
+        return self._process_nodes(nodes, pattern.root, pattern, css_pattern, result)
 
-    def _process_nodes(self, nodes, desc, pattern, current_result, result):
+    def _process_nodes(self, nodes, desc, pattern, css_pattern, result):
         for node in nodes:
-            self._register_node_match(current_result, desc, node)
+            css_pattern.register_node(desc, node)
 
             relations = pattern.get_node_relations(desc)
             rs = len(relations)
             if rs == 0:
-                result.append(current_result.copy())
+                result.append(css_pattern.copy())
             elif rs == 1:
                 target_desc, new_nodes = self._process_relation(pattern, desc, node)
-                self._process_nodes(new_nodes, target_desc, pattern, current_result, result)
+                self._process_nodes(new_nodes, target_desc, pattern, css_pattern, result)
             elif rs > 1:
-                self._process_fork(node, relations, desc, pattern, current_result, result)
+                self._process_fork(node, relations, desc, pattern, css_pattern, result)
 
-            self._unregister_node_match(current_result, desc)
+            css_pattern.unregister_node(desc)
         return result
 
     def _process_relation(self, pattern_expr, desc, node):
@@ -345,12 +330,12 @@ class PatternMatcher(Matcher):
         nodes = self._find_target_nodes(relation, node)
         return relation.target_node, nodes
 
-    def _process_fork(self, node, relations, desc, pattern, current_result, result):
+    def _process_fork(self, node, relations, desc, pattern, css_pattern, result):
         target_desc, descendants = self._process_relation(pattern, desc, node)
         for combination in itertools.combinations(descendants, len(relations)):
-            self._register_multi_node_match(current_result, relations, combination)
-            result.append(current_result.copy())
-            self._unregister_multi_node_match(current_result, relations)
+            css_pattern.register_multi_nodes(relations, combination)
+            result.append(css_pattern.copy())
+            css_pattern.unregister_multi_nodes(relations)
 
     def find_descendants_that_match(self, node, desc):
         """
@@ -365,16 +350,16 @@ class PatternMatcher(Matcher):
         return self._filter_by(node, desc, TreeWalker.traverse_children)
 
     def find_next_sibling(self, node):
-        next_sibling = self._filter.get_next_sibling(node)
+        next_sibling = self.filter.get_next_sibling(node)
         return next_sibling
 
     def find_if_next_sibling_matches(self, node, desc):
-        next_sibling = self._filter.get_next_sibling(node)
+        next_sibling = self.filter.get_next_sibling(node)
         if next_sibling and self._is_node_desc_match(desc, next_sibling):
             yield next_sibling
 
     def find_previous_sibling(self, node):
-        prev_sibling = self._filter.get_prev_sibling(node)
+        prev_sibling = self.filter.get_prev_sibling(node)
         return prev_sibling
 
     def find_all(self, node, descriptors):
