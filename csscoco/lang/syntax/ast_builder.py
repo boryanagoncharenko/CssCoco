@@ -60,11 +60,11 @@ class CocoCustomVisitor(cocoVisitor):
             self.push_identifiers(target)
             constraint = self.visitLogic_expr(context.requirement)
             self.pop_identifiers()
-            if context.action.text == 'require':
+            if self.is_require_convention(context):
                 return ast.FindRequireConvention(target, description=message, constraint=constraint)
             return ast.FindForbidConvention(target, description=message, constraint=constraint)
 
-        raise NotImplementedError('Unknown convention type')
+        raise ValueError('Unknown convention type')
 
     def push_identifiers(self, target):
         for wrapper in target.nodes:
@@ -77,8 +77,8 @@ class CocoCustomVisitor(cocoVisitor):
     def is_forbid_convention(self, context):
         return not context.find and context.action.text == 'forbid'
 
-    def is_require_convention(self, ctx):
-        return ctx.children[0].symbol.text == 'require'
+    def is_require_convention(self, context):
+        return context.action.text == 'require'
 
     def visit_message(self, context):
         return self.unescape_quotes(context.message.text)
@@ -133,41 +133,14 @@ class CocoCustomVisitor(cocoVisitor):
             wrappers.append(wrapper)
         return wrappers
 
-    def get_node_declarations(self, context):
-        result = []
-        if context.simple:
-            for i in range(0, len(context.children), 2):
-                wrapper = self.visitNode_declaration(context.children[i])
-                result.append(wrapper)
-        if context.fork:
-            pass
-        return result
-
-    def build_relations(self, context, wrappers):
-        relations = ast.NodeRelations()
-        if self.is_single_node_pattern(context):
-            return relations, 0
-        title = context.relation.text
-        root = -1
-        for i in range(1, len(wrappers)):
-            if title == 'in':
-                relations.register_relation(wrappers[i], ast.IsAncestorOf(wrappers[i-1]))
-            elif title == 'next-to':
-                relations.register_relation(wrappers[i-1], ast.IsPreviousSiblingOf(wrappers[i]))
-                root = 0
-        return relations, root
-
-    def is_single_node_pattern(self, context):
-        return len(context.children) == 1
-
     def visitNode_declaration(self, context):
         if context.variable and context.node:
-            return self.visit_semantic_node_id(context.node, context.variable.text)
+            return self.visit_semantic_node_with_id(context.node, context.variable.text)
         if context.node:
             return self.visitSemantic_node(context.node)
         raise ValueError('Unknown node declaration')
 
-    def visit_semantic_node_id(self, context, variable):
+    def visit_semantic_node_with_id(self, context, variable):
         node_descriptor = self.get_node_descriptor(context.type_)
         if not context.constraint:
             return ast.Node(node_descriptor, identifier=variable)
@@ -184,10 +157,8 @@ class CocoCustomVisitor(cocoVisitor):
     def visitLogic_expr(self, context):
         if context.parenthesis:
             return self.visitLogic_expr(context.parenthesis)
-
         if context.type_:
             return self.visitType_expr(context.type_)
-
         if context.call:
             return self.visitArithmetic_expr(context.call)
 
@@ -203,7 +174,7 @@ class CocoCustomVisitor(cocoVisitor):
             return ast.AndExpr(left, right, line)
         if operator == 'or':
             return ast.OrExpr(left, right, line)
-        raise ValueError('Unknown logic expression')
+        raise ValueError('Unknown expression')
 
     def visitType_expr(self, context):
         operator = context.operator.text
@@ -221,7 +192,7 @@ class CocoCustomVisitor(cocoVisitor):
         if operator == 'between':
             second_operand = self.get_type_expr_right(context.second_variable, context.second_operand)
             return ast.BetweenExpr(operand, variation, second_operand, line)
-        raise ValueError('Unknown type expression')
+        raise ValueError('Unknown expression')
 
     def get_type_expr_right(self, variable, operand):
         if variable:
@@ -260,10 +231,8 @@ class CocoCustomVisitor(cocoVisitor):
     def visitArithmetic_expr(self, context):
         if context.primary:
             return self.visitElement(context.primary)
-
         if context.call:
             return self.visitCall_expr(context.call)
-
         operator = context.operator.text
         line = context.operator.line
         if operator == '-':
@@ -275,7 +244,10 @@ class CocoCustomVisitor(cocoVisitor):
 
         left = self.visitArithmetic_expr(context.left)
         right = self.visitArithmetic_expr(context.right)
+        return self.binary_arithmetic_expr(context, left, right, line)
 
+    def binary_arithmetic_expr(self, context, left, right, line):
+        operator = context.operator.text
         if operator == '==':
             return ast.EqualExpr(left, right, line)
         if operator == '!=':
@@ -297,6 +269,7 @@ class CocoCustomVisitor(cocoVisitor):
             return ast.MatchExpr(left, right, line)
         if operator == 'not match':
             return ast.NotExpr(ast.MatchExpr(left, right, line))
+        raise ValueError('Unknown expression')
 
     def visitElement(self, context):
         if context.primary_bool:
@@ -309,46 +282,49 @@ class CocoCustomVisitor(cocoVisitor):
             return self.visitList_(context.primary_list)
         raise ValueError('Unknown element')
 
-    def visitCall_expr(self, ctx):
-        identifier = ctx.call.text
-        line = ctx.call.line
+    def visitCall_expr(self, context):
+        identifier = context.call.text
+        line = context.call.line
         if identifier in self.identifiers:
             return ast.VariableExpr(identifier, line)
         if identifier == 'lowercase':
             return ast.StringExpr('^[^A-Z]+$', line)
         if identifier == 'shorten':
             return ast.StringExpr('(?P<gr1>[0-9a-f])(?P=gr1)(?P<gr2>[0-9a-f])(?P=gr2)(?P<gr3>[0-9a-f])(?P=gr3)', line)
-
         operand = ast.VariableExpr.DEFAULT
-        if ctx.operand:
-            operand = self.visitCall_expr(ctx.operand)
-
-        argument = self.visit_argument(ctx)
+        if context.operand:
+            operand = self.visitCall_expr(context.operand)
+        argument = self.visit_argument(context)
         if not argument:
-            if identifier == 'next-sibling':
-                return ast.NextSiblingExpr(operand, line)
-            if identifier == 'previous-sibling':
-                return ast.PreviousSiblingExpr(operand, line)
-            if identifier == 'is-vendor-specific':
-                return ast.IsVendorSpecificPropertyExpr(operand, line)
-            if identifier == 'string':
-                return ast.StringPropertyExpr(operand, line)
-            if identifier == 'value':
-                return ast.ValuePropertyExpr(operand, line)
-            if identifier == 'num-value':
-                return ast.NumValuePropertyExpr(operand, line)
-            if identifier == 'property':
-                return ast.PropertyPropertyExpr(operand, line)
-            if identifier == 'name':
-                return ast.NamePropertyExpr(operand, line)
-            if identifier == 'is-long':
-                return ast.IsLongPropertyExpr(operand, line)
-            if identifier == 'has-single-quotes':
-                return ast.HasSingleQuotesPropertyExpr(operand, line)
-            if identifier == 'standard':
-                return ast.StandardPropertyExpr(operand, line)
-            return ast.InvalidPropertyExpr(operand, identifier, line)
+            return self.visit_property_call(identifier, operand, line)
+        return self.visit_method_call(identifier, operand, argument, line)
 
+    def visit_property_call(self, identifier, operand, line):
+        if identifier == 'next-sibling':
+            return ast.NextSiblingExpr(operand, line)
+        if identifier == 'previous-sibling':
+            return ast.PreviousSiblingExpr(operand, line)
+        if identifier == 'is-vendor-specific':
+            return ast.IsVendorSpecificPropertyExpr(operand, line)
+        if identifier == 'string':
+            return ast.StringPropertyExpr(operand, line)
+        if identifier == 'value':
+            return ast.ValuePropertyExpr(operand, line)
+        if identifier == 'num-value':
+            return ast.NumValuePropertyExpr(operand, line)
+        if identifier == 'property':
+            return ast.PropertyPropertyExpr(operand, line)
+        if identifier == 'name':
+            return ast.NamePropertyExpr(operand, line)
+        if identifier == 'is-long':
+            return ast.IsLongPropertyExpr(operand, line)
+        if identifier == 'has-single-quotes':
+            return ast.HasSingleQuotesPropertyExpr(operand, line)
+        if identifier == 'standard':
+            return ast.StandardPropertyExpr(operand, line)
+        return ast.InvalidPropertyExpr(operand, identifier, line)
+
+    def visit_method_call(self, identifier, operand, argument, line):
         if identifier == 'contains-all':
             return ast.ContainsAllExpr(operand, argument, line)
         if identifier == 'contains':
@@ -357,7 +333,7 @@ class CocoCustomVisitor(cocoVisitor):
             return ast.CountExpr(operand, argument, line)
         if identifier == 'child':
             return ast.ChildMethodExpr(identifier, argument, line)
-        return ast.InvalidMethodExpr(operand, ctx.call.text, argument, line)
+        return ast.InvalidMethodExpr(operand, identifier, argument, line)
 
     def visit_argument(self, context):
         if context.argument:
@@ -413,18 +389,14 @@ class CocoCustomVisitor(cocoVisitor):
     def get_type_expression_string(self, ctx):
         if ctx.parenthesis:
             return self.get_type_expression_string(ctx.children[1])
-
         if ctx.left:
             left = self.get_type_expression_string(ctx.left)
             right = self.get_type_expression_string(ctx.right)
             return ''.join([left, ' ', ctx.operator.text, ' ', right])
-
         if ctx.primary:
             return ''.join(['\'', ctx.primary.text, '\' in n.search_labels'])
-
         if ctx.operand:
             return 'not (' + self.get_type_expression_string(ctx.operand) + ')'
-
         raise ValueError('Unknown type expression')
 
     def unescape_quotes(self, string):

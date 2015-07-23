@@ -1,5 +1,6 @@
 import csscoco.lang.visitor_decorator as vis
 import csscoco.lang.ast.ast as ast
+import csscoco.lang.ast.types as types
 
 
 class TypeChecker(object):
@@ -52,20 +53,20 @@ class TypeChecker(object):
             constraint_type = self._visit(node.constraint)
             if not constraint_type.is_undefined() and not constraint_type.is_boolean():
                 self._errors.log(ErrorMessageBuilder.not_boolean_constraint_error(constraint_type, node.line))
-                return ast.UndefinedType.TYPE
-        return ast.CocoNodeType.TYPE
+                return types.Error.TYPE
+        return types.CocoNode.TYPE
 
     @vis.visitor(ast.WhitespaceNode)
     def _visit(self, node):
         if node.repeater.lower < 1 or node.repeater.upper < 1:
             self._errors.log(ErrorMessageBuilder.repeater_with_negative_limit_error(node))
-        return ast.CocoNodeType
+        return types.CocoNode
 
     @vis.visitor(ast.WhitespaceVariation)
     def _visit(self, variation):
         for seq in variation.sequences:
             self._visit(seq)
-        return ast.CocoNodeType.TYPE
+        return types.CocoNode.TYPE
 
     @vis.visitor(ast.UnaryExpr)
     def _visit(self, expr):
@@ -74,7 +75,7 @@ class TypeChecker(object):
             return type_operand
         if not expr.is_type_compatible(type_operand):
             self._errors.log(ErrorMessageBuilder.build_unary_type_error(expr, type_operand))
-            return ast.UndefinedType.TYPE
+            return types.Error.TYPE
         return expr.get_return_type()
 
     @vis.visitor(ast.BinaryExpr)
@@ -82,10 +83,10 @@ class TypeChecker(object):
         type_left = self._visit(expr.left)
         type_right = self._visit(expr.right)
         if type_left.is_undefined() or type_right.is_undefined():
-            return ast.UndefinedType.TYPE
+            return types.Error.TYPE
         if not expr.are_types_compatible(type_left, type_right):
             self._errors.log(ErrorMessageBuilder.build_binary_type_error(expr, type_left, type_right))
-            return ast.UndefinedType.TYPE
+            return types.Error.TYPE
         return expr.get_return_type()
 
     @vis.visitor(ast.PropertyExpr)
@@ -104,13 +105,13 @@ class TypeChecker(object):
     def _visit(self, expr):
         error_msg = ErrorMessageBuilder.unknown_call_error(expr)
         self._errors.log(error_msg)
-        return ast.UndefinedType.TYPE
+        return types.Error.TYPE
 
     @vis.visitor(ast.InvalidMethodExpr)
     def _visit(self, expr):
         error_msg = ErrorMessageBuilder.unknown_call_error(expr)
         self._errors.log(error_msg)
-        return ast.UndefinedType.TYPE
+        return types.Error.TYPE
 
     @vis.visitor(ast.NodeQueryExpr)
     def _visit(self, expr):
@@ -120,51 +121,51 @@ class TypeChecker(object):
     def _visit(self, expr):
         arg_type = self._visit(expr.argument)
         if arg_type.is_undefined():
-            return ast.UndefinedType.TYPE
+            return types.Error.TYPE
         if not expr.is_type_compatible(arg_type):
             self._errors.log(ErrorMessageBuilder.invalid_argument_error(expr, arg_type))
-            return ast.UndefinedType.TYPE
+            return types.Error.TYPE
         return expr.get_return_type()
 
     @vis.visitor(ast.VariableExpr)
     def _visit(self, expr):
         if expr.name != '' and expr.name not in self._type_checking_context.identifiers_table:
             self._errors.log(ErrorMessageBuilder.unregistered_id_error(expr))
-            return ast.UndefinedType.TYPE
-        return ast.CssNodeType.TYPE
+            return types.Error.TYPE
+        return types.CssNode.TYPE
 
     @vis.visitor(ast.StringExpr)
     def _visit(self, expr):
-        return ast.StringType.TYPE
+        return types.String.TYPE
 
     @vis.visitor(ast.BooleanExpr)
     def _visit(self, expr):
-        return ast.BooleanType.TYPE
+        return types.Boolean.TYPE
 
     @vis.visitor(ast.IntegerExpr)
     def _visit(self, expr):
-        return ast.IntegerType.TYPE
+        return types.Integer.TYPE
 
     @vis.visitor(ast.ListExpr)
     def _visit(self, expr):
         if not expr.value:
-            return ast.ListType('')
+            return types.List('')
         first_type = self._visit(expr.value[0])
         for el in expr.value:
             next_type = self._visit(el)
             if first_type != next_type:
                 self._errors.log(ErrorMessageBuilder.heterogeneos_list_error(first_type, next_type, expr.line))
-                return ast.UndefinedType.TYPE
-        return ast.ListType(first_type)
+                return types.Error.TYPE
+        return types.List(first_type)
 
 
     @vis.visitor(ast.NodeTypeExpr)
     def _visit(self, expr):
-        return ast.CocoNodeTypeType.TYPE
+        return types.CocoNodeType.TYPE
 
     @vis.visitor(ast.NodeQueryExpr)
     def _visit(self, expr):
-        return ast.UndefinedType.TYPE
+        return types.Error.TYPE
 
 
 class Errors(object):
