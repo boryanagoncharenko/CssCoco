@@ -42,7 +42,7 @@ class CssParser(TestCase):
                                   ['selector', ['simpleselector', ['ident', 'a']], ['delim', ','],
                                   ['simpleselector', ['ident', 'p']]],
                                   ['block', ['symbol', '{'], ['declaration', ['property', ['ident', 'font']],
-                                  ['colon', ':'], ['value', ['ident', 'black']]], ['decldelim', ';'], ['symbol', '}']]]]
+                                  ['colon', ':'], ['value', ['colorname', 'black']]], ['decldelim', ';'], ['symbol', '}']]]]
     
         parser.SExprTransformer()._add_missing_tokens(s_expr)
         assert s_expr == expected

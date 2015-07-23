@@ -474,6 +474,30 @@ class IsVendorSpecificPropertyExpr(PropertyExpr):
         return types.Boolean.TYPE
 
 
+class IsSingleLinePropertyExpr(PropertyExpr):
+    def __init__(self, operand, line=-1):
+        super(IsSingleLinePropertyExpr, self).__init__(operand, 'is-single-line', line)
+
+    def get_return_type(self):
+        return types.Boolean.TYPE
+
+
+class UnitPropertyExpr(PropertyExpr):
+    def __init__(self, operand, line=-1):
+        super(UnitPropertyExpr, self).__init__(operand, 'unit', line)
+
+    def get_return_type(self):
+        return types.String.TYPE
+
+
+class OpacityPropertyExpr(PropertyExpr):
+    def __init__(self, operand, line=-1):
+        super(OpacityPropertyExpr, self).__init__(operand, 'opacity', line)
+
+    def get_return_type(self):
+        return types.Integer.TYPE
+
+
 class ValuePropertyExpr(PropertyExpr):
     def __init__(self, operand, line=-1):
         super(ValuePropertyExpr, self).__init__(operand, 'value', line)

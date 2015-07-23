@@ -38,10 +38,9 @@ logic_expr : '(' parenthesis=logic_expr ')'
            | call=arithmetic_expr
            ;
 
-type_expr : operand=arithmetic_expr operator='is' type_=Identifier/*(node)*/
-          | variation=whitespace_variation operator=('before'|'after') (variable=Identifier | operand=semantic_node)
-          | variation=whitespace_variation operator='between' (variable=Identifier | operand=semantic_node)
-            'and' (second_variable=Identifier | second_operand=semantic_node)
+type_expr : operand=arithmetic_expr operator='is' target_type=semantic_node
+          | variation=whitespace_variation operator=('before'|'after') operand=call_expr
+          | variation=whitespace_variation operator='between' operand=call_expr 'and' second_operand=call_expr
           ;
 
 arithmetic_expr : operator='-' operand=arithmetic_expr
@@ -51,14 +50,18 @@ arithmetic_expr : operator='-' operand=arithmetic_expr
                 | primary=element
                 ;
 
+basic_expr : operator='-' operand=arithmetic_expr
+           | primary=element
+           ;
+
 element : primary_bool=Boolean
         | primary_int=Integer
         | primary_str=String
         | primary_list=list_
         ;
 
-call_expr : operand=call_expr '.' call=Identifier ('(' (argument=element | abstract=semantic_node ) ')')?
-          | call=Identifier ('(' (argument=element|abstract=semantic_node ) ')')?
+call_expr : operand=call_expr '.' call=Identifier ('(' (argument=basic_expr | abstract=semantic_node ) ')')?
+          | call=Identifier ('(' (argument=basic_expr | abstract=semantic_node ) ')')?
           ;
 
 repeater : exact=Integer

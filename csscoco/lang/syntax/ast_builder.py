@@ -10,9 +10,11 @@ class CocoCustomVisitor(cocoVisitor):
         super(CocoCustomVisitor, self).__init__()
         self.identifiers = set()
 
-    def visitStylesheet(self, ctx):
+    def visitStylesheet(self, context):
+        if not context.children:
+            return ast.ConventionSet([])
         contexts = []
-        for contextCtx in ctx.children:
+        for contextCtx in context.children:
             contexts.append(self.visitContext(contextCtx))
         return ast.ConventionSet(contexts)
 
@@ -181,25 +183,21 @@ class CocoCustomVisitor(cocoVisitor):
         line = context.operator.line
         if operator == 'is':
             operand = self.visitArithmetic_expr(context.operand)
-            node_type = ast.NodeTypeExpr(context.type_.text)
+            node_type = ast.NodeTypeExpr(self.visitSemantic_node(context.target_type))
             return ast.IsExpr(operand, node_type, line)
         variation = self.visitWhitespace_variation(context.variation)
-        operand = self.get_type_expr_right(context.variable, context.operand)
+        operand = self.get_type_expr_right(context.operand)
         if operator == 'before':
             return ast.BeforeExpr(operand, variation, line)
         if operator == 'after':
             return ast.AfterExpr(operand, variation, line)
         if operator == 'between':
-            second_operand = self.get_type_expr_right(context.second_variable, context.second_operand)
+            second_operand = self.get_type_expr_right(context.second_operand)
             return ast.BetweenExpr(operand, variation, second_operand, line)
         raise ValueError('Unknown expression')
 
-    def get_type_expr_right(self, variable, operand):
-        if variable:
-            return ast.VariableExpr(variable.text)
-        if operand:
-            return self.visitSemantic_node(operand)
-        raise ValueError('Unknown type expr right')
+    def get_type_expr_right(self, operand):
+        return self.visitCall_expr(operand)
 
     def visitWhitespace_variation(self, context):
         sequences = []
@@ -273,7 +271,7 @@ class CocoCustomVisitor(cocoVisitor):
 
     def visitElement(self, context):
         if context.primary_bool:
-            return ast.BooleanExpr(bool(context.primary_bool.text), context.primary_bool.line)
+            return ast.BooleanExpr(bool(context.primary_bool.text.lower() != 'false'), context.primary_bool.line)
         if context.primary_int:
             return ast.IntegerExpr(int(context.primary_int.text), context.primary_int.line)
         if context.primary_str:
@@ -306,6 +304,12 @@ class CocoCustomVisitor(cocoVisitor):
             return ast.PreviousSiblingExpr(operand, line)
         if identifier == 'is-vendor-specific':
             return ast.IsVendorSpecificPropertyExpr(operand, line)
+        if identifier == 'is-single-line':
+            return ast.IsSingleLinePropertyExpr(operand, line)
+        if identifier == 'unit':
+            return ast.UnitPropertyExpr(operand, line)
+        if identifier == 'opacity':
+            return ast.OpacityPropertyExpr(operand, line)
         if identifier == 'string':
             return ast.StringPropertyExpr(operand, line)
         if identifier == 'value':
@@ -332,15 +336,27 @@ class CocoCustomVisitor(cocoVisitor):
         if identifier == 'count':
             return ast.CountExpr(operand, argument, line)
         if identifier == 'child':
-            return ast.ChildMethodExpr(identifier, argument, line)
+            return ast.ChildMethodExpr(operand, argument, line)
         return ast.InvalidMethodExpr(operand, identifier, argument, line)
 
     def visit_argument(self, context):
         if context.argument:
-            return self.visitElement(context.argument)
+            return self.visitBasic_expr(context.argument)
         if context.abstract:
             return self.visitSemantic_node(context.abstract)
         return None
+
+    def visitBasic_expr(self, context):
+        if context.primary:
+            return self.visitElement(context.primary)
+        operator = context.operator.text
+        line = context.operator.line
+        if operator == '-':
+            operand = self.visitArithmetic_expr(context.operand)
+            return ast.UnaryMinusExpr(operand, line)
+        if operator == '+':
+            operand = self.visitArithmetic_expr(context.operand)
+            return ast.UnaryPlusExpr(operand)
 
     def visitList_(self, ctx):
         result = []

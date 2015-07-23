@@ -1,5 +1,7 @@
 Semantic
+ignore newline indent comment, newline comment, indent, comment
 {
-  forbid declaration{property.name is string}
-  message 'Warning if a property is included in a rule twice and contains the same value.'
+    find v=attribute-value
+    require v is string and v.has-single-quotes
+    message ''
 }

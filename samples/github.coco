@@ -1,0 +1,62 @@
+Semantic
+ignore space, indent, tab, comment, newline
+{
+    forbid class{name match '.*js-.*'}
+    message 'Do not make js- prefixed classes. They are used exclusively from JS files. Use the is- prefix instead.'
+
+    forbid colorname
+    message 'Use hex for colors'
+
+    forbid number{num-value == 0} in (dimension or percentage)
+    message 'Do not use units after 0 values'
+
+    forbid rgba{opacity == 1}
+    message 'Use rgba only when opacity is needed'
+
+    find d=declaration{property.name=='font-size'}
+    require d.value is dimension{unit=='px'}
+    message 'Use px for font-size'
+
+    find d=declaration{property.name=='line-height'}
+    require not d.contains(dimension) or d.contains(dimension{unit=='px'})
+    message 'Line height should also be unit-less, unless necessary to be defined as a specific pixel value.'
+
+    find id in s=simpleselector
+    forbid s.count(id) > 1
+    message 'If you must use an id selector make sure that you have no more than one in your rule declaration.'
+}
+
+Whitespace
+ignore newline indent comment, newline comment, indent, comment
+{
+    find c=colon next-to v=value
+    require space between c and v
+    message 'Put one space between the colon and the value of a declaration.'
+
+    find r1=ruleset next-to r2=ruleset
+    require newline{2,3} between r1 and r2
+    message 'Put one or two blank lines between rules'
+
+    find s=selector next-to b=block
+    require space between s and b
+    message 'Put one space between the last selector and the block.'
+
+    find s1=delim next-to s2=simpleselector
+    require newline between s1 and s2
+    message 'One selector per line.'
+
+    find d=declaration
+    require newline before d
+    message 'Put every declaration on a new line'
+
+    find b=block
+    require newline before b.child(-1)
+    message 'Place closing brace on a new line'
+}
+
+Indent
+{
+    find i=indent
+    require i.string match '^ {4}$'
+    message 'Use 4 spaces for indentation, no tabs.'
+}

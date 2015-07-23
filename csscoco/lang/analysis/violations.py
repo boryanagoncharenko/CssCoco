@@ -77,7 +77,7 @@ class ViolationsFinder(object):
         self._context = context
 
     def get_matched_css_patterns(self, convention):
-        ignored = self._context.get_ignored_patterns()
+        ignored = self._context.get_ignored_patterns().copy()
         if convention.has_constraint():
             ignored += ViolationsHelper.get_additional_constraint(convention.constraint)
         matcher = p_matcher.PatternMatcher(p_matcher.Filter(ignored))

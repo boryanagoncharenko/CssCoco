@@ -2,7 +2,7 @@ Semantic
 ignore space, newline, comment, indent, tab
 {
 /**/
-  forbid ident{string in ['px', 'pt', 'cm']}
+  forbid unit{string in ['px', 'pt', 'cm']}
   message 'Use em instead of pt, px, cm'
 
   forbid property{name=='z-index'}
@@ -30,13 +30,9 @@ ignore space, newline, comment, indent, tab
   require t.name match lowercase
   message 'Html tags should be lowercase'
 
-/*
-  Fix the element
   find d=declaration
   require d.child(-1).string == ';'
   message 'Put a ; at the end of declarations'
-*/
-/* */
 
   forbid string in uri
   message 'Do not put quotes in url declarations'
@@ -52,13 +48,20 @@ ignore space, newline, comment, indent, tab
   ])}
   message 'Use the shorthand margin property instead'
 
+  forbid ruleset{contains-all([
+    property{name=='padding-right'},
+    property{name=='padding-left'},
+    property{name=='padding-top'},
+    property{name=='padding-bottom'}
+  ])}
+  message 'Use the shorthand padding property instead'
+
   forbid number{num-value == 0} in (dimension or percentage)
   message 'Do not use units after 0 values'
 
   find n=number{num-value < 1 and num-value > -1}
   require n.string match '^0.*'
   message 'Use a leading zero for decimal values'
-
 
   find v=attribute-value
   require v is string and v.has-single-quotes
@@ -75,8 +78,8 @@ ignore space, newline, comment, indent, tab
   forbid charset
   message 'Do not specify the encoding of style sheets as these assume UTF-8.'
 
-  find r=raw in uri
-  require r.string not match '(?i)https?:.*'
+  find u=uri
+  require u.string not match '(?i)https?:.*'
   message 'Omit the protocol http(s) in url'
 
   forbid tag next-to (class or id)
@@ -94,8 +97,6 @@ ignore space, newline, comment, indent, tab
                      'padding-right']})
                 }
   message 'Warning if a rule contains width and border, border-left, border-right, padding, padding-left, or padding-right'
-
-
 
   forbid ruleset{contains(property{name=='height'})
                  and contains(property{name in ['border',
@@ -135,13 +136,11 @@ ignore space, newline, comment, indent, tab
            (not d.next-sibling.is-vendor-specific and d.next-sibling.property.standard == d.property.standard))
   message 'Warning if found a vendor-prefixed property without a standard property after it.'
 
-
   find (rgba or hsl or hsla) in d=declaration{property.name == 'color'}
   require d.previous-sibling is declaration and
           d.previous-sibling.property.name == 'color' and
          (d.previous-sibling.contains(hex) or d.previous-sibling.contains(color-text))
   message 'No fallback color for properties with a rgba(), hsl(), or hsla() color.'
-
 }
 
 Whitespace
@@ -163,6 +162,9 @@ ignore newline indent comment, newline comment, indent, comment
   require newline between s1 and s2
   message 'One selector per line.'
 
+  find d=declaration
+  require newline before d
+  message 'Put every declaration on a new line'
 }
 
 Custom
@@ -173,5 +175,11 @@ Custom
   find i=indent
   require i.string match '^ {4}$'
   message 'Use 4 spaces for indentation, no tabs.'
+
+  /* requires immediately-in and any
+  find a=any in block
+  require indent any{parent matches block}
+  message "Indent the contents of a block"
+  */
 }
 

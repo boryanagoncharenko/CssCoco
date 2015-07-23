@@ -58,7 +58,7 @@ class TypeChecker(object):
 
     @vis.visitor(ast.WhitespaceNode)
     def _visit(self, node):
-        if node.repeater.lower < 1 or node.repeater.upper < 1:
+        if node.repeater.lower < 1 and node.repeater.upper < 1:
             self._errors.log(ErrorMessageBuilder.repeater_with_negative_limit_error(node))
         return types.CocoNode
 
@@ -224,8 +224,8 @@ class ErrorMessageBuilder(object):
     @staticmethod
     def build_binary_type_error(expr, type_left, type_right):
         e = expr.__class__.__name__
-        l = type_left.__class__.__name__[:-4]
-        r = type_right.__class__.__name__[:-4]
+        l = type_left.__class__.__name__
+        r = type_right.__class__.__name__
         line = str(expr.line)
         return ''.join(['Error on line ', line, ' - Expression of type ', e,
                         ' is not allowed to have arguments of types: ', l, ' and ', r, '.'])
@@ -233,14 +233,14 @@ class ErrorMessageBuilder(object):
     @staticmethod
     def build_unary_type_error(expr, type_operand):
         e = expr.__class__.__name__
-        o = type_operand.__class__.__name__[:-4]
+        o = type_operand.__class__.__name__
         line = str(expr.line)
         return ''.join(['Error on line ', line, ' - Expression of type ', e,
                         ' is not allowed to have argument of type: ', o, '.'])
 
     @staticmethod
     def not_boolean_constraint_error(type_operand, line):
-        t = type_operand.__class__.__name__[:-4]
+        t = type_operand.__class__.__name__
         line = str(line)
         return ''.join(['Error on line ', line, ' - The constraint of node is of type : ',
                         t, ' and it should be boolean instead.'])
@@ -253,15 +253,15 @@ class ErrorMessageBuilder(object):
 
     @staticmethod
     def heterogeneos_list_error(first_type, second_type, line):
-        f = first_type.__class__.__name__[:-4]
-        s = second_type.__class__.__name__[:-4]
+        f = first_type.__class__.__name__
+        s = second_type.__class__.__name__
         line = str(line)
         return ''.join(['Error on line ', line, ' - List contains elements of different types: ', f, ' and ', s, '.'])
 
     @staticmethod
     def invalid_argument_error(expr, arg_type):
         e = expr.__class__.__name__
-        a = arg_type.__class__.__name__[:-4]
+        a = arg_type.__class__.__name__
         line = str(expr.line)
         return ''.join(['Error on line ', line, ' - Expression of type ', e, ' cannot have argument of type ', a, '.'])
 

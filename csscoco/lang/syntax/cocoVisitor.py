@@ -70,6 +70,11 @@ class cocoVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by cocoParser#basic_expr.
+    def visitBasic_expr(self, ctx):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by cocoParser#element.
     def visitElement(self, ctx):
         return self.visitChildren(ctx)

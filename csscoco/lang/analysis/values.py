@@ -84,12 +84,12 @@ class Value(object):
         raise ValueError()
 
 
-class Decimal(Value):
+class Integer(Value):
     def __init__(self, value):
         self.value = value
 
     def unary_minus(self):
-        return Decimal(-self.value)
+        return Integer(-self.value)
 
     def equals(self, value):
         return value.equals_decimal(self)

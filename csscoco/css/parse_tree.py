@@ -233,6 +233,18 @@ class Function(CssNode):
         return values.String(self.value[0].value)
 
 
+class Rgba(Function):
+    def __init__(self, value):
+        super(Rgba, self).__init__(value)
+
+    def _register_api(self):
+        super(Rgba, self)._register_api()
+        self._api['opacity'] = self._get_opacity
+
+    def _get_opacity(self):
+        return values.Integer(int(self.value[1].value[-1].value))
+
+
 class Hex(TerminalCssNode):
     def __init__(self, value):
         super(Hex, self).__init__('hex', value)
@@ -256,7 +268,7 @@ class Number(TerminalCssNode):
         self._api['num-value'] = self._get_value
 
     def _get_value(self):
-        return values.Decimal(self.float_value)
+        return values.Integer(self.float_value)
 
 
 class String(TerminalCssNode):
@@ -278,8 +290,30 @@ class String(TerminalCssNode):
         return values.Boolean.build(self.value[0] == '"')
 
 
+class Dimension(CssNode):
+    def __init__(self, value):
+        super(Dimension, self).__init__('dimension', value)
+
+    def _register_api(self):
+        super(Dimension, self)._register_api()
+        self._api['unit'] = self._get_unit
+
+    def _get_unit(self):
+        return values.String(self.value[1].value)
+
+
 class AtRule(CssNode):
     pass
+
+
+class RuleSet(CssNode):
+    def __init__(self, value):
+        super(RuleSet, self).__init__('ruleset', value)
+        self._api['is-single-line'] = self._is_single_line
+
+    def _is_single_line(self):
+        is_single_line = self.value[0].start_position.line == self.value[-1].end_position.line
+        return values.Boolean.build(is_single_line)
 
 
 class Charset(AtRule):
@@ -357,10 +391,18 @@ class ParseTreeBuilder(object):
             return ClassSelector(children[-1].value)
         if node_type == 'attrib':
             return self._get_attribute(children)
+        if node_type == 'funktion' and l[1][1] == 'rgba':
+            return Rgba(children)
+        if node_type == 'funktion':
+            return Function(children)
         if node_type == 'funktion':
             return Function(children)
         if node_type == 'atrules':
             return self._get_at_rule(children)
+        if node_type == 'ruleset':
+            return RuleSet(children)
+        if node_type == 'dimension':
+            return Dimension(children)
         return CssNode(node_type, children)
 
     def _get_attribute(self,children):

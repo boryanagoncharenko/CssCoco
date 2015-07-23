@@ -106,7 +106,7 @@ class ExprEvaluator(object):
 
     @vis.visitor(ast.IntegerExpr)
     def visit(self, integer_expr):
-        return values.Decimal(integer_expr.value)
+        return values.Integer(integer_expr.value)
 
     @vis.visitor(ast.StringExpr)
     def visit(self, string_expr):
@@ -191,7 +191,7 @@ class ExprEvaluator(object):
         count = 0
         for _ in self._context.pattern_matcher.find_descendants_that_match(node_value.value, count_expr.argument):
             count += 1
-        return values.Decimal(count)
+        return values.Integer(count)
 
     @vis.visitor(ast.NextSiblingExpr)
     def visit(self, next_sibling):

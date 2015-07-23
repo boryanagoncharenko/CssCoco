@@ -20,7 +20,8 @@ class Parser(object):
 
 
 class SExprTransformer(object):
-    _type_to_value = {'decldelim': ';', 'delim': ','}
+    def __init__(self):
+        self._type_to_value = {'decldelim': ';', 'delim': ','}
 
     @staticmethod
     def transform(s_expr):
@@ -44,6 +45,7 @@ class SExprTransformer(object):
         self._block_transformation(s_expr)
         self._function_transformation(s_expr)
         self._declaration_transformation(s_expr)
+        self._rename_transformation(s_expr)
 
         i = 1
         while i < len(s_expr):
@@ -107,6 +109,14 @@ class SExprTransformer(object):
         """
         if s_expr[0] == 'declaration':
             s_expr.insert(2, ['colon', ':'])
+
+    def _rename_transformation(self, s_expr):
+        if s_expr[0] == 'operator' and s_expr[1] == ',':
+            s_expr[0] = 'comma'
+        if s_expr[0] == 'dimension':
+            s_expr[2][0] = 'unit'
+        if s_expr[0] == 'ident' and CssLookUp.is_color_name(s_expr[1]):
+            s_expr[0] = 'colorname'
 
     def _push_down(self, s_expr):
         """
@@ -194,7 +204,6 @@ class SExprTransformer(object):
         stack[expr-1][0].insert(position, space)
         if stack[expr][1] >= position:
             stack.update(expr, (stack[expr][0], stack[expr][1] + 1))
-        pass
 
     def _should_pull_up_child(self, child, current, parent, i):
         if parent and child[0] == 's':
@@ -340,8 +349,8 @@ class NodePositionStack(object):
     def __getitem__(self, item):
         return self.inner[item]
 
-    def update(self, item, tuple):
-        self.inner[item] = tuple
+    def update(self, item, tuple_):
+        self.inner[item] = tuple_
 
     def len(self):
         return len(self.inner)
@@ -367,3 +376,151 @@ class NodePositionStack(object):
         if len(self.inner) > 1:
             self.inner = self.inner[:-1]
         return self
+
+
+class CssLookUp(object):
+    @staticmethod
+    def is_color_name(s):
+        return s in CssLookUp.color_names
+
+    color_names = ["aliceblue",
+                   "antiquewhite",
+                   "aqua",
+                   "aquamarine",
+                   "azure",
+                   "beige",
+                   "bisque",
+                   "black",
+                   "blanchedalmond",
+                   "blue",
+                   "blueviolet",
+                   "brown",
+                   "burlywood",
+                   "cadetblue",
+                   "chartreuse",
+                   "chocolate",
+                   "coral",
+                   "cornflowerblue",
+                   "cornsilk",
+                   "crimson",
+                   "cyan",
+                   "darkblue",
+                   "darkcyan",
+                   "darkgoldenrod",
+                   "darkgray",
+                   "darkgreen",
+                   "darkkhaki",
+                   "darkmagenta",
+                   "darkolivegreen",
+                   "darkorange",
+                   "darkorchid",
+                   "darkred",
+                   "darksalmon",
+                   "darkseagreen",
+                   "darkslateblue",
+                   "darkslategray",
+                   "darkturquoise",
+                   "darkviolet",
+                   "deeppink",
+                   "deepskyblue",
+                   "dimgray",
+                   "dodgerblue",
+                   "firebrick",
+                   "floralwhite",
+                   "forestgreen",
+                   "fuchsia",
+                   "gainsboro",
+                   "ghostwhite",
+                   "gold",
+                   "goldenrod",
+                   "gray",
+                   "green",
+                   "greenyellow",
+                   "honeydew",
+                   "hotpink",
+                   "indianred",
+                   "indigo",
+                   "ivory",
+                   "khaki",
+                   "lavender",
+                   "lavenderblush",
+                   "lawngreen",
+                   "lemonchiffon",
+                   "lightblue",
+                   "lightcoral",
+                   "lightcyan",
+                   "lightgoldenrodyellow",
+                   "lightgray",
+                   "lightgreen",
+                   "lightpink",
+                   "lightsalmon",
+                   "lightseagreen",
+                   "lightskyblue",
+                   "lightslategray",
+                   "lightsteelblue",
+                   "lightyellow",
+                   "lime",
+                   "limegreen",
+                   "linen",
+                   "magenta",
+                   "maroon",
+                   "mediumaquamarine",
+                   "mediumblue",
+                   "mediumorchid",
+                   "mediumpurple",
+                   "mediumseagreen",
+                   "mediumslateblue",
+                   "mediumspringgreen",
+                   "mediumturquoise",
+                   "mediumvioletred",
+                   "midnightblue",
+                   "mintcream",
+                   "mistyrose",
+                   "moccasin",
+                   "navajowhite",
+                   "navy",
+                   "oldlace",
+                   "olive",
+                   "olivedrab",
+                   "orange",
+                   "orangered",
+                   "orchid",
+                   "palegoldenrod",
+                   "palegreen",
+                   "paleturquoise",
+                   "palevioletred",
+                   "papayawhip",
+                   "peachpuff",
+                   "peru",
+                   "pink",
+                   "plum",
+                   "powderblue",
+                   "purple",
+                   "rebeccapurple",
+                   "red",
+                   "rosybrown",
+                   "royalblue",
+                   "saddlebrown",
+                   "salmon",
+                   "sandybrown",
+                   "seagreen",
+                   "seashell",
+                   "sienna",
+                   "silver",
+                   "skyblue",
+                   "slateblue",
+                   "slategray",
+                   "snow",
+                   "springgreen",
+                   "steelblue",
+                   "tan",
+                   "teal",
+                   "thistle",
+                   "tomato",
+                   "turquoise",
+                   "violet",
+                   "wheat",
+                   "white",
+                   "whitesmoke",
+                   "yellow",
+                   "yellowgreen"]

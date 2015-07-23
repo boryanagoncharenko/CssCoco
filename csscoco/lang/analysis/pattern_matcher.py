@@ -173,6 +173,8 @@ class WhitespaceVariationMatcher(Matcher):
         for i in range(0, len(prev_siblings)):
             rem_nodes = prev_siblings[i:]
             if self._is_variation_exact_nodes_match(variation, rem_nodes):
+                if i > 0 and self._is_variation_exact_nodes_match(variation, [prev_siblings[i-1]]):
+                    return False
                 return True
         return False
 
@@ -182,7 +184,13 @@ class WhitespaceVariationMatcher(Matcher):
         Returns boolean
         """
         next_sibling = self.filter.get_next_sibling(node)
-        return self.is_start_of_variation(variation, next_sibling)
+        if not next_sibling:
+            return False
+        is_match = self.is_start_of_variation(variation, next_sibling)
+        further_sibling = self.filter.get_next_sibling(next_sibling)
+        if is_match and further_sibling and self.is_start_of_variation(variation, further_sibling):
+            return False
+        return is_match
 
     def is_variation_between_nodes(self, variation, node1, node2):
         """
