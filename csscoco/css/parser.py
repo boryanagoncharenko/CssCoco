@@ -72,11 +72,11 @@ class SExprTransformer(object):
         """
         if self._is_expr_without_value(s_expr):
             type_ = s_expr[0]
+            if type_ == 'block':
+                return
             value = ['dummy', '']
             if type_ in self._type_to_value:
                 value = self._type_to_value[type_]
-            else:
-                pass
             s_expr.insert(1, value)
 
     def _is_expr_without_value(self, s_expr):
@@ -85,7 +85,7 @@ class SExprTransformer(object):
         if type(s_expr[1]) is not list:
             return False
         # selector 'a, ' produces a simple selector that has one space as a child that is later pulled up
-        if len(s_expr) == 2 and s_expr[1][0] == 's':
+        if len(s_expr) == 2 and s_expr[1][0] == 's' :
             return True
         return False
 

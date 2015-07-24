@@ -6,7 +6,10 @@ context : name=Identifier (ignore=ignore_clause)? '{' convention* '}' ;
 
 convention : action='forbid' target=pattern 'message' message=String
            | action='require' requirement=logic_expr 'message' message=String
-           | find='find' target=pattern action=('require'|'forbid') requirement=logic_expr 'message' message=String
+           | find='find' target=pattern
+             ('where' where=logic_expr)?
+             action=('require'|'forbid') requirement=logic_expr
+             'message' message=String
            ;
 
 pattern : simple=node_declaration (relation=('in'|'next-to') node_declaration)*

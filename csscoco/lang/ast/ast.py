@@ -65,6 +65,9 @@ class PatternDescriptor(AstNode):
         self.nodes = nodes
         self.relations = relations
 
+    def has_constraint(self):
+        return False
+
     def get_node_relations(self, node_desc):
         return self.relations.get_relations(node_desc)
 
@@ -72,6 +75,15 @@ class PatternDescriptor(AstNode):
         if self.relations.is_empty():
             return [self.root]
         return self.relations.get_anchors()
+
+
+class PatternConstraintDescriptor(PatternDescriptor):
+    def __init__(self, root, nodes, relations, constraint):
+        super(PatternConstraintDescriptor, self).__init__(root, nodes, relations)
+        self.constraint = constraint
+
+    def has_constraint(self):
+        return True
 
 
 class NodeRelations(object):

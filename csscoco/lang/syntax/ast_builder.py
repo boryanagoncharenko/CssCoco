@@ -45,6 +45,8 @@ class CocoCustomVisitor(cocoVisitor):
             else:
                 node = self.visitWhitespace_node(child)
                 current_pattern.append(node)
+        if current_pattern:
+            result.append(ast.SequencePattern(current_pattern))
         return result
 
     def is_terminal(self, node):
@@ -60,6 +62,9 @@ class CocoCustomVisitor(cocoVisitor):
 
         if context.find:
             self.push_identifiers(target)
+            if context.where:
+                constraint = self.visitLogic_expr(context.where)
+                target = ast.PatternConstraintDescriptor(target.root, target.nodes, target.relations, constraint)
             constraint = self.visitLogic_expr(context.requirement)
             self.pop_identifiers()
             if self.is_require_convention(context):

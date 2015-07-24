@@ -27,8 +27,8 @@ ignore space, indent, tab, comment, newline
 Whitespace
 ignore newline indent comment, newline comment, indent, comment
 {
-/*
-    find r1=ruleset{not is-single-line} next-to r2=ruleset{not is-single-line}
+
+    find r1=ruleset next-to r2=ruleset
     where not r1.is-single-line or not r2.is-single-line
     require newline{2} between r1 and r2
     message 'Add one blank line between rulesets'
@@ -37,7 +37,7 @@ ignore newline indent comment, newline comment, indent, comment
     where r1.is-single-line and r2.is-single-line
     require newline{1, 2} between r1 and r2
     message 'Single-line rules may appear on adjacent lines'
-*/
+
     find c=colon next-to v=value
     require space between c and v
     message 'Put one space between the colon and the value of a declaration.'

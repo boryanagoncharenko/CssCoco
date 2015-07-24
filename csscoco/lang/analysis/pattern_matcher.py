@@ -323,7 +323,7 @@ class PatternMatcher(Matcher):
             relations = pattern.get_node_relations(desc)
             rs = len(relations)
             if rs == 0:
-                result.append(css_pattern.copy())
+                self._register_result(result, pattern, css_pattern)
             elif rs == 1:
                 target_desc, new_nodes = self._process_relation(pattern, desc, node)
                 self._process_nodes(new_nodes, target_desc, pattern, css_pattern, result)
@@ -342,8 +342,17 @@ class PatternMatcher(Matcher):
         target_desc, descendants = self._process_relation(pattern, desc, node)
         for combination in itertools.combinations(descendants, len(relations)):
             css_pattern.register_multi_nodes(relations, combination)
-            result.append(css_pattern.copy())
+            self._register_result(result, pattern, css_pattern)
             css_pattern.unregister_multi_nodes(relations)
+
+    def _register_result(self, result, pattern, css_pattern):
+        if not pattern.has_constraint():
+            result.append(css_pattern.copy())
+        else:
+            context = expr.ConventionConstraintContext(self, css_pattern)
+            is_met = expr.ExprEvaluator.evaluate(pattern.constraint, context)
+            if is_met.value:
+                result.append(css_pattern.copy())
 
     def find_descendants_that_match(self, node, desc):
         """
