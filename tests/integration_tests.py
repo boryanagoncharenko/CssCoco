@@ -504,7 +504,7 @@ class TypeCheckerTests(TestCase):
         Put one space between the last selector and the block
         """
         cos = "Whitespace ignore newline comment newline { " \
-              "find s=multiselector next-to b=block " \
+              "find s=selector next-to b=block " \
               "require space between s and b "\
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
@@ -517,7 +517,7 @@ class TypeCheckerTests(TestCase):
         One selector per line
         """
         cos = "Whitespace ignore newline comment newline { " \
-              "find s1=delim next-to s2=selector " \
+              "find s1=delim next-to s2=simpleselector " \
               "require newline between s1 and s2 "\
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
@@ -779,8 +779,8 @@ class TypeCheckerTests(TestCase):
         If you must use an id selector make sure that you have no more than one in your rule declaration.
         """
         cos = "Semantic ignore indent, space, newline,  { " \
-              "find id in s=selector " \
-              "forbid s.count(simpleselector) > 1 " \
+              "find id in s=simpleselector " \
+              "forbid s.count(selectorpart) > 1 " \
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
         css_tree = helpers.ParseHelper.parse_css_string("h1#a { } #b {} #a, #b{}")

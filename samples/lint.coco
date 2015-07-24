@@ -1,0 +1,139 @@
+Semantic
+ignore space, newline, comment, indent, tab
+{
+
+    forbid ruleset{contains-all([
+        property{name=='margin-right'},
+        property{name=='margin-left'},
+        property{name=='margin-top'},
+        property{name=='margin-bottom'}
+        ])}
+    message 'Use the shorthand margin property instead'
+
+    forbid ruleset{contains-all([
+        property{name=='padding-right'},
+        property{name=='padding-left'},
+        property{name=='padding-top'},
+        property{name=='padding-bottom'}
+        ])}
+    message 'Use the shorthand padding property instead'
+
+    forbid number{num-value == 0} in (dimension or percentage)
+    message 'Do not use units after 0 values'
+
+    forbid import
+    message 'Do not use @import'
+
+    forbid important
+    message 'Do not use !important'
+
+    forbid id
+    message 'Avoid using ids'
+
+    forbid ruleset{contains(property{name=='width'})
+           and contains(property{name in ['border',
+            'border-left',
+            'border-right',
+            'padding',
+            'padding-left',
+            'padding-right']})
+           }
+    message 'Warning if a rule contains width and border, border-left, border-right, padding, padding-left, or padding-right'
+
+    forbid ruleset{contains(property{name=='height'})
+           and contains(property{name in ['border',
+            'border-top',
+            'border-bottom',
+            'padding',
+            'padding-top',
+            'padding-bottom']})
+           }
+    message 'Warning if a rule contains height and border, border-top, border-bottom, padding, padding-top, or padding-bottom'
+
+
+    forbid ruleset{contains(declaration{property.name=='display' and value.string=='inline'})
+           and contains(property{name in ['width', 'height', 'margin', 'float']})}
+    message 'A rule that has display: inline-block should not use float.'
+
+    forbid ruleset{contains(declaration{property.name=='display' and value.string=='inline-block'})
+           and contains(property{name=='float'})}
+    message 'A rule that has display: inline-block should not use float.'
+
+    forbid ruleset{contains(declaration{property.name=='display' and value.string=='block'})
+           and contains(property{name=='vertical-align'})}
+    message 'A rule that has display: block should not use vertical-align'
+
+    forbid ruleset{contains(declaration{property.name=='display' and value.string match '^table.*'})
+           and contains(property{name in ['margin',
+                                          'margin-top',
+                                          'margin-bottom',
+                                          'margin-left',
+                                          'margin-right',
+                                          'float']})}
+    message 'A rule that has display: table-* should not use margin (and all variants) or float'
+
+    find (d1=declaration, d2=declaration) in ruleset
+    forbid d1.property.name == d2.property.name and
+           d1.value.string == d2.value.string
+    message 'Warning if a property is included in a rule twice and contains the same value.'
+
+    find (d1=declaration, d2=declaration, d3=declaration) in ruleset
+    forbid d1.property.name == d3.property.name and
+           d2.property.name != d1.property.name and
+           d1.value.string != d3.value.string
+    message 'A property is included twice and is separated by at least one other property.'
+
+    forbid ruleset{count(declaration) == 0}
+    message 'Forbid empty rules.'
+
+    /* tests */
+    forbid class next-to class
+    message 'Disallow adjoining classes'
+
+    forbid property{name == 'box-sizing'}
+    message 'Do not use box-sizing'
+
+    find d=declaration{property.is-vendor-specific}
+    require d.next-sibling is declaration and
+            ((d.next-sibling.property.is-vendor-specific and d.next-sibling.property.standard == d.property.standard) or
+            (not d.next-sibling.property.is-vendor-specific and d.next-sibling.property.name == d.property.standard))
+    message 'Do not use a vendor-prefixed property without a standard property after it'
+
+    find (rgba or hsl or hsla) in d=declaration{property.name == 'color'}
+    require d.previous-sibling is declaration and
+            d.previous-sibling.property.name == 'color' and
+           (d.previous-sibling.contains(hex) or d.previous-sibling.contains(color-text))
+    message 'No fallback color for properties with a rgba(), hsl(), or hsla() color.'
+
+    find p=property
+    forbid p.name match '^\*.*'
+    message 'Disallow star hack'
+
+    find p=property
+    forbid p.name match '^_.*'
+    message 'Disallow underscore hack'
+
+    find s=stylesheet
+    forbid s.count(fontface) > 5
+    message 'There are more than five font-faces in the stylesheet'
+
+    find s=stylesheet
+    forbid s.count(float) > 10
+    message 'Disallow too many floats'
+
+    find a=attrselector
+    forbid a.string in ['*=', '|=', '^=', '~=', '$=']
+    message 'Disallow selectors that look like regular expressions'
+
+    forbid universal
+    message 'Disallow the universal selector'
+
+    forbid stylesheet{count(property{name == 'font-size'}) > 9}
+    message 'Disallow excessive use of font-size'
+}
+
+Whitespace
+ignore newline indent comment, newline comment, indent, comment
+{
+
+}

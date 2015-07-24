@@ -1,6 +1,9 @@
 Semantic
-ignore indent
+ignore indent, space, newline, comment
 {
-    forbid rgba{opacity == 1}
-    message 'Use rgba only when opacity is needed'
+
+    find d=declaration{property.is-vendor-specific}
+    require (d.next-sibling.property.is-vendor-specific and d.next-sibling.property.standard == d.property.standard) or
+            (not d.next-sibling.property.is-vendor-specific and d.next-sibling.property.name == d.property.standard)
+    message 'Do not use a vendor-prefixed property without a standard property after it'
 }

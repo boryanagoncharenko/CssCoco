@@ -180,7 +180,7 @@ class GeneralSiblingSelector(CombinatorSelector):
 
 class SimpleSelector(TerminalCssNode):
     def __init__(self, type_, name):
-        super(SimpleSelector, self).__init__(type_, name, categories=['simpleselector'])
+        super(SimpleSelector, self).__init__(type_, name, categories=['selectorpart'])
         self._api['name'] = self._get_value
 
 
@@ -326,6 +326,11 @@ class Import(AtRule):
         super(Import, self).__init__('import', value)
 
 
+class FontFace(AtRule):
+    def __init__(self, value):
+        super(FontFace, self).__init__('fontface', value)
+
+
 class ParseTreeBuilder(object):
 
     @staticmethod
@@ -397,7 +402,7 @@ class ParseTreeBuilder(object):
             return Function(children)
         if node_type == 'funktion':
             return Function(children)
-        if node_type == 'atrules':
+        if node_type == 'atrules' or node_type == 'atruler':
             return self._get_at_rule(children)
         if node_type == 'ruleset':
             return RuleSet(children)
@@ -420,6 +425,9 @@ class ParseTreeBuilder(object):
         if keyword == 'import':
             children.pop(0)
             return Import(children)
+        if keyword == 'font-face':
+            children.pop(0)
+            return FontFace(children)
         raise NotImplementedError()
 
     def _annotate_ast(self, node):
