@@ -180,7 +180,7 @@ class GeneralSiblingSelector(CombinatorSelector):
 
 class SimpleSelector(TerminalCssNode):
     def __init__(self, type_, name):
-        super(SimpleSelector, self).__init__(type_, name)
+        super(SimpleSelector, self).__init__(type_, name, categories=['simpleselector'])
         self._api['name'] = self._get_value
 
 

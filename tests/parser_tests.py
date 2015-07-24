@@ -39,8 +39,8 @@ class CssParser(TestCase):
                                 ['block', ['declaration', ['property', ['ident', 'font']], ['value', ['ident', 'black']]],
                                 ['decldelim']]]]
         expected = ['stylesheet', ['ruleset',
-                                  ['selector', ['simpleselector', ['ident', 'a']], ['delim', ','],
-                                  ['simpleselector', ['ident', 'p']]],
+                                  ['multiselector', ['selector', ['tag', 'a']], ['delim', ','],
+                                  ['selector', ['tag', 'p']]],
                                   ['block', ['symbol', '{'], ['declaration', ['property', ['ident', 'font']],
                                   ['colon', ':'], ['value', ['colorname', 'black']]], ['decldelim', ';'], ['symbol', '}']]]]
     

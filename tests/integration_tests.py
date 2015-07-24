@@ -23,7 +23,7 @@ class TypeCheckerTests(TestCase):
         """
         Use em instead of pt, px, cm
         """
-        coco_ast = self.get_coco_ast("Semantic { forbid ident{string in ['px', 'pt', 'cm']} message '' }")
+        coco_ast = self.get_coco_ast("Semantic { forbid unit{string in ['px', 'pt', 'cm']} message '' }")
         css_tree = helpers.ParseHelper.parse_css_string('#a { margin: 5px; padding: 10cm; margin: 0pt; padding: 15em;}')
         violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
         assert violation_log.number_of_violations() == 3
@@ -211,6 +211,18 @@ class TypeCheckerTests(TestCase):
         violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
         assert violation_log.number_of_violations() == 2
 
+    def test_use_single_quotes_in_string(self):
+        """
+        Use single quotes in values
+        """
+        coco_ast = self.get_coco_ast("Semantic { "
+                                     "find s=string "
+                                     "require s.has-single-quotes "
+                                     "message '' }")
+        css_tree = helpers.ParseHelper.parse_css_string('a[b="test"] { font: "Black"; color: \'red\'; }')
+        violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 2
+
     def test_forbid_charset(self):
         """
         Do not specify the encoding of style sheets as these assume UTF-8
@@ -291,7 +303,7 @@ class TypeCheckerTests(TestCase):
         css_tree = helpers.ParseHelper.parse_css_string("a {width: 5px; padding: 10px}")
         violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
         assert violation_log.number_of_violations() == 1
-        
+
     def test_no_height_and_border(self):
         """
         Warning if a rule contains height and border, border-top, border-bottom, padding, padding-top, or padding-bottom
@@ -413,7 +425,7 @@ class TypeCheckerTests(TestCase):
               "find (rgba or hsl or hsla) in d=declaration{property.name == 'color'} " \
               "require d.previous-sibling is declaration and " \
               "d.previous-sibling.property.name == 'color' and " \
-              "(d.previous-sibling.contains(hex) or d.previous-sibling.contains(ident)) "\
+              "(d.previous-sibling.contains(hex) or d.previous-sibling.contains(colorname)) "\
               "message '' }"
         coco_ast = self.get_coco_ast(css)
         css_tree = helpers.ParseHelper.parse_css_string("a { color: rgba(1,2,3,0); } "
@@ -492,7 +504,7 @@ class TypeCheckerTests(TestCase):
         Put one space between the last selector and the block
         """
         css = "Whitespace ignore newline comment newline { " \
-              "find s=selector next-to b=block " \
+              "find s=multiselector next-to b=block " \
               "require space between s and b "\
               "message '' }"
         coco_ast = self.get_coco_ast(css)
@@ -505,7 +517,7 @@ class TypeCheckerTests(TestCase):
         One selector per line
         """
         css = "Whitespace ignore newline comment newline { " \
-              "find s1=delim next-to s2=simpleselector " \
+              "find s1=delim next-to s2=selector " \
               "require newline between s1 and s2 "\
               "message '' }"
         coco_ast = self.get_coco_ast(css)
@@ -553,3 +565,225 @@ class TypeCheckerTests(TestCase):
         violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
         assert violation_log.number_of_violations() == 2
 
+    def test_closing_brace_newline(self):
+        """
+        Place closing brace on a new line
+        """
+        css = "Whitespace ignore newline comment newline { " \
+              "find b=block " \
+              "require newline before b.child(-1) " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(css)
+        css_tree = helpers.ParseHelper.parse_css_string("a{ color:red;\n} a{ color:red;\n\n} a{ color:red; }")
+        css_tree.pretty_print()
+        violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 2
+
+    def test_newline_around_block_braces_valid(self):
+        """
+        Put newline after "{" and before "}"
+        """
+        css = "Whitespace ignore newline comment newline { " \
+              "find b=block{count(declaration) != 1} " \
+              "require newline after b.child(0) and newline before b.child(-1) " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(css)
+        css_tree = helpers.ParseHelper.parse_css_string("a{\ncolor:red;\ncolor:red;\n}")
+        css_tree.pretty_print()
+        violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert not violation_log.number_of_violations()
+
+    def test_newline_around_block_braces_spaces(self):
+        """
+        Put newline after "{" and before "}"
+        """
+        css = "Whitespace ignore newline comment newline { " \
+              "find b=block{count(declaration) != 1} " \
+              "require newline after b.child(0) and newline before b.child(-1) " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(css)
+        css_tree = helpers.ParseHelper.parse_css_string("a{\ncolor:red;\ncolor:red; }b{ color:red;\ncolor:red;\n}")
+        css_tree.pretty_print()
+        violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 2
+
+    def test_newline_around_block_braces_newlines(self):
+        """
+        Put newline after "{" and before "}"
+        """
+        css = "Whitespace ignore newline comment newline { " \
+              "find b=block{count(declaration) != 1} " \
+              "require newline after b.child(0) and newline before b.child(-1) " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(css)
+        css_tree = helpers.ParseHelper.parse_css_string("a{\ncolor:red;\ncolor:red;\n\n}b{\n\n\ncolor:red;\ncolor:red;\n}")
+        css_tree.pretty_print()
+        violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 2
+
+    def test_newline_around_block_braces_no_matches(self):
+        """
+        Put newline after "{" and before "}"
+        """
+        css = "Whitespace ignore newline comment newline { " \
+              "find b=block{count(declaration) != 1} " \
+              "require newline after b.child(0) and newline before b.child(-1) " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(css)
+        css_tree = helpers.ParseHelper.parse_css_string("a{ color:red; }b{\n\n\ncolor:red;\n\n\n}")
+        css_tree.pretty_print()
+        violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert not violation_log.number_of_violations()
+
+    def test_space_around_oneliner_braces_valid(self):
+        """
+        You can put spaces in one line declarations
+        """
+        css = "Whitespace ignore newline comment newline { " \
+              "find b=block{count(declaration) == 1} " \
+              "require (newline after b.child(0) and newline before b.child(-1)) or "\
+              "(space after b.child(0) and space before b.child(-1)) " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(css)
+        css_tree = helpers.ParseHelper.parse_css_string("a{ color:red; }")
+        css_tree.pretty_print()
+        violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert not violation_log.number_of_violations()
+
+    def test_space_around_oneliner_braces(self):
+        """
+        You can put spaces in one line declarations
+        """
+        css = "Whitespace ignore newline comment newline { " \
+              "find b=block{count(declaration) == 1} " \
+              "require (newline after b.child(0) and newline before b.child(-1)) or "\
+              "(space after b.child(0) and space before b.child(-1)) " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(css)
+        css_tree = helpers.ParseHelper.parse_css_string("a{\ncolor:red; } a{ color:red;   }")
+        css_tree.pretty_print()
+        violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 2
+
+    def test_space_after_commas_valid(self):
+        """
+        Multiple csv values should be separated by either space of newline
+        """
+        css = "Whitespace ignore newline comment newline { " \
+              "find c=comma " \
+              "require space or newline after c "\
+              "message '' }"
+        coco_ast = self.get_coco_ast(css)
+        css_tree = helpers.ParseHelper.parse_css_string("a{ color: rgb(1, 2,\n3); }")
+        css_tree.pretty_print()
+        violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert not violation_log.number_of_violations()
+
+    def test_space_after_commas(self):
+        """
+        Multiple csv values should be separated by either space of newline
+        """
+        css = "Whitespace ignore newline comment newline { " \
+              "find c=comma " \
+              "require space or newline after c "\
+              "message '' }"
+        coco_ast = self.get_coco_ast(css)
+        css_tree = helpers.ParseHelper.parse_css_string("a{ color: rgb(1,  2,\n\n3); }")
+        css_tree.pretty_print()
+        violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 2
+
+    def test_comments_on_new_line(self):
+        """
+        Place comments on a new line
+        """
+        css = "Whitespace ignore indent{ " \
+              "find c=comment " \
+              "require newline{1,} before c and newline{1,} after c "\
+              "message '' }"
+        coco_ast = self.get_coco_ast(css)
+        css_tree = helpers.ParseHelper.parse_css_string("a{\n/*comment*/\n}\n b /*commend*/\n{}\n/*comment*/ c {}")
+        css_tree.pretty_print()
+        violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 2
+
+    def test_no_js_prefixed_classes(self):
+        """
+        Do not make js- prefixed classes. They are used exclusively from JS files. Use the is- prefix instead.
+        """
+        css = "Whitespace ignore indent{ " \
+              "forbid class{name match '.*js-.*'} " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(css)
+        css_tree = helpers.ParseHelper.parse_css_string(".js-class{} .is-class{} .class{}")
+        css_tree.pretty_print()
+        violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 1
+
+    def test_use_hex_for_colors(self):
+        """
+        Use hex for colors
+        """
+        css = "Semantic ignore indent, space, newline,  { " \
+              "forbid colorname " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(css)
+        css_tree = helpers.ParseHelper.parse_css_string("a{ color: red; color: #FFFFFF }")
+        css_tree.pretty_print()
+        violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 1
+
+    # def test_use_rgba_with_opacity(self):
+    #     """
+    #     Use rgba only when opacity is needed
+    #     """
+    #     css = "Semantic ignore indent, space, newline,  { " \
+    #           "forbid rgba{opacity == 1} " \
+    #           "message '' }"
+    #     coco_ast = self.get_coco_ast(css)
+    #     css_tree = helpers.ParseHelper.parse_css_string("a{ color: rgba(1, 1, 2, 0.9); color: rgba(1, 1, 2, 1) }")
+    #     css_tree.pretty_print()
+    #     violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+    #     assert violation_log.number_of_violations() == 1
+
+    def test_use_px_for_font_size(self):
+        """
+        Use px for font-size
+        """
+        css = "Semantic ignore indent, space, newline,  { " \
+              "find d=declaration{property.name=='font-size'} " \
+              "require d.value.contains(dimension{unit=='px'}) " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(css)
+        css_tree = helpers.ParseHelper.parse_css_string("a{ font-size: 10px; font-size: 10em; }")
+        css_tree.pretty_print()
+        violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 1
+
+    def test_unitless_line_height(self):
+        """
+        Line height should also be unit-less, unless necessary to be defined as a specific pixel value.
+        """
+        css = "Semantic ignore indent, space, newline,  { " \
+              "find d=declaration{property.name=='line-height'} " \
+              "require not d.contains(dimension) or d.contains(dimension{unit=='px'}) " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(css)
+        css_tree = helpers.ParseHelper.parse_css_string("a{ line-height: 10px; line-height: 10em; line-height: 10; }")
+        css_tree.pretty_print()
+        violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 1
+
+    def test_single_id_selector(self):
+        """
+        If you must use an id selector make sure that you have no more than one in your rule declaration.
+        """
+        css = "Semantic ignore indent, space, newline,  { " \
+              "find id in s=selector " \
+              "forbid s.count(simpleselector) > 1 " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(css)
+        css_tree = helpers.ParseHelper.parse_css_string("h1#a { } #b {} #a, #b{}")
+        css_tree.pretty_print()
+        violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 1

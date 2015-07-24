@@ -61,7 +61,7 @@ ignore newline indent comment, newline comment, indent, comment
     find b=block{count(declaration) == 1}
     require (newline after b.child(0) and newline before b.child(-1)) or
             (space after b.child(0) and space before b.child(-1))
-    message 'Put newline after "{" and before "}"'
+    message 'You can put spaces in one line declarations'
 
     find c=comma
     require space or newline after c

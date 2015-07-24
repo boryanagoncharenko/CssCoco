@@ -14,15 +14,15 @@ ignore space, indent, tab, comment, newline
     message 'Use rgba only when opacity is needed'
 
     find d=declaration{property.name=='font-size'}
-    require d.value is dimension{unit=='px'}
+    require d.value.contains(dimension{unit=='px'})
     message 'Use px for font-size'
 
     find d=declaration{property.name=='line-height'}
     require not d.contains(dimension) or d.contains(dimension{unit=='px'})
     message 'Line height should also be unit-less, unless necessary to be defined as a specific pixel value.'
 
-    find id in s=simpleselector
-    forbid s.count(id) > 1
+    find id in s=selector
+    forbid s.count(simpleselector) > 1
     message 'If you must use an id selector make sure that you have no more than one in your rule declaration.'
 }
 

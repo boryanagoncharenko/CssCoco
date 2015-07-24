@@ -91,7 +91,7 @@ def serializedATN():
         buf.write("\3\2\2\2\u00ae\u00ab\3\2\2\2\u00af\u00b2\3\2\2\2\u00b0")
         buf.write("\u00ae\3\2\2\2\u00b0\u00b1\3\2\2\2\u00b1\27\3\2\2\2\u00b2")
         buf.write("\u00b0\3\2\2\2\u00b3\u00b4\5\32\16\2\u00b4\u00b5\7\22")
-        buf.write("\2\2\u00b5\u00b6\5\16\b\2\u00b6\u00c2\3\2\2\2\u00b7\u00b8")
+        buf.write("\2\2\u00b5\u00b6\7%\2\2\u00b6\u00c2\3\2\2\2\u00b7\u00b8")
         buf.write("\5\22\n\2\u00b8\u00b9\t\4\2\2\u00b9\u00ba\5 \21\2\u00ba")
         buf.write("\u00c2\3\2\2\2\u00bb\u00bc\5\22\n\2\u00bc\u00bd\7\25\2")
         buf.write("\2\u00bd\u00be\5 \21\2\u00be\u00bf\7\20\2\2\u00bf\u00c0")
@@ -706,13 +706,14 @@ class cocoParser ( Parser ):
 
         localctx = cocoParser.Semantic_nodeContext(self, self._ctx, self.state)
         self.enterRule(localctx, 12, self.RULE_semantic_node)
+        self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
             self.state = 112
             localctx.type_ = self.node_type(0)
             self.state = 117
-            la_ = self._interp.adaptivePredict(self._input,9,self._ctx)
-            if la_ == 1:
+            _la = self._input.LA(1)
+            if _la==cocoParser.T__0:
                 self.state = 113
                 self.match(cocoParser.T__0)
                 self.state = 114
@@ -1090,7 +1091,7 @@ class cocoParser ( Parser ):
             self.parser = parser
             self.operand = None # Arithmetic_exprContext
             self.operator = None # Token
-            self.target_type = None # Semantic_nodeContext
+            self.type_ = None # Token
             self.variation = None # Whitespace_variationContext
             self.second_operand = None # Call_exprContext
 
@@ -1098,9 +1099,8 @@ class cocoParser ( Parser ):
             return self.getTypedRuleContext(cocoParser.Arithmetic_exprContext,0)
 
 
-        def semantic_node(self):
-            return self.getTypedRuleContext(cocoParser.Semantic_nodeContext,0)
-
+        def Identifier(self):
+            return self.getToken(cocoParser.Identifier, 0)
 
         def whitespace_variation(self):
             return self.getTypedRuleContext(cocoParser.Whitespace_variationContext,0)
@@ -1140,7 +1140,7 @@ class cocoParser ( Parser ):
                 self.state = 178
                 localctx.operator = self.match(cocoParser.T__15)
                 self.state = 179
-                localctx.target_type = self.semantic_node()
+                localctx.type_ = self.match(cocoParser.Identifier)
                 pass
 
             elif la_ == 2:

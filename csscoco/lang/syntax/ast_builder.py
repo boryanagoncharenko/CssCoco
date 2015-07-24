@@ -183,7 +183,7 @@ class CocoCustomVisitor(cocoVisitor):
         line = context.operator.line
         if operator == 'is':
             operand = self.visitArithmetic_expr(context.operand)
-            node_type = ast.NodeTypeExpr(self.visitSemantic_node(context.target_type))
+            node_type = ast.NodeTypeExpr(context.type_.text)
             return ast.IsExpr(operand, node_type, line)
         variation = self.visitWhitespace_variation(context.variation)
         operand = self.get_type_expr_right(context.operand)

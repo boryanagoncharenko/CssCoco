@@ -46,6 +46,7 @@ class SExprTransformer(object):
         self._function_transformation(s_expr)
         self._declaration_transformation(s_expr)
         self._rename_transformation(s_expr)
+        self._rename_selectors(s_expr)
 
         i = 1
         while i < len(s_expr):
@@ -117,6 +118,15 @@ class SExprTransformer(object):
             s_expr[2][0] = 'unit'
         if s_expr[0] == 'ident' and CssLookUp.is_color_name(s_expr[1]):
             s_expr[0] = 'colorname'
+
+    def _rename_selectors(self, s_expr):
+        if s_expr[0] == 'selector':
+            s_expr[0] = 'multiselector'
+        if s_expr[0] == 'simpleselector':
+            s_expr[0] = 'selector'
+            for i in range(1, len(s_expr)):
+                if s_expr[i][0] == 'ident':
+                    s_expr[i][0] = 'tag'
 
     def _push_down(self, s_expr):
         """

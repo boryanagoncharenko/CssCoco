@@ -38,7 +38,7 @@ logic_expr : '(' parenthesis=logic_expr ')'
            | call=arithmetic_expr
            ;
 
-type_expr : operand=arithmetic_expr operator='is' target_type=semantic_node
+type_expr : operand=arithmetic_expr operator='is' type_=Identifier/*(node)*/
           | variation=whitespace_variation operator=('before'|'after') operand=call_expr
           | variation=whitespace_variation operator='between' operand=call_expr 'and' second_operand=call_expr
           ;

@@ -1,7 +1,7 @@
 Semantic
 ignore newline indent comment, newline comment, indent, comment
 {
-    find v=attribute-value
-    require v is string and v.has-single-quotes
-    message ''
+    find id in s=selector
+    forbid s.count(simpleselector) > 1
+    message 'If you must use an id selector make sure that you have no more than one in your rule declaration.'
 }
