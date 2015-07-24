@@ -25,15 +25,32 @@ class Type(object):
     def is_undefined(self):
         return False
 
+    def promote_to(self, type_):
+        return self
+
+    def promote_int_to(self, type_):
+        return type_
+
 
 class String(Type):
     def is_string(self):
         return True
 
 
+class Decimal(Type):
+    def is_numerical(self):
+        return True
+
+    def promote_int_to(self, type_):
+        return self
+
+
 class Integer(Type):
     def is_numerical(self):
         return True
+
+    def promote_to(self, type_):
+        return type_.promote_int_to(self)
 
 
 class Boolean(Type):
@@ -76,6 +93,7 @@ class Error(Type):
 
 String.TYPE = String()
 Integer.TYPE = Integer()
+Decimal.TYPE = Decimal()
 Boolean.TYPE = Boolean()
 CssNode.TYPE = CssNode()
 CocoNodeType.TYPE = CocoNodeType()

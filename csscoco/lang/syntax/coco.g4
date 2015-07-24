@@ -58,6 +58,7 @@ basic_expr : operator='-' operand=arithmetic_expr
            ;
 
 element : primary_bool=Boolean
+        | primary_dec=Decimal
         | primary_int=Integer
         | primary_str=String
         | primary_list=list_
@@ -77,7 +78,8 @@ ignore_clause : 'ignore' (whitespace_node)+ (',' (whitespace_node)+)* ;
 
 list_ : '[' list_element (',' list_element)* ']' ;
 
-list_element : element_int=Integer
+list_element : element_dec=Decimal
+             | element_int=Integer
              | element_str=String
              | element_desc=semantic_node
              ;
@@ -97,6 +99,8 @@ Boolean : 'true' | 'True' | 'false' | 'False' ;
 Identifier : (Letter)(Letter|Digit|'_'|'-')* ;
 
 Integer : (ZeroDigit | NonZeroDigit Digit*) ;
+
+Decimal : ( NonZeroDigit Digit* | ZeroDigit? ) '.' Digit+ ;
 
 String : ['] ( EscapeSequence | ~['] )*? ['] ;
 

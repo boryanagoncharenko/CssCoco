@@ -104,6 +104,10 @@ class ExprEvaluator(object):
         right = self.visit(less_than_expr.right)
         return left.less_than(right)
 
+    @vis.visitor(ast.DecimalExpr)
+    def visit(self, decimal_expr):
+        return values.Decimal(decimal_expr.value)
+
     @vis.visitor(ast.IntegerExpr)
     def visit(self, integer_expr):
         return values.Integer(integer_expr.value)

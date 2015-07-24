@@ -11,8 +11,8 @@ else:
 
 def serializedATN():
     with StringIO() as buf:
-        buf.write("\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3+")
-        buf.write("\u012c\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
+        buf.write("\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3,")
+        buf.write("\u012e\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7")
         buf.write("\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f\t\f\4\r\t\r\4\16")
         buf.write("\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22\4\23\t\23")
         buf.write("\4\24\t\24\4\25\t\25\3\2\7\2,\n\2\f\2\16\2/\13\2\3\3\3")
@@ -31,43 +31,43 @@ def serializedATN():
         buf.write("\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\3\r\5\r\u00c6\n\r\3")
         buf.write("\16\3\16\3\16\3\16\3\16\5\16\u00cd\n\16\3\16\3\16\3\16")
         buf.write("\3\16\3\16\3\16\7\16\u00d5\n\16\f\16\16\16\u00d8\13\16")
-        buf.write("\3\17\3\17\3\17\5\17\u00dd\n\17\3\20\3\20\3\20\3\20\5")
-        buf.write("\20\u00e3\n\20\3\21\3\21\3\21\3\21\3\21\5\21\u00ea\n\21")
-        buf.write("\3\21\3\21\5\21\u00ee\n\21\3\21\3\21\3\21\3\21\3\21\3")
-        buf.write("\21\5\21\u00f6\n\21\3\21\3\21\5\21\u00fa\n\21\7\21\u00fc")
-        buf.write("\n\21\f\21\16\21\u00ff\13\21\3\22\3\22\3\22\3\22\3\22")
-        buf.write("\3\22\3\22\3\22\5\22\u0109\n\22\3\23\3\23\6\23\u010d\n")
-        buf.write("\23\r\23\16\23\u010e\3\23\3\23\6\23\u0113\n\23\r\23\16")
-        buf.write("\23\u0114\7\23\u0117\n\23\f\23\16\23\u011a\13\23\3\24")
-        buf.write("\3\24\3\24\3\24\7\24\u0120\n\24\f\24\16\24\u0123\13\24")
-        buf.write("\3\24\3\24\3\25\3\25\3\25\5\25\u012a\n\25\3\25\2\6\20")
-        buf.write("\26\32 \26\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$")
-        buf.write("&(\2\7\4\2\5\5\7\7\3\2\n\13\3\2\24\25\3\2\30\35\4\2\n")
-        buf.write("\n\36 \u0146\2-\3\2\2\2\4\60\3\2\2\2\6R\3\2\2\2\bd\3\2")
-        buf.write("\2\2\nf\3\2\2\2\fr\3\2\2\2\16v\3\2\2\2\20\u0085\3\2\2")
-        buf.write("\2\22\u0092\3\2\2\2\24\u009a\3\2\2\2\26\u00aa\3\2\2\2")
-        buf.write("\30\u00c5\3\2\2\2\32\u00cc\3\2\2\2\34\u00dc\3\2\2\2\36")
-        buf.write("\u00e2\3\2\2\2 \u00e4\3\2\2\2\"\u0108\3\2\2\2$\u010a\3")
-        buf.write("\2\2\2&\u011b\3\2\2\2(\u0129\3\2\2\2*,\5\4\3\2+*\3\2\2")
-        buf.write("\2,/\3\2\2\2-+\3\2\2\2-.\3\2\2\2.\3\3\2\2\2/-\3\2\2\2")
-        buf.write("\60\62\7&\2\2\61\63\5$\23\2\62\61\3\2\2\2\62\63\3\2\2")
-        buf.write("\2\63\64\3\2\2\2\648\7\3\2\2\65\67\5\6\4\2\66\65\3\2\2")
-        buf.write("\2\67:\3\2\2\28\66\3\2\2\289\3\2\2\29;\3\2\2\2:8\3\2\2")
-        buf.write("\2;<\7\4\2\2<\5\3\2\2\2=>\7\5\2\2>?\5\b\5\2?@\7\6\2\2")
-        buf.write("@A\7(\2\2AS\3\2\2\2BC\7\7\2\2CD\5\26\f\2DE\7\6\2\2EF\7")
-        buf.write("(\2\2FS\3\2\2\2GH\7\b\2\2HK\5\b\5\2IJ\7\t\2\2JL\5\26\f")
-        buf.write("\2KI\3\2\2\2KL\3\2\2\2LM\3\2\2\2MN\t\2\2\2NO\5\26\f\2")
-        buf.write("OP\7\6\2\2PQ\7(\2\2QS\3\2\2\2R=\3\2\2\2RB\3\2\2\2RG\3")
-        buf.write("\2\2\2S\7\3\2\2\2TY\5\f\7\2UV\t\3\2\2VX\5\f\7\2WU\3\2")
-        buf.write("\2\2X[\3\2\2\2YW\3\2\2\2YZ\3\2\2\2Ze\3\2\2\2[Y\3\2\2\2")
-        buf.write("\\a\5\n\6\2]^\7\n\2\2^`\5\f\7\2_]\3\2\2\2`c\3\2\2\2a_")
-        buf.write("\3\2\2\2ab\3\2\2\2be\3\2\2\2ca\3\2\2\2dT\3\2\2\2d\\\3")
-        buf.write("\2\2\2e\t\3\2\2\2fg\7\f\2\2gj\5\f\7\2hi\7\r\2\2ik\5\f")
-        buf.write("\7\2jh\3\2\2\2kl\3\2\2\2lj\3\2\2\2lm\3\2\2\2mn\3\2\2\2")
-        buf.write("no\7\16\2\2o\13\3\2\2\2pq\7&\2\2qs\7\17\2\2rp\3\2\2\2")
-        buf.write("rs\3\2\2\2st\3\2\2\2tu\5\16\b\2u\r\3\2\2\2v{\5\20\t\2")
-        buf.write("wx\7\3\2\2xy\5\26\f\2yz\7\4\2\2z|\3\2\2\2{w\3\2\2\2{|")
-        buf.write("\3\2\2\2|\17\3\2\2\2}~\b\t\1\2~\177\7\20\2\2\177\u0086")
+        buf.write("\3\17\3\17\3\17\5\17\u00dd\n\17\3\20\3\20\3\20\3\20\3")
+        buf.write("\20\5\20\u00e4\n\20\3\21\3\21\3\21\3\21\3\21\5\21\u00eb")
+        buf.write("\n\21\3\21\3\21\5\21\u00ef\n\21\3\21\3\21\3\21\3\21\3")
+        buf.write("\21\3\21\5\21\u00f7\n\21\3\21\3\21\5\21\u00fb\n\21\7\21")
+        buf.write("\u00fd\n\21\f\21\16\21\u0100\13\21\3\22\3\22\3\22\3\22")
+        buf.write("\3\22\3\22\3\22\3\22\5\22\u010a\n\22\3\23\3\23\6\23\u010e")
+        buf.write("\n\23\r\23\16\23\u010f\3\23\3\23\6\23\u0114\n\23\r\23")
+        buf.write("\16\23\u0115\7\23\u0118\n\23\f\23\16\23\u011b\13\23\3")
+        buf.write("\24\3\24\3\24\3\24\7\24\u0121\n\24\f\24\16\24\u0124\13")
+        buf.write("\24\3\24\3\24\3\25\3\25\3\25\3\25\5\25\u012c\n\25\3\25")
+        buf.write("\2\6\20\26\32 \26\2\4\6\b\n\f\16\20\22\24\26\30\32\34")
+        buf.write("\36 \"$&(\2\7\4\2\5\5\7\7\3\2\n\13\3\2\24\25\3\2\30\35")
+        buf.write("\4\2\n\n\36 \u014a\2-\3\2\2\2\4\60\3\2\2\2\6R\3\2\2\2")
+        buf.write("\bd\3\2\2\2\nf\3\2\2\2\fr\3\2\2\2\16v\3\2\2\2\20\u0085")
+        buf.write("\3\2\2\2\22\u0092\3\2\2\2\24\u009a\3\2\2\2\26\u00aa\3")
+        buf.write("\2\2\2\30\u00c5\3\2\2\2\32\u00cc\3\2\2\2\34\u00dc\3\2")
+        buf.write("\2\2\36\u00e3\3\2\2\2 \u00e5\3\2\2\2\"\u0109\3\2\2\2$")
+        buf.write("\u010b\3\2\2\2&\u011c\3\2\2\2(\u012b\3\2\2\2*,\5\4\3\2")
+        buf.write("+*\3\2\2\2,/\3\2\2\2-+\3\2\2\2-.\3\2\2\2.\3\3\2\2\2/-")
+        buf.write("\3\2\2\2\60\62\7&\2\2\61\63\5$\23\2\62\61\3\2\2\2\62\63")
+        buf.write("\3\2\2\2\63\64\3\2\2\2\648\7\3\2\2\65\67\5\6\4\2\66\65")
+        buf.write("\3\2\2\2\67:\3\2\2\28\66\3\2\2\289\3\2\2\29;\3\2\2\2:")
+        buf.write("8\3\2\2\2;<\7\4\2\2<\5\3\2\2\2=>\7\5\2\2>?\5\b\5\2?@\7")
+        buf.write("\6\2\2@A\7)\2\2AS\3\2\2\2BC\7\7\2\2CD\5\26\f\2DE\7\6\2")
+        buf.write("\2EF\7)\2\2FS\3\2\2\2GH\7\b\2\2HK\5\b\5\2IJ\7\t\2\2JL")
+        buf.write("\5\26\f\2KI\3\2\2\2KL\3\2\2\2LM\3\2\2\2MN\t\2\2\2NO\5")
+        buf.write("\26\f\2OP\7\6\2\2PQ\7)\2\2QS\3\2\2\2R=\3\2\2\2RB\3\2\2")
+        buf.write("\2RG\3\2\2\2S\7\3\2\2\2TY\5\f\7\2UV\t\3\2\2VX\5\f\7\2")
+        buf.write("WU\3\2\2\2X[\3\2\2\2YW\3\2\2\2YZ\3\2\2\2Ze\3\2\2\2[Y\3")
+        buf.write("\2\2\2\\a\5\n\6\2]^\7\n\2\2^`\5\f\7\2_]\3\2\2\2`c\3\2")
+        buf.write("\2\2a_\3\2\2\2ab\3\2\2\2be\3\2\2\2ca\3\2\2\2dT\3\2\2\2")
+        buf.write("d\\\3\2\2\2e\t\3\2\2\2fg\7\f\2\2gj\5\f\7\2hi\7\r\2\2i")
+        buf.write("k\5\f\7\2jh\3\2\2\2kl\3\2\2\2lj\3\2\2\2lm\3\2\2\2mn\3")
+        buf.write("\2\2\2no\7\16\2\2o\13\3\2\2\2pq\7&\2\2qs\7\17\2\2rp\3")
+        buf.write("\2\2\2rs\3\2\2\2st\3\2\2\2tu\5\16\b\2u\r\3\2\2\2v{\5\20")
+        buf.write("\t\2wx\7\3\2\2xy\5\26\f\2yz\7\4\2\2z|\3\2\2\2{w\3\2\2")
+        buf.write("\2{|\3\2\2\2|\17\3\2\2\2}~\b\t\1\2~\177\7\20\2\2\177\u0086")
         buf.write("\5\20\t\6\u0080\u0081\7\f\2\2\u0081\u0082\5\20\t\2\u0082")
         buf.write("\u0083\7\16\2\2\u0083\u0086\3\2\2\2\u0084\u0086\7&\2\2")
         buf.write("\u0085}\3\2\2\2\u0085\u0080\3\2\2\2\u0085\u0084\3\2\2")
@@ -109,44 +109,45 @@ def serializedATN():
         buf.write("\3\2\2\2\u00d6\u00d7\3\2\2\2\u00d7\33\3\2\2\2\u00d8\u00d6")
         buf.write("\3\2\2\2\u00d9\u00da\7\27\2\2\u00da\u00dd\5\32\16\2\u00db")
         buf.write("\u00dd\5\36\20\2\u00dc\u00d9\3\2\2\2\u00dc\u00db\3\2\2")
-        buf.write("\2\u00dd\35\3\2\2\2\u00de\u00e3\7%\2\2\u00df\u00e3\7\'")
-        buf.write("\2\2\u00e0\u00e3\7(\2\2\u00e1\u00e3\5&\24\2\u00e2\u00de")
-        buf.write("\3\2\2\2\u00e2\u00df\3\2\2\2\u00e2\u00e0\3\2\2\2\u00e2")
-        buf.write("\u00e1\3\2\2\2\u00e3\37\3\2\2\2\u00e4\u00e5\b\21\1\2\u00e5")
-        buf.write("\u00ed\7&\2\2\u00e6\u00e9\7\f\2\2\u00e7\u00ea\5\34\17")
-        buf.write("\2\u00e8\u00ea\5\16\b\2\u00e9\u00e7\3\2\2\2\u00e9\u00e8")
-        buf.write("\3\2\2\2\u00ea\u00eb\3\2\2\2\u00eb\u00ec\7\16\2\2\u00ec")
-        buf.write("\u00ee\3\2\2\2\u00ed\u00e6\3\2\2\2\u00ed\u00ee\3\2\2\2")
-        buf.write("\u00ee\u00fd\3\2\2\2\u00ef\u00f0\f\4\2\2\u00f0\u00f1\7")
-        buf.write("!\2\2\u00f1\u00f9\7&\2\2\u00f2\u00f5\7\f\2\2\u00f3\u00f6")
-        buf.write("\5\34\17\2\u00f4\u00f6\5\16\b\2\u00f5\u00f3\3\2\2\2\u00f5")
-        buf.write("\u00f4\3\2\2\2\u00f6\u00f7\3\2\2\2\u00f7\u00f8\7\16\2")
-        buf.write("\2\u00f8\u00fa\3\2\2\2\u00f9\u00f2\3\2\2\2\u00f9\u00fa")
-        buf.write("\3\2\2\2\u00fa\u00fc\3\2\2\2\u00fb\u00ef\3\2\2\2\u00fc")
-        buf.write("\u00ff\3\2\2\2\u00fd\u00fb\3\2\2\2\u00fd\u00fe\3\2\2\2")
-        buf.write("\u00fe!\3\2\2\2\u00ff\u00fd\3\2\2\2\u0100\u0109\7\'\2")
-        buf.write("\2\u0101\u0102\7\'\2\2\u0102\u0103\7\r\2\2\u0103\u0109")
-        buf.write("\7\'\2\2\u0104\u0105\7\r\2\2\u0105\u0109\7\'\2\2\u0106")
-        buf.write("\u0107\7\'\2\2\u0107\u0109\7\r\2\2\u0108\u0100\3\2\2\2")
-        buf.write("\u0108\u0101\3\2\2\2\u0108\u0104\3\2\2\2\u0108\u0106\3")
-        buf.write("\2\2\2\u0109#\3\2\2\2\u010a\u010c\7\"\2\2\u010b\u010d")
-        buf.write("\5\24\13\2\u010c\u010b\3\2\2\2\u010d\u010e\3\2\2\2\u010e")
-        buf.write("\u010c\3\2\2\2\u010e\u010f\3\2\2\2\u010f\u0118\3\2\2\2")
-        buf.write("\u0110\u0112\7\r\2\2\u0111\u0113\5\24\13\2\u0112\u0111")
-        buf.write("\3\2\2\2\u0113\u0114\3\2\2\2\u0114\u0112\3\2\2\2\u0114")
-        buf.write("\u0115\3\2\2\2\u0115\u0117\3\2\2\2\u0116\u0110\3\2\2\2")
-        buf.write("\u0117\u011a\3\2\2\2\u0118\u0116\3\2\2\2\u0118\u0119\3")
-        buf.write("\2\2\2\u0119%\3\2\2\2\u011a\u0118\3\2\2\2\u011b\u011c")
-        buf.write("\7#\2\2\u011c\u0121\5(\25\2\u011d\u011e\7\r\2\2\u011e")
-        buf.write("\u0120\5(\25\2\u011f\u011d\3\2\2\2\u0120\u0123\3\2\2\2")
-        buf.write("\u0121\u011f\3\2\2\2\u0121\u0122\3\2\2\2\u0122\u0124\3")
-        buf.write("\2\2\2\u0123\u0121\3\2\2\2\u0124\u0125\7$\2\2\u0125\'")
-        buf.write("\3\2\2\2\u0126\u012a\7\'\2\2\u0127\u012a\7(\2\2\u0128")
-        buf.write("\u012a\5\16\b\2\u0129\u0126\3\2\2\2\u0129\u0127\3\2\2")
-        buf.write("\2\u0129\u0128\3\2\2\2\u012a)\3\2\2\2&-\628KRYadlr{\u0085")
-        buf.write("\u008d\u008f\u0097\u009f\u00aa\u00b2\u00b4\u00c5\u00cc")
-        buf.write("\u00d4\u00d6\u00dc\u00e2\u00e9\u00ed\u00f5\u00f9\u00fd")
-        buf.write("\u0108\u010e\u0114\u0118\u0121\u0129")
+        buf.write("\2\u00dd\35\3\2\2\2\u00de\u00e4\7%\2\2\u00df\u00e4\7(")
+        buf.write("\2\2\u00e0\u00e4\7\'\2\2\u00e1\u00e4\7)\2\2\u00e2\u00e4")
+        buf.write("\5&\24\2\u00e3\u00de\3\2\2\2\u00e3\u00df\3\2\2\2\u00e3")
+        buf.write("\u00e0\3\2\2\2\u00e3\u00e1\3\2\2\2\u00e3\u00e2\3\2\2\2")
+        buf.write("\u00e4\37\3\2\2\2\u00e5\u00e6\b\21\1\2\u00e6\u00ee\7&")
+        buf.write("\2\2\u00e7\u00ea\7\f\2\2\u00e8\u00eb\5\34\17\2\u00e9\u00eb")
+        buf.write("\5\16\b\2\u00ea\u00e8\3\2\2\2\u00ea\u00e9\3\2\2\2\u00eb")
+        buf.write("\u00ec\3\2\2\2\u00ec\u00ed\7\16\2\2\u00ed\u00ef\3\2\2")
+        buf.write("\2\u00ee\u00e7\3\2\2\2\u00ee\u00ef\3\2\2\2\u00ef\u00fe")
+        buf.write("\3\2\2\2\u00f0\u00f1\f\4\2\2\u00f1\u00f2\7!\2\2\u00f2")
+        buf.write("\u00fa\7&\2\2\u00f3\u00f6\7\f\2\2\u00f4\u00f7\5\34\17")
+        buf.write("\2\u00f5\u00f7\5\16\b\2\u00f6\u00f4\3\2\2\2\u00f6\u00f5")
+        buf.write("\3\2\2\2\u00f7\u00f8\3\2\2\2\u00f8\u00f9\7\16\2\2\u00f9")
+        buf.write("\u00fb\3\2\2\2\u00fa\u00f3\3\2\2\2\u00fa\u00fb\3\2\2\2")
+        buf.write("\u00fb\u00fd\3\2\2\2\u00fc\u00f0\3\2\2\2\u00fd\u0100\3")
+        buf.write("\2\2\2\u00fe\u00fc\3\2\2\2\u00fe\u00ff\3\2\2\2\u00ff!")
+        buf.write("\3\2\2\2\u0100\u00fe\3\2\2\2\u0101\u010a\7\'\2\2\u0102")
+        buf.write("\u0103\7\'\2\2\u0103\u0104\7\r\2\2\u0104\u010a\7\'\2\2")
+        buf.write("\u0105\u0106\7\r\2\2\u0106\u010a\7\'\2\2\u0107\u0108\7")
+        buf.write("\'\2\2\u0108\u010a\7\r\2\2\u0109\u0101\3\2\2\2\u0109\u0102")
+        buf.write("\3\2\2\2\u0109\u0105\3\2\2\2\u0109\u0107\3\2\2\2\u010a")
+        buf.write("#\3\2\2\2\u010b\u010d\7\"\2\2\u010c\u010e\5\24\13\2\u010d")
+        buf.write("\u010c\3\2\2\2\u010e\u010f\3\2\2\2\u010f\u010d\3\2\2\2")
+        buf.write("\u010f\u0110\3\2\2\2\u0110\u0119\3\2\2\2\u0111\u0113\7")
+        buf.write("\r\2\2\u0112\u0114\5\24\13\2\u0113\u0112\3\2\2\2\u0114")
+        buf.write("\u0115\3\2\2\2\u0115\u0113\3\2\2\2\u0115\u0116\3\2\2\2")
+        buf.write("\u0116\u0118\3\2\2\2\u0117\u0111\3\2\2\2\u0118\u011b\3")
+        buf.write("\2\2\2\u0119\u0117\3\2\2\2\u0119\u011a\3\2\2\2\u011a%")
+        buf.write("\3\2\2\2\u011b\u0119\3\2\2\2\u011c\u011d\7#\2\2\u011d")
+        buf.write("\u0122\5(\25\2\u011e\u011f\7\r\2\2\u011f\u0121\5(\25\2")
+        buf.write("\u0120\u011e\3\2\2\2\u0121\u0124\3\2\2\2\u0122\u0120\3")
+        buf.write("\2\2\2\u0122\u0123\3\2\2\2\u0123\u0125\3\2\2\2\u0124\u0122")
+        buf.write("\3\2\2\2\u0125\u0126\7$\2\2\u0126\'\3\2\2\2\u0127\u012c")
+        buf.write("\7(\2\2\u0128\u012c\7\'\2\2\u0129\u012c\7)\2\2\u012a\u012c")
+        buf.write("\5\16\b\2\u012b\u0127\3\2\2\2\u012b\u0128\3\2\2\2\u012b")
+        buf.write("\u0129\3\2\2\2\u012b\u012a\3\2\2\2\u012c)\3\2\2\2&-\62")
+        buf.write("8KRYadlr{\u0085\u008d\u008f\u0097\u009f\u00aa\u00b2\u00b4")
+        buf.write("\u00c5\u00cc\u00d4\u00d6\u00dc\u00e3\u00ea\u00ee\u00f6")
+        buf.write("\u00fa\u00fe\u0109\u010f\u0115\u0119\u0122\u012b")
         return buf.getvalue()
 
 
@@ -177,8 +178,8 @@ class cocoParser ( Parser ):
                       u"<INVALID>", u"<INVALID>", u"<INVALID>", u"<INVALID>", 
                       u"<INVALID>", u"<INVALID>", u"<INVALID>", u"<INVALID>", 
                       u"<INVALID>", u"<INVALID>", u"<INVALID>", u"Boolean", 
-                      u"Identifier", u"Integer", u"String", u"Comment", 
-                      u"LineComment", u"WS" ]
+                      u"Identifier", u"Integer", u"Decimal", u"String", 
+                      u"Comment", u"LineComment", u"WS" ]
 
     RULE_stylesheet = 0
     RULE_context = 1
@@ -245,10 +246,11 @@ class cocoParser ( Parser ):
     Boolean=35
     Identifier=36
     Integer=37
-    String=38
-    Comment=39
-    LineComment=40
-    WS=41
+    Decimal=38
+    String=39
+    Comment=40
+    LineComment=41
+    WS=42
 
     def __init__(self, input:TokenStream):
         super().__init__(input)
@@ -1257,7 +1259,7 @@ class cocoParser ( Parser ):
                 self.state = 200
                 localctx.call = self.call_expr(0)
 
-            elif token in [cocoParser.T__32, cocoParser.Boolean, cocoParser.Integer, cocoParser.String]:
+            elif token in [cocoParser.T__32, cocoParser.Boolean, cocoParser.Integer, cocoParser.Decimal, cocoParser.String]:
                 self.state = 201
                 localctx.primary = self.element()
 
@@ -1369,7 +1371,7 @@ class cocoParser ( Parser ):
                 self.state = 216
                 localctx.operand = self.arithmetic_expr(0)
 
-            elif token in [cocoParser.T__32, cocoParser.Boolean, cocoParser.Integer, cocoParser.String]:
+            elif token in [cocoParser.T__32, cocoParser.Boolean, cocoParser.Integer, cocoParser.Decimal, cocoParser.String]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 217
                 localctx.primary = self.element()
@@ -1391,12 +1393,16 @@ class cocoParser ( Parser ):
             super().__init__(parent, invokingState)
             self.parser = parser
             self.primary_bool = None # Token
+            self.primary_dec = None # Token
             self.primary_int = None # Token
             self.primary_str = None # Token
             self.primary_list = None # List_Context
 
         def Boolean(self):
             return self.getToken(cocoParser.Boolean, 0)
+
+        def Decimal(self):
+            return self.getToken(cocoParser.Decimal, 0)
 
         def Integer(self):
             return self.getToken(cocoParser.Integer, 0)
@@ -1425,26 +1431,31 @@ class cocoParser ( Parser ):
         localctx = cocoParser.ElementContext(self, self._ctx, self.state)
         self.enterRule(localctx, 28, self.RULE_element)
         try:
-            self.state = 224
+            self.state = 225
             token = self._input.LA(1)
             if token in [cocoParser.Boolean]:
                 self.enterOuterAlt(localctx, 1)
                 self.state = 220
                 localctx.primary_bool = self.match(cocoParser.Boolean)
 
-            elif token in [cocoParser.Integer]:
+            elif token in [cocoParser.Decimal]:
                 self.enterOuterAlt(localctx, 2)
                 self.state = 221
+                localctx.primary_dec = self.match(cocoParser.Decimal)
+
+            elif token in [cocoParser.Integer]:
+                self.enterOuterAlt(localctx, 3)
+                self.state = 222
                 localctx.primary_int = self.match(cocoParser.Integer)
 
             elif token in [cocoParser.String]:
-                self.enterOuterAlt(localctx, 3)
-                self.state = 222
+                self.enterOuterAlt(localctx, 4)
+                self.state = 223
                 localctx.primary_str = self.match(cocoParser.String)
 
             elif token in [cocoParser.T__32]:
-                self.enterOuterAlt(localctx, 4)
-                self.state = 223
+                self.enterOuterAlt(localctx, 5)
+                self.state = 224
                 localctx.primary_list = self.list_()
 
             else:
@@ -1503,32 +1514,32 @@ class cocoParser ( Parser ):
         self.enterRecursionRule(localctx, 30, self.RULE_call_expr, _p)
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 227
+            self.state = 228
             localctx.call = self.match(cocoParser.Identifier)
-            self.state = 235
+            self.state = 236
             la_ = self._interp.adaptivePredict(self._input,26,self._ctx)
             if la_ == 1:
-                self.state = 228
+                self.state = 229
                 self.match(cocoParser.T__9)
-                self.state = 231
+                self.state = 232
                 token = self._input.LA(1)
-                if token in [cocoParser.T__20, cocoParser.T__32, cocoParser.Boolean, cocoParser.Integer, cocoParser.String]:
-                    self.state = 229
+                if token in [cocoParser.T__20, cocoParser.T__32, cocoParser.Boolean, cocoParser.Integer, cocoParser.Decimal, cocoParser.String]:
+                    self.state = 230
                     localctx.argument = self.basic_expr()
 
                 elif token in [cocoParser.T__9, cocoParser.T__13, cocoParser.Identifier]:
-                    self.state = 230
+                    self.state = 231
                     localctx.abstract = self.semantic_node()
 
                 else:
                     raise NoViableAltException(self)
 
-                self.state = 233
+                self.state = 234
                 self.match(cocoParser.T__11)
 
 
             self._ctx.stop = self._input.LT(-1)
-            self.state = 251
+            self.state = 252
             self._errHandler.sync(self)
             _alt = self._interp.adaptivePredict(self._input,29,self._ctx)
             while _alt!=2 and _alt!=ATN.INVALID_ALT_NUMBER:
@@ -1539,37 +1550,37 @@ class cocoParser ( Parser ):
                     localctx = cocoParser.Call_exprContext(self, _parentctx, _parentState)
                     localctx.operand = _prevctx
                     self.pushNewRecursionContext(localctx, _startState, self.RULE_call_expr)
-                    self.state = 237
+                    self.state = 238
                     if not self.precpred(self._ctx, 2):
                         from antlr4.error.Errors import FailedPredicateException
                         raise FailedPredicateException(self, "self.precpred(self._ctx, 2)")
-                    self.state = 238
-                    self.match(cocoParser.T__30)
                     self.state = 239
+                    self.match(cocoParser.T__30)
+                    self.state = 240
                     localctx.call = self.match(cocoParser.Identifier)
-                    self.state = 247
+                    self.state = 248
                     la_ = self._interp.adaptivePredict(self._input,28,self._ctx)
                     if la_ == 1:
-                        self.state = 240
+                        self.state = 241
                         self.match(cocoParser.T__9)
-                        self.state = 243
+                        self.state = 244
                         token = self._input.LA(1)
-                        if token in [cocoParser.T__20, cocoParser.T__32, cocoParser.Boolean, cocoParser.Integer, cocoParser.String]:
-                            self.state = 241
+                        if token in [cocoParser.T__20, cocoParser.T__32, cocoParser.Boolean, cocoParser.Integer, cocoParser.Decimal, cocoParser.String]:
+                            self.state = 242
                             localctx.argument = self.basic_expr()
 
                         elif token in [cocoParser.T__9, cocoParser.T__13, cocoParser.Identifier]:
-                            self.state = 242
+                            self.state = 243
                             localctx.abstract = self.semantic_node()
 
                         else:
                             raise NoViableAltException(self)
 
-                        self.state = 245
+                        self.state = 246
                         self.match(cocoParser.T__11)
 
              
-                self.state = 253
+                self.state = 254
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,29,self._ctx)
 
@@ -1613,37 +1624,37 @@ class cocoParser ( Parser ):
         localctx = cocoParser.RepeaterContext(self, self._ctx, self.state)
         self.enterRule(localctx, 32, self.RULE_repeater)
         try:
-            self.state = 262
+            self.state = 263
             la_ = self._interp.adaptivePredict(self._input,30,self._ctx)
             if la_ == 1:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 254
+                self.state = 255
                 localctx.exact = self.match(cocoParser.Integer)
                 pass
 
             elif la_ == 2:
                 self.enterOuterAlt(localctx, 2)
-                self.state = 255
-                localctx.lower = self.match(cocoParser.Integer)
                 self.state = 256
-                self.match(cocoParser.T__10)
+                localctx.lower = self.match(cocoParser.Integer)
                 self.state = 257
+                self.match(cocoParser.T__10)
+                self.state = 258
                 localctx.upper = self.match(cocoParser.Integer)
                 pass
 
             elif la_ == 3:
                 self.enterOuterAlt(localctx, 3)
-                self.state = 258
-                self.match(cocoParser.T__10)
                 self.state = 259
+                self.match(cocoParser.T__10)
+                self.state = 260
                 localctx.upper = self.match(cocoParser.Integer)
                 pass
 
             elif la_ == 4:
                 self.enterOuterAlt(localctx, 4)
-                self.state = 260
-                localctx.lower = self.match(cocoParser.Integer)
                 self.state = 261
+                localctx.lower = self.match(cocoParser.Integer)
+                self.state = 262
                 self.match(cocoParser.T__10)
                 pass
 
@@ -1688,39 +1699,39 @@ class cocoParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 264
+            self.state = 265
             self.match(cocoParser.T__31)
-            self.state = 266 
+            self.state = 267 
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while True:
-                self.state = 265
+                self.state = 266
                 self.whitespace_node()
-                self.state = 268 
+                self.state = 269 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 if not (_la==cocoParser.Identifier):
                     break
 
-            self.state = 278
+            self.state = 279
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==cocoParser.T__10:
-                self.state = 270
+                self.state = 271
                 self.match(cocoParser.T__10)
-                self.state = 272 
+                self.state = 273 
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
                 while True:
-                    self.state = 271
+                    self.state = 272
                     self.whitespace_node()
-                    self.state = 274 
+                    self.state = 275 
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
                     if not (_la==cocoParser.Identifier):
                         break
 
-                self.state = 280
+                self.state = 281
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
@@ -1764,23 +1775,23 @@ class cocoParser ( Parser ):
         self._la = 0 # Token type
         try:
             self.enterOuterAlt(localctx, 1)
-            self.state = 281
-            self.match(cocoParser.T__32)
             self.state = 282
+            self.match(cocoParser.T__32)
+            self.state = 283
             self.list_element()
-            self.state = 287
+            self.state = 288
             self._errHandler.sync(self)
             _la = self._input.LA(1)
             while _la==cocoParser.T__10:
-                self.state = 283
-                self.match(cocoParser.T__10)
                 self.state = 284
+                self.match(cocoParser.T__10)
+                self.state = 285
                 self.list_element()
-                self.state = 289
+                self.state = 290
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
 
-            self.state = 290
+            self.state = 291
             self.match(cocoParser.T__33)
         except RecognitionException as re:
             localctx.exception = re
@@ -1795,9 +1806,13 @@ class cocoParser ( Parser ):
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
             self.parser = parser
+            self.element_dec = None # Token
             self.element_int = None # Token
             self.element_str = None # Token
             self.element_desc = None # Semantic_nodeContext
+
+        def Decimal(self):
+            return self.getToken(cocoParser.Decimal, 0)
 
         def Integer(self):
             return self.getToken(cocoParser.Integer, 0)
@@ -1826,21 +1841,26 @@ class cocoParser ( Parser ):
         localctx = cocoParser.List_elementContext(self, self._ctx, self.state)
         self.enterRule(localctx, 38, self.RULE_list_element)
         try:
-            self.state = 295
+            self.state = 297
             token = self._input.LA(1)
-            if token in [cocoParser.Integer]:
+            if token in [cocoParser.Decimal]:
                 self.enterOuterAlt(localctx, 1)
-                self.state = 292
+                self.state = 293
+                localctx.element_dec = self.match(cocoParser.Decimal)
+
+            elif token in [cocoParser.Integer]:
+                self.enterOuterAlt(localctx, 2)
+                self.state = 294
                 localctx.element_int = self.match(cocoParser.Integer)
 
             elif token in [cocoParser.String]:
-                self.enterOuterAlt(localctx, 2)
-                self.state = 293
+                self.enterOuterAlt(localctx, 3)
+                self.state = 295
                 localctx.element_str = self.match(cocoParser.String)
 
             elif token in [cocoParser.T__9, cocoParser.T__13, cocoParser.Identifier]:
-                self.enterOuterAlt(localctx, 3)
-                self.state = 294
+                self.enterOuterAlt(localctx, 4)
+                self.state = 296
                 localctx.element_desc = self.semantic_node()
 
             else:

@@ -242,7 +242,7 @@ class Rgba(Function):
         self._api['opacity'] = self._get_opacity
 
     def _get_opacity(self):
-        return values.Integer(int(self.value[1].value[-1].value))
+        return values.Integer(float(self.value[1].value[-1].value))
 
 
 class Hex(TerminalCssNode):

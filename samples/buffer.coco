@@ -1,8 +1,6 @@
 Semantic
 ignore indent
 {
-    find r1=ruleset next-to r2=ruleset
-    /* where not r1.is-single-line or not r2.is-single-line */
-    require newline{2} between r1 and r2
-    message 'Add one blank line between rulesets'
+    forbid rgba{opacity == 1}
+    message 'Use rgba only when opacity is needed'
 }

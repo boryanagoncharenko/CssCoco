@@ -240,6 +240,11 @@ class IntegerExpr(LiteralExpr):
         super(IntegerExpr, self).__init__(value, line)
 
 
+class DecimalExpr(LiteralExpr):
+    def __init__(self, value, line=-1):
+        super(DecimalExpr, self).__init__(value, line)
+
+
 class StringExpr(LiteralExpr):
     def __init__(self, value, line=-1):
         super(StringExpr, self).__init__(value, line)
@@ -364,7 +369,9 @@ class EqualExpr(BinaryExpr):
         super(EqualExpr, self).__init__(left, right, line)
 
     def are_types_compatible(self, left, right):
-        return left == right
+        left_promoted = left.promote_to(right)
+        right_promoted = right.promote_to(left)
+        return left_promoted == right_promoted
 
     def get_return_type(self):
         return types.Boolean.TYPE
@@ -375,7 +382,9 @@ class NotEqualExpr(BinaryExpr):
         super(NotEqualExpr, self).__init__(left, right, line)
 
     def are_types_compatible(self, left, right):
-        return left == right
+        left_promoted = left.promote_to(right)
+        right_promoted = right.promote_to(left)
+        return left_promoted == right_promoted
 
     def get_return_type(self):
         return types.Boolean.TYPE
@@ -507,7 +516,7 @@ class OpacityPropertyExpr(PropertyExpr):
         super(OpacityPropertyExpr, self).__init__(operand, 'opacity', line)
 
     def get_return_type(self):
-        return types.Integer.TYPE
+        return types.Decimal.TYPE
 
 
 class ValuePropertyExpr(PropertyExpr):

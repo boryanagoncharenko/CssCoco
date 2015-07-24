@@ -142,6 +142,10 @@ class TypeChecker(object):
     def _visit(self, expr):
         return types.Boolean.TYPE
 
+    @vis.visitor(ast.DecimalExpr)
+    def _visit(self, expr):
+        return types.Decimal.TYPE
+
     @vis.visitor(ast.IntegerExpr)
     def _visit(self, expr):
         return types.Integer.TYPE

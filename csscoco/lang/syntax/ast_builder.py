@@ -277,6 +277,8 @@ class CocoCustomVisitor(cocoVisitor):
     def visitElement(self, context):
         if context.primary_bool:
             return ast.BooleanExpr(bool(context.primary_bool.text.lower() != 'false'), context.primary_bool.line)
+        if context.primary_dec:
+            return ast.DecimalExpr(float(context.primary_dec.text), context.primary_dec.line)
         if context.primary_int:
             return ast.IntegerExpr(int(context.primary_int.text), context.primary_int.line)
         if context.primary_str:
@@ -372,11 +374,13 @@ class CocoCustomVisitor(cocoVisitor):
         return ast.ListExpr(result)
 
     def visitList_element(self, ctx):
-        if ctx.element_int is not None:
-            return int(ctx.element_int.text)
-        if ctx.element_str is not None:
+        if ctx.element_dec:
+            return ast.DecimalExpr(float(ctx.element_dec.text))
+        if ctx.element_int:
+            return ast.IntegerExpr(int(ctx.element_int.text))
+        if ctx.element_str:
             return ast.StringExpr(self.unescape_quotes(ctx.element_str.text))
-        if ctx.element_desc is not None:
+        if ctx.element_desc:
             return self.visitSemantic_node(ctx.element_desc)
         raise ValueError('Unknown list element')
 

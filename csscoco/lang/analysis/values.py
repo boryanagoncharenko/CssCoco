@@ -26,6 +26,9 @@ class Value(object):
     def equals(self, value):
         raise ValueError()
 
+    def equals_integer(self, value):
+        raise ValueError()
+
     def equals_decimal(self, value):
         raise ValueError()
 
@@ -36,6 +39,9 @@ class Value(object):
         raise ValueError()
 
     def not_equals(self, value):
+        raise ValueError()
+
+    def not_equals_integer(self, value):
         raise ValueError()
 
     def not_equals_decimal(self, value):
@@ -50,10 +56,16 @@ class Value(object):
     def greater_than(self, value):
         raise ValueError()
 
+    def greater_than_integer(self, value):
+        raise ValueError()
+
     def greater_than_decimal(self, value):
         raise ValueError()
 
     def greater_than_equals(self, value):
+        raise ValueError()
+
+    def greater_than_equals_integer(self, value):
         raise ValueError()
 
     def greater_than_equals_decimal(self, value):
@@ -62,10 +74,16 @@ class Value(object):
     def less_than(self, value):
         raise ValueError()
 
+    def less_than_integer(self, value):
+        raise ValueError()
+
     def less_than_decimal(self, value):
         raise ValueError()
 
     def less_than_equals(self, value):
+        raise ValueError()
+
+    def less_than_equals_integer(self, value):
         raise ValueError()
 
     def less_than_equals_decimal(self, value):
@@ -84,15 +102,16 @@ class Value(object):
         raise ValueError()
 
 
-class Integer(Value):
+class Decimal(Value):
     def __init__(self, value):
+        super(Decimal, self).__init__()
         self.value = value
-
-    def unary_minus(self):
-        return Integer(-self.value)
 
     def equals(self, value):
         return value.equals_decimal(self)
+
+    def equals_integer(self, value):
+        return Boolean.build(value.value == self.value)
 
     def equals_decimal(self, value):
         return Boolean.build(value.value == self.value)
@@ -100,11 +119,17 @@ class Integer(Value):
     def not_equals(self, value):
         return value.not_equals_decimal(self)
 
+    def not_equals_integer(self, value):
+        return Boolean.build(value.value != self.value)
+
     def not_equals_decimal(self, value):
         return Boolean.build(value.value != self.value)
 
     def greater_than(self, value):
         return value.greater_than_decimal(self)
+
+    def greater_than_integer(self, value):
+        return Boolean.build(value.value > self.value)
 
     def greater_than_decimal(self, value):
         return Boolean.build(value.value > self.value)
@@ -112,11 +137,17 @@ class Integer(Value):
     def greater_than_equals(self, value):
         return value.greater_than_equals_decimal(self)
 
+    def greater_than_equals_integer(self, value):
+        return Boolean.build(value.value >= self.value)
+
     def greater_than_equals_decimal(self, value):
         return Boolean.build(value.value >= self.value)
 
     def less_than(self, value):
         return value.less_than_decimal(self)
+
+    def less_than_integer(self, value):
+        return Boolean.build(value.value < self.value)
 
     def less_than_decimal(self, value):
         return Boolean.build(value.value < self.value)
@@ -124,15 +155,82 @@ class Integer(Value):
     def less_than_equals(self, value):
         return value.less_than_equals_decimal(self)
 
+    def less_than_equals_integer(self, value):
+        return Boolean.build(value.value <= self.value)
+
+    def less_than_equals_decimal(self, value):
+        return Boolean.build(value.value <= self.value)
+
+
+class Integer(Value):
+    def __init__(self, value):
+        super(Integer, self).__init__()
+        self.value = value
+
+    def unary_minus(self):
+        return Integer(-self.value)
+
+    def equals(self, value):
+        return value.equals_integer(self)
+
+    def equals_integer(self, value):
+        return Boolean.build(value.value == self.value)
+
+    def equals_decimal(self, value):
+        return Boolean.build(value.value == self.value)
+
+    def not_equals(self, value):
+        return value.not_equals_integer(self)
+
+    def not_equals_integer(self, value):
+        return Boolean.build(value.value != self.value)
+
+    def not_equals_decimal(self, value):
+        return Boolean.build(value.value != self.value)
+
+    def greater_than(self, value):
+        return value.greater_than_integer(self)
+
+    def greater_than_integer(self, value):
+        return Boolean.build(value.value > self.value)
+
+    def greater_than_decimal(self, value):
+        return Boolean.build(value.value > self.value)
+
+    def greater_than_equals(self, value):
+        return value.greater_than_equals_integer(self)
+
+    def greater_than_equals_integer(self, value):
+        return Boolean.build(value.value >= self.value)
+
+    def greater_than_equals_decimal(self, value):
+        return Boolean.build(value.value >= self.value)
+
+    def less_than(self, value):
+        return value.less_than_integer(self)
+
+    def less_than_integer(self, value):
+        return Boolean.build(value.value < self.value)
+
+    def less_than_decimal(self, value):
+        return Boolean.build(value.value < self.value)
+
+    def less_than_equals(self, value):
+        return value.less_than_equals_integer(self)
+
+    def less_than_equals_integer(self, value):
+        return Boolean.build(value.value <= self.value)
+
     def less_than_equals_decimal(self, value):
         return Boolean.build(value.value <= self.value)
 
     def in_(self, value):
-        return value.is_in_list(self)
+        return value.in_list(self)
 
 
 class String(Value):
     def __init__(self, value):
+        super(String, self).__init__()
         self.value = value
 
     def equals(self, value):
@@ -155,6 +253,7 @@ String.EMPTY = String('')
 
 class Boolean(Value):
     def __init__(self, value):
+        super(Boolean, self).__init__()
         self.value = value
 
     @staticmethod
@@ -192,7 +291,7 @@ class Boolean(Value):
         return Boolean.build(value.value != self.value)
 
     def in_(self, value):
-        return value.is_in_list(self)
+        return value.in_list(self)
 
 Boolean.FALSE = Boolean(False)
 Boolean.TRUE = Boolean(True)
@@ -200,6 +299,7 @@ Boolean.TRUE = Boolean(True)
 
 class NodeType(Value):
     def __init__(self, value):
+        super(NodeType, self).__init__()
         self.value = value
 
     def is_of_type(self, node_value):
@@ -218,6 +318,7 @@ class Node(Value):
 
 class List(Value):
     def __init__(self, value):
+        super(List, self).__init__()
         self.value = value
 
     def in_list(self, operand):
