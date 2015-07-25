@@ -37,13 +37,13 @@ def get_coco_ast(filename):
     return convention_set
 
 
-def main(args):
-    css_tree, error = get_css_parse_tree(args[1])
+def find_violations(cssfile, cocofile):
+    css_tree, error = get_css_parse_tree(cssfile)
     if error:
         print(error)
         exit()
 
-    coco_ast = get_coco_ast(args[2])
+    coco_ast = get_coco_ast(cocofile)
     errors = checker.TypeChecker.check(coco_ast)
     if errors.contain_errors():
         print(errors.string())
@@ -53,6 +53,8 @@ def main(args):
     return log.to_string()
 
 if __name__=='__main__':
-    sys.exit(main(sys.argv))
+    cssfile = sys.argv[1]
+    cocofile = sys.argv[2]
+    sys.exit(find_violations(cssfile, cocofile))
 
 # cProfile.run('main()')

@@ -2,8 +2,6 @@ Semantic
 ignore indent, space, newline, comment
 {
 
-    find d=declaration{property.is-vendor-specific}
-    require (d.next-sibling.property.is-vendor-specific and d.next-sibling.property.standard == d.property.standard) or
-            (not d.next-sibling.property.is-vendor-specific and d.next-sibling.property.name == d.property.standard)
+    forbid class
     message 'Do not use a vendor-prefixed property without a standard property after it'
 }
