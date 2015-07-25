@@ -25,7 +25,7 @@ class ViolationLog(object):
 
     def to_string(self):
         if not self._inner:
-            return 'No violations discovered.'
+            return ''
         vs = []
         for v in self._inner:
             vs.append('\n')

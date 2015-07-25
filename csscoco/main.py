@@ -22,7 +22,7 @@ def get_css_parse_tree(filename):
         return None, '-----\nPlease check the validity of the css block!\n-----'
     tr = css_parser.SExprTransformer.transform(l)
     a = css.ParseTreeBuilder.build(tr)
-    print(a.pretty_print())
+    # print(a.pretty_print())
     return a, ''
 
 
@@ -37,19 +37,22 @@ def get_coco_ast(filename):
     return convention_set
 
 
-def main(*args):
-    css_tree, error = get_css_parse_tree(args[0])
+def main(args):
+    css_tree, error = get_css_parse_tree(args[1])
     if error:
         print(error)
         exit()
-    coco_ast = get_coco_ast(args[1])
+
+    coco_ast = get_coco_ast(args[2])
     errors = checker.TypeChecker.check(coco_ast)
     if errors.contain_errors():
         print(errors.string())
         exit()
+
     log = violations.ViolationsFinder.find(coco_ast, css_tree)
+    return log.to_string()
 
 if __name__=='__main__':
-    sys.exit(main(sys.argv[1], sys.argv[2]))
+    sys.exit(main(sys.argv))
 
 # cProfile.run('main()')
