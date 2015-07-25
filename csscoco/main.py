@@ -12,8 +12,8 @@ import csscoco.lang.analysis.violations as violations
 import csscoco.lang.analysis.type_checker as checker
 
 
-def get_css_parse_tree(filename):
-    file = open(filename, encoding='utf-8')
+def get_css_parse_tree():
+    file = open(sys.argv[1], encoding='utf-8')
     css_source = file.read()
     result = css_parser.Parser.parse_css(css_source)
     try:
@@ -26,8 +26,8 @@ def get_css_parse_tree(filename):
     return a, ''
 
 
-def get_coco_ast(filename):
-    input_stream = antlr4.FileStream(filename)
+def get_coco_ast():
+    input_stream = antlr4.FileStream(sys.argv[2])
     lexer = cocoLexer.cocoLexer(input_stream)
     stream = antlr4.CommonTokenStream(lexer)
     parser = cocoParser.cocoParser(stream)
@@ -37,13 +37,13 @@ def get_coco_ast(filename):
     return convention_set
 
 
-def main(argv):
-    css_tree, error = get_css_parse_tree(argv[1])
+def main():
+    css_tree, error = get_css_parse_tree()
     if error:
         print(error)
         exit()
 
-    coco_ast = get_coco_ast(argv[2])
+    coco_ast = get_coco_ast()
     errors = checker.TypeChecker.check(coco_ast)
     if errors.contain_errors():
         print(errors.string())
@@ -53,6 +53,6 @@ def main(argv):
     return log.to_string()
 
 if __name__ == "__main__":
-    print(main(sys.argv))
+    print(main())
 
 # cProfile.run('main()')
