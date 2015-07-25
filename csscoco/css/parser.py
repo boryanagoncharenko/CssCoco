@@ -2,7 +2,11 @@ import os
 from subprocess import Popen, PIPE
 
 GONZO_PATH = os.path.dirname(os.path.realpath(__file__)) + '/gonzales_parser.js'
-
+NODE_PATH = {
+    "windows": "C:/Program Files/nodejs/node.exe",
+    "linux": "/usr/bin/nodejs",
+    "osx": "/usr/local/bin/node"
+  }
 
 class Parser(object):
     @staticmethod

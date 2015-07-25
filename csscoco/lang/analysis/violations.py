@@ -28,9 +28,9 @@ class ViolationLog(object):
             return ''
         vs = []
         for v in self._inner:
-            vs.append('\n')
             vs.append(v.to_string())
-        return ''.join(vs)
+            vs.append('\n')
+        return ''.join(vs[:-1])
 
 
 class ViolationsFinder(object):
