@@ -40,16 +40,15 @@ def get_coco_ast():
 def main():
     css_tree, error = get_css_parse_tree()
     if error:
-        return 'Please check the validity of your css.'
+        print('Please check the validity of your css.')
 
     coco_ast = get_coco_ast()
     errors = checker.TypeChecker.check(coco_ast)
     if errors.contain_errors():
-        return errors.string()
+        print(errors.string())
 
     log = violations.ViolationsFinder.find(coco_ast, css_tree)
-    return log.to_string()
+    print(log.to_string())
+    exit(0)
 
-if __name__ == "__main__":
-    print(main())
-    sys.exit(0)
+# print(main())
