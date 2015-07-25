@@ -38,23 +38,16 @@ def get_coco_ast(filename):
 
 
 def main(*args):
-    print('--- Parsing CSS ---')
     css_tree, error = get_css_parse_tree(args[0])
     if error:
         print(error)
         exit()
-
     coco_ast = get_coco_ast(args[1])
     errors = checker.TypeChecker.check(coco_ast)
     if errors.contain_errors():
         print(errors.string())
         exit()
-
-    print('--- Detecting violations ---')
     log = violations.ViolationsFinder.find(coco_ast, css_tree)
-    print(log.to_string())
-    print('Total number of violations found: ' + str(log.number_of_violations()))
-    print('--- Done ---')
 
 if __name__=='__main__':
     sys.exit(main(sys.argv[1], sys.argv[2]))
