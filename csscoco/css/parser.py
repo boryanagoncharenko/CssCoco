@@ -1,19 +1,23 @@
 import os
+import platform
 from subprocess import Popen, PIPE
+
 
 GONZO_PATH = os.path.dirname(os.path.realpath(__file__)) + '/gonzales_parser.js'
 NODE_PATH = {
-    "windows": "C:/Program Files/nodejs/node.exe",
-    "linux": "/usr/bin/nodejs",
-    "osx": "/usr/local/bin/node"
-  }
+    "win": "C:/Program Files/nodejs/node.exe",
+    "linux2": "/usr/bin/nodejs",
+    "darwin": "/usr/local/bin/node"
+}
+
 
 class Parser(object):
     @staticmethod
     def parse_css(css):
         encoded_css = css.encode('utf8')
         try:
-            process = Popen(['node', GONZO_PATH, encoded_css], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+            node_command = Parser.get_node_command()
+            process = Popen([node_command, GONZO_PATH, encoded_css], stdout=PIPE, stdin=PIPE, stderr=PIPE)
         except OSError:
             raise Exception('')
 
@@ -21,6 +25,13 @@ class Parser(object):
         if out:
             return out
         return err
+
+    @staticmethod
+    def get_node_command():
+        system = platform.system().lower()
+        if system in NODE_PATH:
+            return NODE_PATH[system]
+        return 'node'
 
 
 class SExprTransformer(object):
