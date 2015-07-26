@@ -5,7 +5,7 @@ from subprocess import Popen, PIPE
 
 GONZO_PATH = os.path.dirname(os.path.realpath(__file__)) + '/gonzales_parser.js'
 NODE_PATH = {
-    "win": "C:/Program Files/nodejs/node.exe",
+    "windows": "C:/Program Files/nodejs/node.exe",
     "linux2": "/usr/bin/nodejs",
     "darwin": "/usr/local/bin/node"
 }
