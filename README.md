@@ -34,8 +34,7 @@ The tool uses the `node` command. In some cases you might need to create a symbo
 
 ## Configuration and Use
 
-1. Create a file with .coco extension. Alternatively, you can use of the 
-<a href="CssCoco/samples">predefined coco files</a>.
+1. Create a file with .coco extension. Alternatively, you can use of the [predefined coco files](../blob/master/samples).
 
 2. Execute command csscoco. The command accepts two arguments: the path to the css file and the path to the coco file. For example:
 `csscoco my_code.css conventions.coco`
