@@ -49,8 +49,8 @@ def main():
     if errors.contain_errors():
         print(errors.string())
 
-    log = violations.ViolationsFinder.find(coco_ast, css_tree)
-    print(log.to_string())
+    successful, output = violations.ViolationsFinder.find(coco_ast, css_tree)
+    print(output.to_string())
     exit(0)
 
-# print(main())
+print(main())

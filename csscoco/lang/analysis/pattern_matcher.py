@@ -338,6 +338,26 @@ class PatternMatcher(Matcher):
         nodes = self._find_target_nodes(relation, node)
         return relation.target_node, nodes
 
+    # for future use
+    def _process_fork_descendants(self, relations, node):
+        result = []
+        for relation in relations:
+            nodes = self._find_target_nodes(relation, node)
+            result.append(nodes)
+        return result
+
+    # for future use
+    def _get_combinations(self, node_buckets, result=[], buffer=[]):
+        if not node_buckets:
+            result.append(buffer.copy())
+            return result
+        bucket = node_buckets[0]
+        for node in bucket:
+            buffer.append(node)
+            self._get_combinations(node_buckets[1:], result, buffer)
+            buffer.pop()
+        return result
+
     def _process_fork(self, node, relations, desc, pattern, css_pattern, result):
         target_desc, descendants = self._process_relation(pattern, desc, node)
         for combination in itertools.combinations(descendants, len(relations)):

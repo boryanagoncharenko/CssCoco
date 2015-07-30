@@ -22,7 +22,7 @@ class Type(object):
     def is_coco_node(self):
         return False
 
-    def is_undefined(self):
+    def is_error(self):
         return False
 
     def promote_to(self, type_):
@@ -58,7 +58,7 @@ class Boolean(Type):
         return True
 
 
-class CocoNodeType(Type):
+class CssNodeType(Type):
     def is_css_node_type(self):
         return True
 
@@ -88,7 +88,7 @@ class List(Type):
 
 
 class Error(Type):
-    def is_undefined(self):
+    def is_error(self):
         return True
 
 String.TYPE = String()
@@ -96,6 +96,6 @@ Integer.TYPE = Integer()
 Decimal.TYPE = Decimal()
 Boolean.TYPE = Boolean()
 CssNode.TYPE = CssNode()
-CocoNodeType.TYPE = CocoNodeType()
+CssNodeType.TYPE = CssNodeType()
 CocoNode.TYPE = CocoNode()
 Error.TYPE = Error()

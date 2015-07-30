@@ -11,6 +11,9 @@ class Value(object):
     def unary_minus(self):
         raise ValueError()
 
+    def unary_plus(self):
+        raise ValueError()
+
     def and_(self, value):
         raise ValueError()
 
@@ -107,6 +110,12 @@ class Decimal(Value):
         super(Decimal, self).__init__()
         self.value = value
 
+    def unary_minus(self):
+        return Decimal(-self.value)
+
+    def unary_plus(self):
+        return Decimal(self.value)
+
     def equals(self, value):
         return value.equals_decimal(self)
 
@@ -161,6 +170,9 @@ class Decimal(Value):
     def less_than_equals_decimal(self, value):
         return Boolean.build(value.value <= self.value)
 
+    def in_(self, value):
+        return value.in_list(self)
+
 
 class Integer(Value):
     def __init__(self, value):
@@ -169,6 +181,9 @@ class Integer(Value):
 
     def unary_minus(self):
         return Integer(-self.value)
+
+    def unary_plus(self):
+        return Integer(self.value)
 
     def equals(self, value):
         return value.equals_integer(self)
@@ -326,9 +341,3 @@ class List(Value):
             if operand.equals(v).value:
                 return Boolean.TRUE
         return Boolean.FALSE
-
-
-class Undefined(Value):
-    pass
-
-Undefined.VALUE = Undefined()

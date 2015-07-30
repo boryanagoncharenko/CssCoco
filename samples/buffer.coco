@@ -1,7 +1,6 @@
 Semantic
-ignore indent, space, newline, comment
+ignore indent
 {
-
-    forbid class
-    message 'Do not use a vendor-prefixed property without a standard property after it'
+    forbid universal{name == 'test'}
+    message 'Disallow selectors that look like regular expressions'
 }

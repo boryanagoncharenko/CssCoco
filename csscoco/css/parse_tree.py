@@ -211,9 +211,7 @@ class AttributeSelector(CssNode):
         self._api['value'] = self._get_value
 
     def _get_value(self):
-        if self.attr_value:
-            return values.Node(self.attr_value)
-        return values.Undefined.VALUE
+        return values.Node(self.attr_value)
 
 
 class Attribute(TerminalCssNode):

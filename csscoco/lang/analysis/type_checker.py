@@ -51,7 +51,7 @@ class TypeChecker(object):
         self._type_checking_context.node_type = node.descriptor
         if node.has_constraint():
             constraint_type = self._visit(node.constraint)
-            if not constraint_type.is_undefined() and not constraint_type.is_boolean():
+            if not constraint_type.is_error() and not constraint_type.is_boolean():
                 self._errors.log(ErrorMessageBuilder.not_boolean_constraint_error(constraint_type, node.line))
                 return types.Error.TYPE
         return types.CocoNode.TYPE
@@ -60,7 +60,7 @@ class TypeChecker(object):
     def _visit(self, node):
         if node.repeater.lower < 1 and node.repeater.upper < 1:
             self._errors.log(ErrorMessageBuilder.repeater_with_negative_limit_error(node))
-        return types.CocoNode
+        return types.CocoNode.TYPE
 
     @vis.visitor(ast.WhitespaceVariation)
     def _visit(self, variation):
@@ -71,7 +71,7 @@ class TypeChecker(object):
     @vis.visitor(ast.UnaryExpr)
     def _visit(self, expr):
         type_operand = self._visit(expr.operand)
-        if type_operand.is_undefined():
+        if type_operand.is_error():
             return type_operand
         if not expr.is_type_compatible(type_operand):
             self._errors.log(ErrorMessageBuilder.build_unary_type_error(expr, type_operand))
@@ -82,7 +82,7 @@ class TypeChecker(object):
     def _visit(self, expr):
         type_left = self._visit(expr.left)
         type_right = self._visit(expr.right)
-        if type_left.is_undefined() or type_right.is_undefined():
+        if type_left.is_error() or type_right.is_error():
             return types.Error.TYPE
         if not expr.are_types_compatible(type_left, type_right):
             self._errors.log(ErrorMessageBuilder.build_binary_type_error(expr, type_left, type_right))
@@ -92,7 +92,7 @@ class TypeChecker(object):
     @vis.visitor(ast.PropertyExpr)
     def _visit(self, expr):
         operand_type = self._visit(expr.operand)
-        if operand_type.is_undefined():
+        if operand_type.is_error():
             return operand_type
         # TODO: Add a check whether the invoked property is defined for the specific CssNode
         # Consider the following example. Has-single-quotes cannot be checked
@@ -120,7 +120,7 @@ class TypeChecker(object):
     @vis.visitor(ast.NodeQueryWithArgExpr)
     def _visit(self, expr):
         arg_type = self._visit(expr.argument)
-        if arg_type.is_undefined():
+        if arg_type.is_error():
             return types.Error.TYPE
         if not expr.is_type_compatible(arg_type):
             self._errors.log(ErrorMessageBuilder.invalid_argument_error(expr, arg_type))
@@ -165,11 +165,7 @@ class TypeChecker(object):
 
     @vis.visitor(ast.NodeTypeExpr)
     def _visit(self, expr):
-        return types.CocoNodeType.TYPE
-
-    @vis.visitor(ast.NodeQueryExpr)
-    def _visit(self, expr):
-        return types.Error.TYPE
+        return types.CssNodeType.TYPE
 
 
 class Errors(object):

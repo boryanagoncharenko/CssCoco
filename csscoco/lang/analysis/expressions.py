@@ -64,6 +64,11 @@ class ExprEvaluator(object):
         operand = self.visit(unary_minus_expr.operand)
         return operand.unary_minus()
 
+    @vis.visitor(ast.UnaryPlusExpr)
+    def visit(self, unary_plus_expr):
+        operand = self.visit(unary_plus_expr.operand)
+        return operand.unary_plus()
+
     @vis.visitor(ast.OrExpr)
     def visit(self, or_expr):
         left = self.visit(or_expr.left)
@@ -166,12 +171,20 @@ class ExprEvaluator(object):
     def visit(self, prop_expr):
         node = self.visit(prop_expr.operand)
         real_node = node.value
+        if not real_node.has_method(prop_expr.value):
+            msg = ''.join(['Error on line ', str(prop_expr.line), ': the matched CSS node of type \'',
+                           real_node.type_, '\' does not have a property \'', prop_expr.value, '\''])
+            raise InvalidPropertyException(msg)
         return real_node.invoke_property(prop_expr.value)
 
     @vis.visitor(ast.MethodExpr)
     def visit(self, method_expr):
         node = self.visit(method_expr.operand)
         real_node = node.value
+        if not real_node.has_method(method_expr.value):
+            msg = ''.join(['Error on line ', str(method_expr.line), ': the matched CSS node of type \'',
+                           real_node.type_, '\' does not have a method \'', method_expr.value, '\''])
+            raise InvalidPropertyException(msg)
         argument = self.visit(method_expr.argument)
         return real_node.invoke_method(method_expr.value, argument.value)
 
@@ -203,7 +216,7 @@ class ExprEvaluator(object):
         node = self._context.pattern_matcher.find_next_sibling(node_value.value)
         if node:
             return values.Node(node)
-        return values.Undefined.VALUE
+        return values.Error.VALUE
 
     @vis.visitor(ast.PreviousSiblingExpr)
     def visit(self, prev_sibling):
@@ -211,7 +224,7 @@ class ExprEvaluator(object):
         node = self._context.pattern_matcher.find_previous_sibling(node_value.value)
         if node:
             return values.Node(node)
-        return values.Undefined.VALUE
+        return values.Error.VALUE
 
     @vis.visitor(ast.BeforeExpr)
     def visit(self, before):
@@ -238,3 +251,8 @@ class ExprEvaluator(object):
         match = matcher.is_variation_after_node(after.argument, operand_node_value.value)
         return values.Boolean.build(match)
 
+
+class InvalidPropertyException(Exception):
+    def __init__(self, message):
+        super(InvalidPropertyException, self).__init__()
+        self.message = message

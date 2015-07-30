@@ -18,10 +18,7 @@ class Context(AstNode):
     def __init__(self, conventions, ignores):
         super(Context, self).__init__()
         self.conventions = conventions
-        self._ignores = ignores
-
-    def get_ignored_patterns(self):
-        return self._ignores
+        self.ignored_patterns = ignores
 
 
 class Convention(AstNode):

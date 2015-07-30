@@ -118,7 +118,7 @@ class CocoCustomVisitor(cocoVisitor):
         relations = ast.NodeRelations()
         for i in range(1, len(wrappers)):
             relations.register_relation(wrappers[i-1], ast.IsPreviousSiblingOf(wrappers[i]))
-        return ast.PatternDescriptor(wrappers[0], wrappers, relations)
+        return ast.SequencePattern(wrappers)
 
     def handle_fork_pattern(self, context):
         fork_wrappers = self.visitFork_pattern(context.fork)

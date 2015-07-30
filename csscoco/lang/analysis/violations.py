@@ -41,18 +41,21 @@ class ViolationsFinder(object):
         self._context = None
 
     @staticmethod
-    def find(sheet, tree):
+    def find(convention_set, tree):
         finder = ViolationsFinder(tree)
-        finder.visit(sheet)
-        return finder._violations
+        return finder.visit(convention_set)
 
     @vis.visitor(ast.ConventionSet)
     def visit(self, sheet):
         for context in sheet.contexts:
             self._set_current_context(context)
             for conv in context.conventions:
-                css_patterns = self.get_matched_css_patterns(conv)
+                try:
+                    css_patterns = self.get_matched_css_patterns(conv)
+                except expr.InvalidPropertyException as e:
+                    return False, CocoRuntimeError(e.message)
                 self.visit(conv, css_patterns)
+        return True, self._violations
 
     @vis.visitor(ast.FindRequireConvention)
     def visit(self, convention, matched_patterns):
@@ -77,14 +80,14 @@ class ViolationsFinder(object):
         self._context = context
 
     def get_matched_css_patterns(self, convention):
-        ignored = self._context.get_ignored_patterns().copy()
+        ignored = self._context.ignored_patterns.copy()
         if convention.has_constraint():
             ignored += ViolationsHelper.get_additional_constraint(convention.constraint)
         matcher = p_matcher.PatternMatcher(p_matcher.Filter(ignored))
         return matcher.find_pattern_in_tree(self._tree, convention.pattern)
 
     def _evaluate_constraint(self, constraint, pattern):
-        constraint_filter = p_matcher.Filter(self._context.get_ignored_patterns())
+        constraint_filter = p_matcher.Filter(self._context.ignored_patterns)
         eval_context = expr.ConventionConstraintContext(p_matcher.PatternMatcher(constraint_filter), pattern)
         return expr.ExprEvaluator.evaluate(constraint, eval_context)
 
@@ -127,3 +130,11 @@ class ViolationsHelper(object):
     @vis.visitor(ast.BetweenExpr)
     def _visit(self, e):
         return True
+
+
+class CocoRuntimeError(object):
+    def __init__(self, message):
+        self.message = message
+
+    def to_string(self):
+        return self.message

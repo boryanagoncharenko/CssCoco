@@ -1,7 +1,6 @@
 Semantic
 ignore space, newline, comment, indent, tab
 {
-
     forbid ruleset{contains-all([
         property{name=='margin-right'},
         property{name=='margin-left'},
