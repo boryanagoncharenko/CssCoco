@@ -1,6 +1,5 @@
 Semantic
 ignore indent
 {
-    forbid universal{name == 'test'}
-    message 'Disallow selectors that look like regular expressions'
+
 }

@@ -1,7 +1,5 @@
 import json
 import sys
-import platform
-import os
 
 import antlr4
 
