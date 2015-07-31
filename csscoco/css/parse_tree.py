@@ -15,9 +15,10 @@ class CssNode(object):
         self._print_indent = '  '
 
     def initialize_labels(self, type_, categories):
+        labels = [type_, 'any']
         if not categories:
-            return [type_]
-        return [type_] + categories
+            return labels
+        return labels + categories
 
     def matches(self, value):
         return value in self.search_labels

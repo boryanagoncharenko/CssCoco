@@ -1219,6 +1219,144 @@ color: red;
 **Actions**: Find the opening brace of a declaration block and the first declaration of a block; check if the newline symbols between them are not equal to 1
 
 ---
+**Description**: You may not use the "border" shorthand to set the border-color property.   
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when a color appears in the value of a border declaration.  
+**Actions**: Find occurrences of border that contain colors.  
+
+---
+**Description**: You may not use the "background" shorthand to set the background-color property.   
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when a color appears in the value of a background declaration.  
+**Actions**: Find occurrences of background that contain colors.  
+
+---
+**Description**: It is forbidden to use pt, use px instead.   
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when a value contains pt.  
+**Actions**: Find occurrences of pt unit.  
+
+---
+**Description**: In multiselectors, order the selectors in by type: html, html groupings, classes, ids.   
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when the selectors are not ordered in the defined way.  
+**Actions**: Find selectors in multiselectors. Assert the order of the selectors based on their type.  
+
+---
+**Description**: Paddings, dimensions & margins are ordered from the outer to the inner (padding, dimension, margin).   
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when a margin appears before padding or dimension and a dimension appears before padding.  
+**Actions**: Find properties that match the specified groups. Assert their order is as specified.  
+
+---
+**Description**: Alignments and positioning are ordered from the outer to the inner (position, float, overflow, vertical-align, text-align, direction, text-indent, white-space).   
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when a margin when properties of the two groups are not ordered in the given way.  
+**Actions**: Find properties that match the specified groups. Assert their order is as specified.  
+
+---
+**Description**: When setting border value, use always width followed by style.   
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when the value of the border property does not have style after the width value part.  
+**Actions**: Find the width value part of the border declaration. Assert there is a style value part next to it.  
+
+---
+**Description**: Require newline before a declaration.   
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when a declaration does not have a newline before it.  
+**Actions**: Find declarations and assert there is a newline before them.  
+
+---
+**Description**: It is always forbidden to have several properties set on a single line if a shorthand property is used.   
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when two declarations appear on the same line and at least one of them is a shorthand.  
+**Actions**: Find declarations that appear on the same line and assert none of them is shorthand.  
+
+---
+**Description**: Require a header comment of the css file.    
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when the file does not start with a comment.  
+**Actions**: Find the first node of the stylesheet and ensure it is a comment.  
+
+---
+**Description**: if you use comments put the after them after the ; at the end of the declaration.    
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when a comment does not appear at the end of a declaration line.   
+**Actions**: Find comments and assert they appear at the end of the line before a declaration.  
+
+---
+**Description**: Do not abbreviate.    
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when words that do not belong to the built-in dictionary are used.   
+**Actions**: Find class and id words and ensure they are present in the dictionary.  
+
+---
+**Description**: All except comments should be lowercase.    
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when any string that is not of type comment contains an uppercase letter.   
+**Actions**: Find nodes that are not of type comment and assert that their string is lowercase.  
+
+---
+**Description**: Your ids and classes should not be more than 20 chars.    
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations id selectors are more than 20 chars.   
+**Actions**: Find id selectors and assert their length is not more than 20 chars.  
+
+---
+**Description**: Do not use shorthands except when all sides are the same value.    
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when shorthand properties are used and they are given more than one value.   
+**Actions**: Find shorthand declaration and assert the value is a single number.  
+
+---
+**Description**: Do not use shorthands except setting border width and style.    
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when shorthand properties are used, except for the border property.   
+**Actions**: Find shorthand properties except for the border property.  
+
+---
+**Description**: Do not use shorthands except for setting background image.    
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when shorthand properties are used, except for the background property.   
+**Actions**: Find shorthand properties except for the background property.  
+
+---
+**Description**: Do not use shorthands except list-type.    
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when shorthand properties are used, except for the list-style property.   
+**Actions**: Find shorthand properties except for the list-style property.  
+
+---
+**Description**: Colors should be in hex, except for white, black and transparent, which should be in text.    
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when a color with value white, black or transparent is not expressed as color text and when any other color is not expressed in hex.   
+**Actions**: Find hex colors and check whether they are white, black. Find color text colors and check whether they are different than while, black and transparent.  
+
+---
+**Description**: Forbid a class and a id to have the same value.    
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur when an id and a class share a name.     
+**Actions**: Find all id names and check if the stylesheet contains a class of the same name.  
+
+---
+**Description**: The argument of a url must be in single quotes    
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur the argument in a url uses double quotes or does not use quotes at all.     
+**Actions**: Find the argument of urls and assert the type is string and that it contains single quotes.  
+
+---
+**Description**: Font names with spaces must surrounded by double quotes.    
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur font names with spaces are surrounded by single quotes.     
+**Actions**: Find font names and ensure they use single quotes.  
+
+---
+**Description**: Font names with spaces must surrounded by double quotes.    
+**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
+**Violations**: Violations occur font names with spaces are surrounded by single quotes.     
+**Actions**: Find font names and ensure they use single quotes.  
+
+---
 **Description**: One selector per line.  
 **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [GitHub](http://primercss.io/guidelines/#css), [CSSguidelines](http://cssguidelin.es/#introduction), [cbracco](https://github.com/cbracco/css-conventions), [CodeGuide](http://codeguide.co/), [Mediarain](http://standards.mediarain.com/html-css), [Toll](http://www.benjamintoll.com/software/css_code_conventions.html), [Moodle](https://docs.moodle.org/dev/CSS_coding_style)         
 **Violations**: Violations occur if adjacent selectors of a multiselector do not appear on adjacent lines:

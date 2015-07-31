@@ -1,1 +1,27 @@
-[prOp*='test'] {} [another='test']{}
+
+.cols table tr td {
+	font-family: 'Stencil', 'Stencil D', Courier, mono;
+	font-size: 64px;
+	width: 200px;
+	font-weight: normal;
+}
+
+.cols table tr.c td {
+	font-family: "Cochin", Courier, mono;
+	font-size: 14px;
+	width: 200px;
+	font-style: italic;
+}
+.cols table tr:first-child td {
+	border: 1px solid black;
+	color: #fff;
+	padding: 0px;
+}
+.col {
+	float: left; 
+	width: 200px; 
+}
+
+.col br {
+	clear:right;
+}
