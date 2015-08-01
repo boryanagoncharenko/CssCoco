@@ -221,8 +221,9 @@ class Attribute(TerminalCssNode):
 
 
 class Function(CssNode):
-    def __init__(self, value):
-        super(Function, self).__init__(value[0].value, value, categories=['function'])
+    # TODO: type should not be a single string but a list
+    def __init__(self, value, categories=[]):
+        super(Function, self).__init__(value[0].value, value, categories=categories+['function'])
 
     def _register_api(self):
         super(Function, self)._register_api()
@@ -234,7 +235,7 @@ class Function(CssNode):
 
 class Rgba(Function):
     def __init__(self, value):
-        super(Rgba, self).__init__(value)
+        super(Rgba, self).__init__(value, categories=['color'])
 
     def _register_api(self):
         super(Rgba, self)._register_api()
@@ -246,7 +247,7 @@ class Rgba(Function):
 
 class Hex(TerminalCssNode):
     def __init__(self, value):
-        super(Hex, self).__init__('hex', value)
+        super(Hex, self).__init__('hex', value, categories=['color'])
         self._is_long = len(self.value) > 4
 
     def _register_api(self):
@@ -255,6 +256,12 @@ class Hex(TerminalCssNode):
 
     def _get_is_long(self):
         return values.Boolean.build(self._is_long)
+
+
+class ColorName(TerminalCssNode):
+    def __init__(self, value):
+        super(ColorName, self).__init__('colorname', value, categories=['color'])
+        self._is_long = len(self.value) > 4
 
 
 class Number(TerminalCssNode):
@@ -373,6 +380,8 @@ class ParseTreeBuilder(object):
             return ElementSelector(node_value)
         if node_type == 'vhash':
             return Hex(node_value)
+        if node_type == 'colorname':
+            return ColorName(node_type)
         if node_type == 'number':
             number_value = float(node_value)
             return Number(node_value, number_value)

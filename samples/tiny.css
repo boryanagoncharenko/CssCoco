@@ -9,11 +9,11 @@
 .cols table tr.c td {
 	font-family: "Cochin", Courier, mono;
 	font-size: 14px;
-	width: 200px;
+	width: 200pt;
 	font-style: italic;
 }
 .cols table tr:first-child td {
-	border: 1px solid black;
+	border: 1px solid;
 	color: #fff;
 	padding: 0px;
 }
@@ -24,4 +24,5 @@
 
 .col br {
 	clear:right;
+    background: url("img_tree.png") no-repeat right top;
 }
