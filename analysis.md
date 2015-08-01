@@ -1158,6 +1158,18 @@ c { property: value; } /* two blank lines instead of one */
 **Actions**: Find two adjacent rulesets that contain a single declaration; check if there is a one or two newline symbols between them. 
 
 ---
+**Description**: Values should appear on one line.  
+**Source**: [Idiomatic CSS](https://github.com/necolas/idiomatic-css)         
+**Violations**: Violations occur when a value is spread on two or more lines:
+```
+margin: 0px
+        20px
+        0px
+        10px;
+```
+**Actions**: Find values and check if they are positioned on one lines  
+
+---
 **Description**: No space before colons.  
 **Source**: [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important), [Drupal](https://www.drupal.org/node/1887862), [CSS Wizardry](http://csswizardry.com/2012/04/my-html-css-coding-style/), [Mediarain](http://standards.mediarain.com/html-css), [Toll](http://www.benjamintoll.com/software/css_code_conventions.html), [BackdropCMS](https://api.backdropcms.org/css-standards)     
 **Violations**: Violations occur when there is a space between the property and the colon of a declaration:
@@ -1498,7 +1510,19 @@ hsla(100,  100,  100);
 **Description**: Order vendor-prefixed values by their version. Newer versions of vendor values should appear after old ones.  
 **Source**: [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS)   
 **Violations**: Violations occur when from two adjacent values, the first have a newer version than the second.  
-**Actions**: Find every pair of adjacent vendor-prefixed values; check if the first value has a newer version than the second one  
+**Actions**: Find every pair of adjacent vendor-prefixed values; check if the first value has a newer version than the second one
+
+---
+**Description**: Multiselectors with more than four selectors are not allowed.  
+**Source**: [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS)   
+**Violations**: Violations occur when a multi selector comprises more than four selectors.  
+**Actions**: Find multiselectors that contain more than four selectors  
+
+---
+**Description**: Selectors with more than four simpleselectors are not allowed.  
+**Source**: [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS)   
+**Violations**: Violations occur when a selector comprises more than four simpleselectors.  
+**Actions**: Find selectors that contain more than four simpleselectors      
 
 ---
 **Description**: No trailing spaces.  
