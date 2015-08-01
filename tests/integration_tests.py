@@ -122,7 +122,7 @@ class TypeCheckerTests(TestCase):
         coco_ast = self.get_coco_ast("Semantic { "
                                      "forbid string in uri "
                                      "message '' }")
-        css_tree = helpers.ParseHelper.parse_css_string('a{ a: uri(\'test\'); b: url("another") } ')
+        css_tree = helpers.ParseHelper.parse_css_string('a{ a: url(\'test\'); b: url("another") } ')
         _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
         assert violation_log.number_of_violations() == 2
 
@@ -780,7 +780,7 @@ class TypeCheckerTests(TestCase):
         """
         cos = "Semantic ignore indent, space, newline,  { " \
               "find id in s=simpleselector " \
-              "forbid s.count(selectorpart) > 1 " \
+              "forbid s.count(selector-part) > 1 " \
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
         css_tree = helpers.ParseHelper.parse_css_string("h1#a { } #b {} #a, #b{}")

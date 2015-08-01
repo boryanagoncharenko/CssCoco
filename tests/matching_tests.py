@@ -11,11 +11,11 @@ class WhitespaceMatcher(TestCase):
 
     def setUp(self):
         self.attr_expr = ast.BooleanExpr.build(True)
-        self.node0 = parse.TerminalCssNode('newline', '\n')
-        self.node1 = parse.TerminalCssNode('space', ' ')
-        self.node2 = parse.TerminalCssNode('tab', '\t')
-        self.node3 = parse.TerminalCssNode('indent', '    ')
-        self.node4 = parse.TerminalCssNode('comment', '/* Comment */')
+        self.node0 = parse.TerminalCssNode('\n', categories=['newline'])
+        self.node1 = parse.TerminalCssNode(' ', categories=['space'])
+        self.node2 = parse.TerminalCssNode('\t', categories=['tab'])
+        self.node3 = parse.TerminalCssNode('    ', categories=['indent'])
+        self.node4 = parse.TerminalCssNode('/* Comment */', categories=['comment'])
         self.nodes = [self.node0, self.node1, self.node2, self.node3, self.node4]
         self.matcher = matching.WhitespaceVariationMatcher(matching.Filter.EMPTY)
 

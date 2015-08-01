@@ -14,7 +14,7 @@ class ParseTreeConstructor(object):
     @staticmethod
     def add_root_to_siblings(*type_list):
         nodes = ParseTreeConstructor._create_nodes(*type_list)
-        root = parse.CssNode('root', nodes)
+        root = parse.CssNode(nodes, categories=['root'])
         ParseTreeConstructor._annotate_children(root)
         return root
 
@@ -29,7 +29,7 @@ class ParseTreeConstructor(object):
     def _create_nodes(*type_list):
         nodes = []
         for i, type_ in enumerate(type_list):
-            nodes.append(parse.CssNode(type_, ''))
+            nodes.append(parse.CssNode('', categories=[type_]))
         return nodes
 
     @staticmethod

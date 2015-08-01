@@ -2,11 +2,12 @@ from csscoco.lang.analysis import values as values
 
 
 class CssNode(object):
-    def __init__(self, type_, value, categories=None):
+    def __init__(self, value, categories=None):
         self.parent = None
-        self.type_ = type_
         self.value = value
-        self.search_labels = self.initialize_labels(type_, categories)
+        self._categories = ['any']
+        if categories:
+            self._categories.extend(categories)
         self.index = -1
         self.start_position = None
         self.end_position = None
@@ -14,14 +15,17 @@ class CssNode(object):
         self._register_api()
         self._print_indent = '  '
 
-    def initialize_labels(self, type_, categories):
-        labels = [type_, 'any']
+    def extend_categories(self, category):
+        self._categories.append(category)
+
+    def initialize_labels(self, _type_, categories):
+        labels = [_type_, 'any']
         if not categories:
             return labels
         return labels + categories
 
     def matches(self, value):
-        return value in self.search_labels
+        return value in self._categories
 
     def has_method(self, property_name):
         return property_name in self._api
@@ -36,7 +40,7 @@ class CssNode(object):
         return True
 
     def pretty_print(self, level=0, verbose=False):
-        s = ''.join(['\n', self._print_indent*level, self.type_, ':'])
+        s = ''.join(['\n', self._print_indent*level, self._categories[-1], ':'])
         if verbose:
             s = ''.join([s, self.get_position_str()])
         for child in self.value:
@@ -69,14 +73,16 @@ class CssNode(object):
 
 
 class TerminalCssNode(CssNode):
-    def __init__(self, type_, value, categories=None):
-        super(TerminalCssNode, self).__init__(type_, value, categories)
+    def __init__(self, value, categories=None):
+        super(TerminalCssNode, self).__init__(value)
+        if categories:
+            self._categories.extend(categories)
 
     def has_children(self):
         return False
 
     def pretty_print(self, level=0, verbose=False):
-        s = ''.join(['\n', self._print_indent*level, self.type_, ': \'', self.value, '\''])
+        s = ''.join(['\n', self._print_indent*level, self._categories[-1], ': \'', self.value, '\''])
         if verbose:
             s = ''.join([s, self.get_position_str()])
         return s
@@ -99,8 +105,9 @@ class TerminalCssNode(CssNode):
 
 
 class Declaration(CssNode):
-    def __init__(self, value):
-        super(Declaration, self).__init__('declaration', value)
+    def __init__(self, children):
+        super(Declaration, self).__init__(children)
+        self._categories.append('declaration')
 
     def _register_api(self):
         super(Declaration, self)._register_api()
@@ -122,7 +129,8 @@ class Declaration(CssNode):
 
 class Property(TerminalCssNode):
     def __init__(self, name):
-        super(Property, self).__init__('property', name)
+        super(Property, self).__init__(name)
+        self._categories.append('property')
         self._name = name
         self._is_vendor = None
         self._vendor_prefixes = {'-ms-', 'mso-', '-moz-', '-o-', '-atsc-', '-wap-', '-webkit-', '-khtml-'}
@@ -160,49 +168,52 @@ class Property(TerminalCssNode):
 
 
 class CombinatorSelector(CssNode):
-    pass
+    def __init__(self, name):
+        super(CombinatorSelector, self).__init__(name)
+        self._categories.append('combinator')
 
 
 class ChildSelector(CombinatorSelector):
-    pass
+    def __init__(self, name):
+        super(ChildSelector, self).__init__(name)
+        self._categories.append('child-selector')
 
 
 class DescendantSelector(CombinatorSelector):
-    pass
-
-
-class AdjacentSiblingSelector(CombinatorSelector):
-    pass
-
-
-class GeneralSiblingSelector(CombinatorSelector):
-    pass
+    def __init__(self, name):
+        super(DescendantSelector, self).__init__(name)
+        self._categories.append('descendant-selector')
 
 
 class SimpleSelector(TerminalCssNode):
-    def __init__(self, type_, name):
-        super(SimpleSelector, self).__init__(type_, name, categories=['selectorpart'])
+    def __init__(self, name):
+        super(SimpleSelector, self).__init__(name)
+        self._categories.append('selector-part')
         self._api['name'] = self._get_value
 
 
 class ElementSelector(SimpleSelector):
     def __init__(self, name):
-        super(ElementSelector, self).__init__('tag', name)
+        super(ElementSelector, self).__init__(name)
+        self._categories.append('tag')
 
 
 class IdSelector(SimpleSelector):
     def __init__(self, name):
-        super(IdSelector, self).__init__('id', name)
+        super(IdSelector, self).__init__(name)
+        self._categories.append('id')
 
 
 class ClassSelector(SimpleSelector):
     def __init__(self, name):
-        super(ClassSelector, self).__init__('class', name)
+        super(ClassSelector, self).__init__(name)
+        self._categories.append('class')
 
 
 class AttributeSelector(CssNode):
     def __init__(self, children):
-        super(AttributeSelector, self).__init__('attribute-selector', children)
+        super(AttributeSelector, self).__init__(children)
+        self._categories.append('attribute-selector')
         self.attribute = children[0]
         self.selector = children[1] if len(children) > 1 else None
         self.attr_value = children[2] if len(children) > 2 else None
@@ -217,13 +228,14 @@ class AttributeSelector(CssNode):
 
 class Attribute(TerminalCssNode):
     def __init__(self, value):
-        super(Attribute, self).__init__('attribute', value)
+        super(Attribute, self).__init__(value)
+        self._categories.append('attribute')
 
 
 class Function(CssNode):
-    # TODO: type should not be a single string but a list
-    def __init__(self, value, categories=[]):
-        super(Function, self).__init__(value[0].value, value, categories=categories+['function'])
+    def __init__(self, children):
+        super(Function, self).__init__(children)
+        self._categories.append('function')
 
     def _register_api(self):
         super(Function, self)._register_api()
@@ -235,7 +247,8 @@ class Function(CssNode):
 
 class Rgba(Function):
     def __init__(self, value):
-        super(Rgba, self).__init__(value, categories=['color'])
+        super(Rgba, self).__init__(value)
+        self._categories.extend(['rgba', 'color'])
 
     def _register_api(self):
         super(Rgba, self)._register_api()
@@ -245,9 +258,16 @@ class Rgba(Function):
         return values.Integer(float(self.value[1].value[-1].value))
 
 
+class Rgb(Function):
+    def __init__(self, value):
+        super(Rgb, self).__init__(value)
+        self._categories.extend(['rgb', 'color'])
+
+
 class Hex(TerminalCssNode):
     def __init__(self, value):
-        super(Hex, self).__init__('hex', value, categories=['color'])
+        super(Hex, self).__init__(value)
+        self._categories.extend(['hex', 'color'])
         self._is_long = len(self.value) > 4
 
     def _register_api(self):
@@ -260,13 +280,15 @@ class Hex(TerminalCssNode):
 
 class ColorName(TerminalCssNode):
     def __init__(self, value):
-        super(ColorName, self).__init__('colorname', value, categories=['color'])
+        super(ColorName, self).__init__(value)
+        self._categories.extend(['colorname', 'color'])
         self._is_long = len(self.value) > 4
 
 
 class Number(TerminalCssNode):
     def __init__(self, value, float_value):
-        super(Number, self).__init__('number', value)
+        super(Number, self).__init__(value)
+        self._categories.append('number')
         self.float_value = float_value
 
     def _register_api(self):
@@ -279,7 +301,8 @@ class Number(TerminalCssNode):
 
 class String(TerminalCssNode):
     def __init__(self, value):
-        super(String, self).__init__('string', value)
+        super(String, self).__init__(value)
+        self._categories.append('string')
 
     def _register_api(self):
         super(String, self)._register_api()
@@ -298,7 +321,8 @@ class String(TerminalCssNode):
 
 class Dimension(CssNode):
     def __init__(self, value):
-        super(Dimension, self).__init__('dimension', value)
+        super(Dimension, self).__init__(value)
+        self._categories.append('dimension')
 
     def _register_api(self):
         super(Dimension, self)._register_api()
@@ -309,12 +333,15 @@ class Dimension(CssNode):
 
 
 class AtRule(CssNode):
-    pass
+    def __init__(self, children):
+        super(AtRule, self).__init__(children)
+        self._categories.append('atrule')
 
 
 class RuleSet(CssNode):
-    def __init__(self, value):
-        super(RuleSet, self).__init__('ruleset', value)
+    def __init__(self, children):
+        super(RuleSet, self).__init__(children)
+        self._categories.append('ruleset')
         self._api['is-single-line'] = self._is_single_line
 
     def _is_single_line(self):
@@ -324,17 +351,20 @@ class RuleSet(CssNode):
 
 class Charset(AtRule):
     def __init__(self, value):
-        super(Charset, self).__init__('charset', value)
+        super(Charset, self).__init__(value)
+        self._categories.append('charset')
 
 
 class Import(AtRule):
     def __init__(self, value):
-        super(Import, self).__init__('import', value)
+        super(Import, self).__init__(value)
+        self._categories.append('import')
 
 
 class FontFace(AtRule):
     def __init__(self, value):
-        super(FontFace, self).__init__('fontface', value)
+        super(FontFace, self).__init__(value)
+        self._categories.append('fontface')
 
 
 class ParseTreeBuilder(object):
@@ -380,16 +410,16 @@ class ParseTreeBuilder(object):
             return ElementSelector(node_value)
         if node_type == 'vhash':
             return Hex(node_value)
-        if node_type == 'colorname':
-            return ColorName(node_type)
         if node_type == 'number':
             number_value = float(node_value)
             return Number(node_value, number_value)
         if node_type == 'string':
             return String(node_value)
-        if node_type == 'delim':
+        if node_type == 'ident' and CssLookUp.is_color_name(node_value):
+            return ColorName(node_value)
+        if node_type == 'newline':
             pass
-        return TerminalCssNode(node_type, node_value)
+        return TerminalCssNode(node_value, categories=[node_type])
 
     def _get_non_terminal(self, l):
         children = self._get_children(l)
@@ -404,25 +434,35 @@ class ParseTreeBuilder(object):
             return ClassSelector(children[-1].value)
         if node_type == 'attrib':
             return self._get_attribute(children)
-        if node_type == 'funktion' and l[1][1] == 'rgba':
-            return Rgba(children)
         if node_type == 'funktion':
-            return Function(children)
-        if node_type == 'funktion':
-            return Function(children)
+            return self._get_function(l, children)
         if node_type == 'atrules' or node_type == 'atruler':
             return self._get_at_rule(children)
         if node_type == 'ruleset':
             return RuleSet(children)
         if node_type == 'dimension':
             return Dimension(children)
-        return CssNode(node_type, children)
+        if node_type == 'root':
+            pass
+        return CssNode(children, categories=[node_type])
 
-    def _get_attribute(self,children):
+    def _get_function(self, l, children):
+        function_name = l[1][1].lower()
+        if function_name == 'rgba':
+            return Rgba(children)
+        # if function_name == 'hsla':
+        #     return Hsla(children)
+        # if function_name == 'rgb':
+        #     return Rgb(children)
+        # if function_name == 'hsl':
+        #     return Hsl(children)
+        return Function(children)
+
+    def _get_attribute(self, children):
         assert len(children) == 3 or len(children) == 1
         children[0] = Attribute(children[0].value)
         if len(children) == 3:
-            children[2].search_labels.append('attribute-value')
+            children[2].extend_categories('attribute-value')
         return AttributeSelector(children)
 
     def _get_at_rule(self, children):
@@ -512,3 +552,151 @@ class CssPattern(object):
 
     def copy(self):
         return CssPattern(self._id_to_node.copy())
+
+
+class CssLookUp(object):
+    @staticmethod
+    def is_color_name(s):
+        return s in CssLookUp.color_names
+
+    color_names = ["aliceblue",
+                   "antiquewhite",
+                   "aqua",
+                   "aquamarine",
+                   "azure",
+                   "beige",
+                   "bisque",
+                   "black",
+                   "blanchedalmond",
+                   "blue",
+                   "blueviolet",
+                   "brown",
+                   "burlywood",
+                   "cadetblue",
+                   "chartreuse",
+                   "chocolate",
+                   "coral",
+                   "cornflowerblue",
+                   "cornsilk",
+                   "crimson",
+                   "cyan",
+                   "darkblue",
+                   "darkcyan",
+                   "darkgoldenrod",
+                   "darkgray",
+                   "darkgreen",
+                   "darkkhaki",
+                   "darkmagenta",
+                   "darkolivegreen",
+                   "darkorange",
+                   "darkorchid",
+                   "darkred",
+                   "darksalmon",
+                   "darkseagreen",
+                   "darkslateblue",
+                   "darkslategray",
+                   "darkturquoise",
+                   "darkviolet",
+                   "deeppink",
+                   "deepskyblue",
+                   "dimgray",
+                   "dodgerblue",
+                   "firebrick",
+                   "floralwhite",
+                   "forestgreen",
+                   "fuchsia",
+                   "gainsboro",
+                   "ghostwhite",
+                   "gold",
+                   "goldenrod",
+                   "gray",
+                   "green",
+                   "greenyellow",
+                   "honeydew",
+                   "hotpink",
+                   "indianred",
+                   "indigo",
+                   "ivory",
+                   "khaki",
+                   "lavender",
+                   "lavenderblush",
+                   "lawngreen",
+                   "lemonchiffon",
+                   "lightblue",
+                   "lightcoral",
+                   "lightcyan",
+                   "lightgoldenrodyellow",
+                   "lightgray",
+                   "lightgreen",
+                   "lightpink",
+                   "lightsalmon",
+                   "lightseagreen",
+                   "lightskyblue",
+                   "lightslategray",
+                   "lightsteelblue",
+                   "lightyellow",
+                   "lime",
+                   "limegreen",
+                   "linen",
+                   "magenta",
+                   "maroon",
+                   "mediumaquamarine",
+                   "mediumblue",
+                   "mediumorchid",
+                   "mediumpurple",
+                   "mediumseagreen",
+                   "mediumslateblue",
+                   "mediumspringgreen",
+                   "mediumturquoise",
+                   "mediumvioletred",
+                   "midnightblue",
+                   "mintcream",
+                   "mistyrose",
+                   "moccasin",
+                   "navajowhite",
+                   "navy",
+                   "oldlace",
+                   "olive",
+                   "olivedrab",
+                   "orange",
+                   "orangered",
+                   "orchid",
+                   "palegoldenrod",
+                   "palegreen",
+                   "paleturquoise",
+                   "palevioletred",
+                   "papayawhip",
+                   "peachpuff",
+                   "peru",
+                   "pink",
+                   "plum",
+                   "powderblue",
+                   "purple",
+                   "rebeccapurple",
+                   "red",
+                   "rosybrown",
+                   "royalblue",
+                   "saddlebrown",
+                   "salmon",
+                   "sandybrown",
+                   "seagreen",
+                   "seashell",
+                   "sienna",
+                   "silver",
+                   "skyblue",
+                   "slateblue",
+                   "slategray",
+                   "snow",
+                   "springgreen",
+                   "steelblue",
+                   "tan",
+                   "teal",
+                   "thistle",
+                   "tomato",
+                   "turquoise",
+                   "violet",
+                   "wheat",
+                   "white",
+                   "whitesmoke",
+                   "yellow",
+                   "yellowgreen"]

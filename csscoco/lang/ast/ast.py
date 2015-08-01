@@ -762,5 +762,5 @@ class NodeTypeDescriptor(AstNode):
         if self.is_any():
             return True
         if self.is_type():
-            return self.type_ in node.search_labels
+            return node.matches(self.type_)
         return self.func(node)
