@@ -1,7 +1,7 @@
 Semantic
 ignore space, newline, comment, indent, tab
 {
-    forbid ruleset{contains-all([
+    forbid ruleset{contains_all([
         property{name=='margin-right'},
         property{name=='margin-left'},
         property{name=='margin-top'},
@@ -9,7 +9,7 @@ ignore space, newline, comment, indent, tab
         ])}
     message 'Use the shorthand margin property instead'
 
-    forbid ruleset{contains-all([
+    forbid ruleset{contains_all([
         property{name=='padding-right'},
         property{name=='padding-left'},
         property{name=='padding-top'},
@@ -17,7 +17,7 @@ ignore space, newline, comment, indent, tab
         ])}
     message 'Use the shorthand padding property instead'
 
-    forbid number{num-value == 0} in (dimension or percentage)
+    forbid number{num_value == 0} in (dimension or percentage)
     message 'Do not use units after 0 values'
 
     forbid import
@@ -92,16 +92,16 @@ ignore space, newline, comment, indent, tab
     forbid property{name == 'box-sizing'}
     message 'Do not use box-sizing'
 
-    find d=declaration{property.is-vendor-specific}
-    require d.next-sibling is declaration and
-            ((d.next-sibling.property.is-vendor-specific and d.next-sibling.property.standard == d.property.standard) or
-            (not d.next-sibling.property.is-vendor-specific and d.next-sibling.property.name == d.property.standard))
+    find d=declaration{property.is_vendor_specific}
+    require d.next_sibling is declaration and
+            ((d.next_sibling.property.is_vendor_specific and d.next_sibling.property.standard == d.property.standard) or
+            (not d.next_sibling.property.is_vendor_specific and d.next_sibling.property.name == d.property.standard))
     message 'Do not use a vendor-prefixed property without a standard property after it'
 
     find (rgba or hsl or hsla) in d=declaration{property.name == 'color'}
-    require d.previous-sibling is declaration and
-            d.previous-sibling.property.name == 'color' and
-           (d.previous-sibling.contains(hex) or d.previous-sibling.contains(color-text))
+    require d.previous_sibling is declaration and
+            d.previous_sibling.property.name == 'color' and
+           (d.previous_sibling.contains(hex) or d.previous_sibling.contains(color-text))
     message 'No fallback color for properties with a rgba(), hsl(), or hsla() color.'
 
     find p=property
@@ -120,7 +120,7 @@ ignore space, newline, comment, indent, tab
     forbid s.count(float) > 10
     message 'Disallow too many floats'
 
-    find a=attrselector
+    find a=attribute-selector-type
     forbid a.string in ['*=', '|=', '^=', '~=', '$=']
     message 'Disallow selectors that look like regular expressions'
 
@@ -129,10 +129,20 @@ ignore space, newline, comment, indent, tab
 
     forbid stylesheet{count(property{name == 'font-size'}) > 9}
     message 'Disallow excessive use of font-size'
-}
 
-Whitespace
-ignore newline indent comment, newline comment, indent, comment
-{
+    find h=heading
+    forbid h.next_sibling is class or h.next_sibling is id
+    message 'Do not over-qualify headings'
 
+    find a=attribute-selector{is_key}
+    require a.previous_sibling is selector-part
+    message 'Disallow unqualified attribute selectors. This is a problem only if the attr selector appears as key and is unqualified.'
+
+    find f=fontface
+    require f.contains(uri{argument.string match '#iefix'})
+    message 'Make hte font-face bulletproof'
+
+    find d=declaration{property.name=='text-indent' and value.contains(unary)} in r=ruleset
+    require r.contains(declaration{property.name=='direction' and value.string=='ltr'})
+    message 'Disallow negative text indent'
 }

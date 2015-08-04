@@ -4,11 +4,47 @@ ignore newline, indent, comment, tab, space
 /*
     forbid dimension{unit == 'pt'}
     message 'It is forbidden to use pt, use px instead.'
-*/
 
     forbid declaration{property.name == 'background' and contains(color)}
     message 'You may not use the "background" shorthand to set the background-color property.'
 
     forbid declaration{property.name == 'border' and contains(color)}
     message 'You may not use the "border" shorthand to set the border-color property.'
+
+    find d=declaration{property.name == 'background-image' and contains(function{name match 'gradient.*'})}
+    require d.previous_sibling is declaration and (d.previous_sibling.property.name == 'background-image' or
+            (d.previous_sibling.property.name == 'background-color' and d.previous_sibling.contains(color)))
+    message 'For background-image with the gradient value, use a background-color fallback property that uses a regular color'
+
+    find d=declaration{contains(unit{string == 'rem'})}
+    require d.previous_sibling is declaration and
+            d.previous_sibling.property.name == d.property.name and
+            d.previous_sibling.contains(unit{string == 'px'})
+    message 'Use rem units preceded by px units for a safe fallback'
+
+    forbid selector{count(simple-selector) > 4}
+    message 'Multiselectors with more than four selectors are not allowed.'
+
+    forbid simple-selector{count(selector-part) > 4}
+    message 'Selectors with more than four simpleselectors are not allowed.'
+
+    find s=string in declaration{property.name in ['font', 'font-family']}
+    require s.has_double_quotes
+    message 'Font names with spaces must surrounded by double-quotes'
+
+    find u=uri
+    require u.argument is string and u.argument.has_single_quotes
+    message 'The argument of a url must be in single quotes'
+
+    forbid rgb or rgba or hsl or hsla
+    message 'Colors should be in hex or text'
+
+    forbid c=colorname{string not in ['white', 'black', 'transparent']}
+    message 'Use color names only for white, black and transparent. Otherwise use hex.'
+
+    find h=hex
+    forbid h.string match 'fff(fff)?' or h.string match '000(000)?'
+    message 'For white and black colors, use color names not hex values'
+    */
+
 }

@@ -46,9 +46,10 @@ def main():
     errors = checker.TypeChecker.check(coco_ast)
     if errors.contain_errors():
         print(errors.string())
+        exit()
 
     successful, output = violations.ViolationsFinder.find(coco_ast, css_tree)
     print(output.to_string())
-    exit(0)
+    exit()
 
 print(main())

@@ -1,4 +1,5 @@
-from csscoco.lang.analysis import values as values
+import csscoco.lang.analysis.values as values
+from csscoco.lang.common_ import ExprConstants
 
 
 class CssNode(object):
@@ -6,23 +7,20 @@ class CssNode(object):
         self.parent = None
         self.value = value
         self._categories = ['any']
-        if categories:
-            self._categories.extend(categories)
-        self.index = -1
         self.start_position = None
         self.end_position = None
         self._api = {}
         self._register_api()
         self._print_indent = '  '
+        self.index = -1
+        if categories:
+            self._categories.extend(categories)
 
     def extend_categories(self, category):
-        self._categories.append(category)
+        self._categories.insert(-1, category)
 
-    def initialize_labels(self, _type_, categories):
-        labels = [_type_, 'any']
-        if not categories:
-            return labels
-        return labels + categories
+    def get_type(self):
+        return self._categories[-1]
 
     def matches(self, value):
         return value in self._categories
@@ -56,8 +54,8 @@ class CssNode(object):
             yield from child._get_terminal_nodes()
 
     def _register_api(self):
-        self._api['string'] = self._get_string
-        self._api['child'] = self._get_child
+        self._api[ExprConstants.STRING] = self._get_string
+        self._api[ExprConstants.CHILD] = self._get_child
 
     def _get_string(self):
         res = ''
@@ -92,7 +90,7 @@ class TerminalCssNode(CssNode):
 
     def _register_api(self):
         super(TerminalCssNode, self)._register_api()
-        self._api['value'] = self._get_value
+        self._api[ExprConstants.VALUE] = self._get_value
 
     def _get_string(self):
         return values.String(self.value)
@@ -104,6 +102,12 @@ class TerminalCssNode(CssNode):
         return values.String(self.value)
 
 
+class Stylesheet(CssNode):
+    def __init__(self, children):
+        super(Stylesheet, self).__init__(children)
+        self._categories.append('stylesheet')
+
+
 class Declaration(CssNode):
     def __init__(self, children):
         super(Declaration, self).__init__(children)
@@ -111,9 +115,9 @@ class Declaration(CssNode):
 
     def _register_api(self):
         super(Declaration, self)._register_api()
-        self._api['property'] = self._get_property
-        self._api['value'] = self._get_value
-        self._api['is-vendor-specific'] = self._is_vendor_specific
+        self._api[ExprConstants.PROPERTY] = self._get_property
+        self._api[ExprConstants.VALUE] = self._get_value
+        self._api[ExprConstants.IS_VENDOR_SPECIFIC] = self._is_vendor_specific
 
     def _get_property(self):
         return values.Node(self.value[0])
@@ -137,9 +141,9 @@ class Property(TerminalCssNode):
 
     def _register_api(self):
         super(Property, self)._register_api()
-        self._api['name'] = self._get_name
-        self._api['is-vendor-specific'] = self._is_vendor_specific
-        self._api['standard'] = self._get_standard
+        self._api[ExprConstants.NAME] = self._get_name
+        self._api[ExprConstants.IS_VENDOR_SPECIFIC] = self._is_vendor_specific
+        self._api[ExprConstants.STANDARD] = self._get_standard
 
     def _get_string(self):
         return values.String(self._name)
@@ -167,6 +171,12 @@ class Property(TerminalCssNode):
         return None
 
 
+class SimpleSelector(CssNode):
+    def __init__(self, value):
+        super(SimpleSelector, self).__init__(value)
+        self._categories.append('simple-selector')
+
+
 class CombinatorSelector(CssNode):
     def __init__(self, name):
         super(CombinatorSelector, self).__init__(name)
@@ -185,28 +195,41 @@ class DescendantSelector(CombinatorSelector):
         self._categories.append('descendant-selector')
 
 
-class SimpleSelector(TerminalCssNode):
+class SelectorPart(TerminalCssNode):
     def __init__(self, name):
-        super(SimpleSelector, self).__init__(name)
+        super(SelectorPart, self).__init__(name)
         self._categories.append('selector-part')
-        self._api['name'] = self._get_value
+
+    def _register_api(self):
+        self._api[ExprConstants.IS_KEY] = self._get_is_key
+        self._api[ExprConstants.NAME] = self._get_value
+
+    def _get_is_key(self):
+        r = self.index == len(self.parent.value)-1
+        return values.Boolean.build(r)
 
 
-class ElementSelector(SimpleSelector):
+class ElementSelectorPart(SelectorPart):
     def __init__(self, name):
-        super(ElementSelector, self).__init__(name)
+        super(ElementSelectorPart, self).__init__(name)
         self._categories.append('tag')
 
 
-class IdSelector(SimpleSelector):
+class HeadingSelector(ElementSelectorPart):
     def __init__(self, name):
-        super(IdSelector, self).__init__(name)
+        super(HeadingSelector, self).__init__(name)
+        self._categories.append('heading')
+
+
+class IdSelectorPart(SelectorPart):
+    def __init__(self, name):
+        super(IdSelectorPart, self).__init__(name)
         self._categories.append('id')
 
 
-class ClassSelector(SimpleSelector):
+class ClassSelectorPart(SelectorPart):
     def __init__(self, name):
-        super(ClassSelector, self).__init__(name)
+        super(ClassSelectorPart, self).__init__(name)
         self._categories.append('class')
 
 
@@ -220,16 +243,27 @@ class AttributeSelector(CssNode):
 
     def _register_api(self):
         super(AttributeSelector, self)._register_api()
-        self._api['value'] = self._get_value
+        self._api[ExprConstants.VALUE] = self._get_value
+        self._api[ExprConstants.IS_KEY] = self._get_is_key
 
     def _get_value(self):
         return values.Node(self.attr_value)
+
+    def _get_is_key(self):
+        r = self.index == len(self.parent.value)-1
+        return values.Boolean.build(r)
 
 
 class Attribute(TerminalCssNode):
     def __init__(self, value):
         super(Attribute, self).__init__(value)
         self._categories.append('attribute')
+
+
+class AttributeSelectorType(TerminalCssNode):
+    def __init__(self, value):
+        super(AttributeSelectorType, self).__init__(value)
+        self._categories.append('attribute-selector-type')
 
 
 class Function(CssNode):
@@ -239,7 +273,7 @@ class Function(CssNode):
 
     def _register_api(self):
         super(Function, self)._register_api()
-        self._api['name'] = self._get_name
+        self._api[ExprConstants.NAME] = self._get_name
 
     def _get_name(self):
         return values.String(self.value[0].value)
@@ -252,7 +286,7 @@ class Rgba(Function):
 
     def _register_api(self):
         super(Rgba, self)._register_api()
-        self._api['opacity'] = self._get_opacity
+        self._api[ExprConstants.OPACITY] = self._get_opacity
 
     def _get_opacity(self):
         return values.Integer(float(self.value[1].value[-1].value))
@@ -272,7 +306,7 @@ class Hex(TerminalCssNode):
 
     def _register_api(self):
         super(Hex, self)._register_api()
-        self._api['is-long'] = self._get_is_long
+        self._api[ExprConstants.IS_LONG] = self._get_is_long
 
     def _get_is_long(self):
         return values.Boolean.build(self._is_long)
@@ -293,7 +327,7 @@ class Number(TerminalCssNode):
 
     def _register_api(self):
         super(Number, self)._register_api()
-        self._api['num-value'] = self._get_value
+        self._api[ExprConstants.NUM_VALUE] = self._get_value
 
     def _get_value(self):
         return values.Integer(self.float_value)
@@ -306,8 +340,8 @@ class String(TerminalCssNode):
 
     def _register_api(self):
         super(String, self)._register_api()
-        self._api['has-single-quotes'] = self._has_single_quotes
-        self._api['has-double-quotes'] = self._has_double_quotes
+        self._api[ExprConstants.HAS_SINGLE_QUOTES] = self._has_single_quotes
+        self._api[ExprConstants.HAS_DOUBLE_QUOTES] = self._has_double_quotes
 
     def _get_string(self):
         return values.String(self.value)
@@ -326,7 +360,7 @@ class Dimension(CssNode):
 
     def _register_api(self):
         super(Dimension, self)._register_api()
-        self._api['unit'] = self._get_unit
+        self._api[ExprConstants.UNIT] = self._get_unit
 
     def _get_unit(self):
         return values.String(self.value[1].value)
@@ -342,7 +376,7 @@ class RuleSet(CssNode):
     def __init__(self, children):
         super(RuleSet, self).__init__(children)
         self._categories.append('ruleset')
-        self._api['is-single-line'] = self._is_single_line
+        self._api[ExprConstants.IS_SINGLE_LINE] = self._is_single_line
 
     def _is_single_line(self):
         is_single_line = self.value[0].start_position.line == self.value[-1].end_position.line
@@ -365,6 +399,19 @@ class FontFace(AtRule):
     def __init__(self, value):
         super(FontFace, self).__init__(value)
         self._categories.append('fontface')
+
+
+class Uri(CssNode):
+    def __init__(self, value):
+        super(Uri, self).__init__(value)
+        self._categories.append('uri')
+
+    def _register_api(self):
+        super(Uri, self)._register_api()
+        self._api[ExprConstants.ARGUMENT] = self._get_argument
+
+    def _get_argument(self):
+        return values.Node(self.value[1])
 
 
 class ParseTreeBuilder(object):
@@ -405,9 +452,9 @@ class ParseTreeBuilder(object):
         node_type = l[0]
         node_value = l[1]
         if node_type == 'shash':
-            return IdSelector(node_value)
+            return IdSelectorPart(node_value)
         if node_type == 'tag':
-            return ElementSelector(node_value)
+            return self._get_element_selector(node_type, node_value)
         if node_type == 'vhash':
             return Hex(node_value)
         if node_type == 'number':
@@ -417,8 +464,8 @@ class ParseTreeBuilder(object):
             return String(node_value)
         if node_type == 'ident' and CssLookUp.is_color_name(node_value):
             return ColorName(node_value)
-        if node_type == 'newline':
-            pass
+        if node_type == 'attrselector':
+            return AttributeSelectorType(node_value)
         return TerminalCssNode(node_value, categories=[node_type])
 
     def _get_non_terminal(self, l):
@@ -431,20 +478,27 @@ class ParseTreeBuilder(object):
             return Property(children[-1].value)
         if node_type == 'clazz':
             assert len(children) == 1
-            return ClassSelector(children[-1].value)
+            return ClassSelectorPart(children[-1].value)
         if node_type == 'attrib':
             return self._get_attribute(children)
         if node_type == 'funktion':
             return self._get_function(l, children)
-        if node_type == 'atrules' or node_type == 'atruler':
+        if node_type in ['atrules', 'atruler', 'atruleb']:
             return self._get_at_rule(children)
         if node_type == 'ruleset':
             return RuleSet(children)
         if node_type == 'dimension':
             return Dimension(children)
-        if node_type == 'root':
-            pass
+        if node_type == 'simpleselector':
+            return SimpleSelector(children)
+        if node_type == 'uri':
+            return Uri(children)
         return CssNode(children, categories=[node_type])
+
+    def _get_element_selector(self, node_type, node_value):
+        if CssLookUp.is_heading(node_value):
+            return HeadingSelector(node_value)
+        return ElementSelectorPart(node_value)
 
     def _get_function(self, l, children):
         function_name = l[1][1].lower()
@@ -557,9 +611,15 @@ class CssPattern(object):
 class CssLookUp(object):
     @staticmethod
     def is_color_name(s):
-        return s in CssLookUp.color_names
+        return s in CssLookUp._color_names
 
-    color_names = ["aliceblue",
+    @staticmethod
+    def is_heading(s):
+        return s in CssLookUp._heading_names
+
+    _heading_names = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
+
+    _color_names = ["aliceblue",
                    "antiquewhite",
                    "aqua",
                    "aquamarine",

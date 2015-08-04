@@ -37,12 +37,28 @@ class TypeChecker(object):
     def _visit(self, convention):
         self._visit(convention.pattern)
         if convention.has_constraint():
-            self._visit(convention.constraint)
+            constraint_type = self._visit(convention.constraint)
+            if self._is_not_boolean_constraint(constraint_type, convention.constraint.line):
+                return types.Error.TYPE
 
     @vis.visitor(ast.PatternDescriptor)
     def _visit(self, pattern_desc):
         for node_desc in pattern_desc.nodes:
             self._visit(node_desc)
+
+    @vis.visitor(ast.PatternConstraintDescriptor)
+    def _visit(self, pattern_desc):
+        for node_desc in pattern_desc.nodes:
+            self._visit(node_desc)
+        constraint_type = self._visit(pattern_desc.constraint)
+        if self._is_not_boolean_constraint(constraint_type, pattern_desc.constaint.line):
+                return types.Error.TYPE
+
+    def _is_not_boolean_constraint(self, constraint_type, line):
+        if not constraint_type.is_error() and not constraint_type.is_boolean():
+            self._errors.log(ErrorMessageBuilder.require_not_boolean_constraint_error(constraint_type, line))
+            return True
+        return False
 
     @vis.visitor(ast.Node)
     def _visit(self, node):
@@ -51,8 +67,7 @@ class TypeChecker(object):
         self._type_checking_context.node_type = node.descriptor
         if node.has_constraint():
             constraint_type = self._visit(node.constraint)
-            if not constraint_type.is_error() and not constraint_type.is_boolean():
-                self._errors.log(ErrorMessageBuilder.not_boolean_constraint_error(constraint_type, node.line))
+            if self._is_not_boolean_constraint(constraint_type, node.line):
                 return types.Error.TYPE
         return types.CocoNode.TYPE
 
@@ -243,6 +258,13 @@ class ErrorMessageBuilder(object):
         t = type_operand.__class__.__name__
         line = str(line)
         return ''.join(['Error on line ', line, ' - The constraint of node is of type : ',
+                        t, ' and it should be boolean instead.'])
+
+    @staticmethod
+    def require_not_boolean_constraint_error(type_operand, line):
+        t = type_operand.__class__.__name__
+        line = str(line)
+        return ''.join(['Error on line ', line, ' - The constraint is of type : ',
                         t, ' and it should be boolean instead.'])
 
     @staticmethod

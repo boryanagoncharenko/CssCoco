@@ -9,18 +9,18 @@ ignore space, indent, tab, comment, newline
     require d.child(-1).string == ';'
     message 'Put a ; at the end of declarations'
 
-    forbid hex{is-long and string match shorten}
+    forbid hex{is_long and string match shorten}
     message 'Use short hex values'
 
-    forbid number{num-value == 0} in (dimension or percentage)
+    forbid number{num_value == 0} in (dimension or percentage)
     message 'Do not use units after 0 values'
 
     find v=attribute-value
-    require v is string and v.has-single-quotes
+    require v is string and v.has_single_quotes
     message 'Use single quotes in attribute selectors'
 
     find s=string
-    require s.has-single-quotes
+    require s.has_single_quotes
     message 'Use single quotes in strings'
 }
 
@@ -29,14 +29,14 @@ ignore newline indent comment, newline comment, indent, comment
 {
 
     find r1=ruleset next-to r2=ruleset
-    where not r1.is-single-line or not r2.is-single-line
+    where not r1.is_single_line or not r2.is_single_line
     require newline{2} between r1 and r2
     message 'Add one blank line between rulesets'
 
     find r1=ruleset next-to r2=ruleset
-    where r1.is-single-line and r2.is-single-line
+    where r1.is_single_line and r2.is_single_line
     require newline{1, 2} between r1 and r2
-    message 'Single-line rules may appear on adjacent lines'
+    message 'Single_line rules may appear on adjacent lines'
 
     find c=colon next-to v=value
     require space between c and v
@@ -46,7 +46,7 @@ ignore newline indent comment, newline comment, indent, comment
     require space between s and b
     message 'Put one space between the last selector and the block.'
 
-    find s1=delim next-to s2=simpleselector
+    find s1=delim next-to s2=simple-selector
     require newline between s1 and s2
     message 'One selector per line.'
 

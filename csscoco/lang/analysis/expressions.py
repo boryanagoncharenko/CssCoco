@@ -31,11 +31,16 @@ class NodeConstraintContext(EvaluationContext):
 
 
 class ConventionConstraintContext(EvaluationContext):
-    def __init__(self, pattern_matcher, id_to_node_table):
+    def __init__(self, pattern_matcher, id_to_node_table, stylesheet=None):
         super(ConventionConstraintContext, self).__init__(pattern_matcher)
         self._id_node_table = id_to_node_table
+        self._stylesheet = stylesheet
 
     def get_node_by_id(self, identifier):
+        if identifier == 'stylesheet':
+            if not self._stylesheet:
+                raise ValueError('Stylesheet is not defined')
+            return self._stylesheet
         for desc in self._id_node_table:
             if desc.has_identifier() and desc.identifier == identifier:
                 return self._id_node_table[desc]
@@ -74,16 +79,14 @@ class ExprEvaluator(object):
         left = self.visit(or_expr.left)
         if not left.is_false():
             return values.Boolean.TRUE
-        right = self.visit(or_expr.right)
-        return left.or_(right)
+        return self.visit(or_expr.right)
 
     @vis.visitor(ast.AndExpr)
     def visit(self, and_expr):
         left = self.visit(and_expr.left)
         if left.is_false():
             return values.Boolean.FALSE
-        right = self.visit(and_expr.right)
-        return left.and_(right)
+        return self.visit(and_expr.right)
 
     @vis.visitor(ast.EqualExpr)
     def visit(self, equals_expr):
@@ -103,11 +106,23 @@ class ExprEvaluator(object):
         right = self.visit(greater_than_expr.right)
         return left.greater_than(right)
 
+    @vis.visitor(ast.GreaterThanOrEqualExpr)
+    def visit(self, greater_than_expr):
+        left = self.visit(greater_than_expr.left)
+        right = self.visit(greater_than_expr.right)
+        return left.greater_than_equals(right)
+
     @vis.visitor(ast.LessThanExpr)
     def visit(self, less_than_expr):
         left = self.visit(less_than_expr.left)
         right = self.visit(less_than_expr.right)
         return left.less_than(right)
+
+    @vis.visitor(ast.LessThanOrEqualExpr)
+    def visit(self, less_than_expr):
+        left = self.visit(less_than_expr.left)
+        right = self.visit(less_than_expr.right)
+        return left.less_than_equals(right)
 
     @vis.visitor(ast.DecimalExpr)
     def visit(self, decimal_expr):
@@ -170,23 +185,23 @@ class ExprEvaluator(object):
     @vis.visitor(ast.PropertyExpr)
     def visit(self, prop_expr):
         node = self.visit(prop_expr.operand)
-        real_node = node.value
-        if not real_node.has_method(prop_expr.value):
+        successful, result = node.get_property(prop_expr.value)
+        if not successful:
             msg = ''.join(['Error on line ', str(prop_expr.line), ': the matched CSS node of type \'',
-                           real_node.type_, '\' does not have a property \'', prop_expr.value, '\''])
+                           node.value.get_type(), '\' does not have a property \'', prop_expr.value, '\''])
             raise InvalidPropertyException(msg)
-        return real_node.invoke_property(prop_expr.value)
+        return result
 
     @vis.visitor(ast.MethodExpr)
     def visit(self, method_expr):
         node = self.visit(method_expr.operand)
-        real_node = node.value
-        if not real_node.has_method(method_expr.value):
-            msg = ''.join(['Error on line ', str(method_expr.line), ': the matched CSS node of type \'',
-                           real_node.type_, '\' does not have a method \'', method_expr.value, '\''])
-            raise InvalidPropertyException(msg)
         argument = self.visit(method_expr.argument)
-        return real_node.invoke_method(method_expr.value, argument.value)
+        successful, result = node.get_method(method_expr.value, argument.value)
+        if not successful:
+            msg = ''.join(['Error on line ', str(method_expr.line), ': the matched CSS node of type \'',
+                           node.value.get_type(), '\' does not have a property \'', method_expr.value, '\''])
+            raise InvalidPropertyException(msg)
+        return result
 
     @vis.visitor(ast.ContainsExpr)
     def visit(self, contains_expr):
@@ -200,6 +215,13 @@ class ExprEvaluator(object):
         node_value = self.visit(contains_all_expr.operand)
         list_value = contains_all_expr.argument
         result = self._context.pattern_matcher.find_all(node_value.value, list_value.value)
+        return values.Boolean.build(result)
+
+    @vis.visitor(ast.ContainsAnyExpr)
+    def visit(self, contains_any_expr):
+        node_value = self.visit(contains_any_expr.operand)
+        list_value = contains_any_expr.argument
+        result = self._context.pattern_matcher.find_any(node_value.value, list_value.value)
         return values.Boolean.build(result)
 
     @vis.visitor(ast.CountExpr)
@@ -216,7 +238,7 @@ class ExprEvaluator(object):
         node = self._context.pattern_matcher.find_next_sibling(node_value.value)
         if node:
             return values.Node(node)
-        return values.Error.VALUE
+        return values.NoMatchedNodeError.VALUE
 
     @vis.visitor(ast.PreviousSiblingExpr)
     def visit(self, prev_sibling):
@@ -224,7 +246,7 @@ class ExprEvaluator(object):
         node = self._context.pattern_matcher.find_previous_sibling(node_value.value)
         if node:
             return values.Node(node)
-        return values.Error.VALUE
+        return values.NoMatchedNodeError.VALUE
 
     @vis.visitor(ast.BeforeExpr)
     def visit(self, before):

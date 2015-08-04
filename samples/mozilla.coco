@@ -1,0 +1,27 @@
+Semantic
+ignore newline, indent, comment, tab, space
+{
+    forbid declaration{is_vendor_specific}
+    message 'Try to avoid vendor-specific properties'
+
+    forbid child-selector
+    message 'Question all usages of the child selector'
+
+    find tag{is_key} in s=simple-selector
+    require not s.contains(child-selector)
+    message 'Selectors that have tag as their key selector should never use the child selector'
+
+    forbid descendant-selector
+    message 'Do not use the descendant selector'
+
+    forbid simple-selector{count(selector-part) > 2}
+    message 'Use the most specific category possible (this implies you should use only one selector).'
+
+    find c=class{is_key}
+    forbid c.previous_sibling is tag
+    message 'If a rule has a class as its key selector, don\'t add a tag name to the rule.'
+
+    find i=id{is_key}
+    forbid i.previous_sibling is tag or i.previous_sibling is class
+    message 'If a rule has an ID selector as its key selector, don\'t add the tag name to the rule. Don\'t add a class name either.'
+}

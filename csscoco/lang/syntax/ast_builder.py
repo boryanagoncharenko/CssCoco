@@ -3,6 +3,7 @@ import antlr4.tree.Tree as Tree
 import csscoco.lang.ast.ast as ast
 import csscoco.lang.syntax.cocoParser as Parser
 from csscoco.lang.syntax.cocoVisitor import cocoVisitor
+from csscoco.lang.common_ import ExprConstants
 
 
 class CocoCustomVisitor(cocoVisitor):
@@ -267,7 +268,7 @@ class CocoCustomVisitor(cocoVisitor):
         if operator == 'in':
             return ast.InExpr(left, right, line)
         if operator == 'not in':
-            raise NotImplementedError()
+            return ast.NotExpr(ast.InExpr(left, right, line))
         if operator == 'match':
             return ast.MatchExpr(left, right, line)
         if operator == 'not match':
@@ -288,9 +289,9 @@ class CocoCustomVisitor(cocoVisitor):
         raise ValueError('Unknown element')
 
     def visitCall_expr(self, context):
-        identifier = context.call.text
+        identifier = context.call.text.lower()
         line = context.call.line
-        if identifier in self.identifiers:
+        if identifier in self.identifiers or identifier == 'stylesheet':
             return ast.VariableExpr(identifier, line)
         if identifier == 'lowercase':
             return ast.StringExpr('^[^A-Z]+$', line)
@@ -305,44 +306,52 @@ class CocoCustomVisitor(cocoVisitor):
         return self.visit_method_call(identifier, operand, argument, line)
 
     def visit_property_call(self, identifier, operand, line):
-        if identifier == 'next-sibling':
+        if identifier == ExprConstants.NEXT_SIBLING:
             return ast.NextSiblingExpr(operand, line)
-        if identifier == 'previous-sibling':
+        if identifier == ExprConstants.PREVIOUS_SIBLING:
             return ast.PreviousSiblingExpr(operand, line)
-        if identifier == 'is-vendor-specific':
+        if identifier == ExprConstants.IS_VENDOR_SPECIFIC:
             return ast.IsVendorSpecificPropertyExpr(operand, line)
-        if identifier == 'is-single-line':
+        if identifier == ExprConstants.IS_SINGLE_LINE:
             return ast.IsSingleLinePropertyExpr(operand, line)
-        if identifier == 'unit':
+        if identifier == ExprConstants.IS_KEY:
+            return ast.IsKeyPropertyExpr(operand, line)
+        if identifier == ExprConstants.UNIT:
             return ast.UnitPropertyExpr(operand, line)
-        if identifier == 'opacity':
+        if identifier == ExprConstants.OPACITY:
             return ast.OpacityPropertyExpr(operand, line)
-        if identifier == 'string':
+        if identifier == ExprConstants.STRING:
             return ast.StringPropertyExpr(operand, line)
-        if identifier == 'value':
+        if identifier == ExprConstants.VALUE:
             return ast.ValuePropertyExpr(operand, line)
-        if identifier == 'num-value':
+        if identifier == ExprConstants.NUM_VALUE:
             return ast.NumValuePropertyExpr(operand, line)
-        if identifier == 'property':
+        if identifier == ExprConstants.PROPERTY:
             return ast.PropertyPropertyExpr(operand, line)
-        if identifier == 'name':
+        if identifier == ExprConstants.NAME:
             return ast.NamePropertyExpr(operand, line)
-        if identifier == 'is-long':
+        if identifier == ExprConstants.IS_LONG:
             return ast.IsLongPropertyExpr(operand, line)
-        if identifier == 'has-single-quotes':
+        if identifier == ExprConstants.HAS_SINGLE_QUOTES:
             return ast.HasSingleQuotesPropertyExpr(operand, line)
-        if identifier == 'standard':
+        if identifier == ExprConstants.HAS_DOUBLE_QUOTES:
+            return ast.HasDoubleQuotesPropertyExpr(operand, line)
+        if identifier == ExprConstants.STANDARD:
             return ast.StandardPropertyExpr(operand, line)
+        if identifier == ExprConstants.ARGUMENT:
+            return ast.ArgumentExpr(operand, line)
         return ast.InvalidPropertyExpr(operand, identifier, line)
 
     def visit_method_call(self, identifier, operand, argument, line):
-        if identifier == 'contains-all':
+        if identifier == ExprConstants.CONTAINS_ALL:
             return ast.ContainsAllExpr(operand, argument, line)
-        if identifier == 'contains':
+        if identifier == ExprConstants.CONTAINS_ANY:
+            return ast.ContainsAnyExpr(operand, argument, line)
+        if identifier == ExprConstants.CONTAINS:
             return ast.ContainsExpr(operand, argument, line)
-        if identifier == 'count':
+        if identifier == ExprConstants.COUNT:
             return ast.CountExpr(operand, argument, line)
-        if identifier == 'child':
+        if identifier == ExprConstants.CHILD:
             return ast.ChildMethodExpr(operand, argument, line)
         return ast.InvalidMethodExpr(operand, identifier, argument, line)
 

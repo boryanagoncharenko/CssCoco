@@ -1,6 +1,7 @@
 import abc
 
-import csscoco.lang.ast.types as types
+from csscoco.lang.ast.types import *
+from csscoco.lang.common_ import ExprConstants
 
 
 class AstNode(object):
@@ -299,7 +300,7 @@ class NotExpr(UnaryExpr):
         return t.is_boolean()
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class UnaryMinusExpr(UnaryExpr):
@@ -310,7 +311,7 @@ class UnaryMinusExpr(UnaryExpr):
         return t.is_numerical()
 
     def get_return_type(self):
-        return types.Integer.TYPE
+        return Integer.TYPE
 
 
 class UnaryPlusExpr(UnaryExpr):
@@ -321,7 +322,7 @@ class UnaryPlusExpr(UnaryExpr):
         return t.is_numerical()
 
     def get_return_type(self):
-        return types.Integer.TYPE
+        return Integer.TYPE
 
 
 class BinaryExpr(Expr):
@@ -347,7 +348,7 @@ class OrExpr(BinaryExpr):
         return left.is_boolean() and right.is_boolean()
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class AndExpr(BinaryExpr):
@@ -358,7 +359,7 @@ class AndExpr(BinaryExpr):
         return left.is_boolean() and right.is_boolean()
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class EqualExpr(BinaryExpr):
@@ -371,7 +372,7 @@ class EqualExpr(BinaryExpr):
         return left_promoted == right_promoted
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class NotEqualExpr(BinaryExpr):
@@ -384,7 +385,7 @@ class NotEqualExpr(BinaryExpr):
         return left_promoted == right_promoted
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class GreaterThanExpr(BinaryExpr):
@@ -395,7 +396,7 @@ class GreaterThanExpr(BinaryExpr):
         return left.is_numerical() and right.is_numerical()
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class GreaterThanOrEqualExpr(BinaryExpr):
@@ -406,7 +407,7 @@ class GreaterThanOrEqualExpr(BinaryExpr):
         return left.is_numerical() and right.is_numerical()
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class LessThanExpr(BinaryExpr):
@@ -417,7 +418,7 @@ class LessThanExpr(BinaryExpr):
         return left.is_numerical() and right.is_numerical()
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class LessThanOrEqualExpr(BinaryExpr):
@@ -428,7 +429,7 @@ class LessThanOrEqualExpr(BinaryExpr):
         return left.is_numerical() and right.is_numerical()
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class IsExpr(BinaryExpr):
@@ -439,7 +440,7 @@ class IsExpr(BinaryExpr):
         return left.is_css_node() and right.is_css_node_type()
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class MatchExpr(BinaryExpr):
@@ -450,7 +451,7 @@ class MatchExpr(BinaryExpr):
         return left.is_string() and right.is_string()
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class InExpr(BinaryExpr):
@@ -461,7 +462,7 @@ class InExpr(BinaryExpr):
         return right.is_list()
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class CallExpr(Expr):
@@ -486,98 +487,122 @@ class PropertyExpr(CallExpr):
 
 class IsVendorSpecificPropertyExpr(PropertyExpr):
     def __init__(self, operand, line=-1):
-        super(IsVendorSpecificPropertyExpr, self).__init__(operand, 'is-vendor-specific', line)
+        super(IsVendorSpecificPropertyExpr, self).__init__(operand, ExprConstants.IS_VENDOR_SPECIFIC, line)
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class IsSingleLinePropertyExpr(PropertyExpr):
     def __init__(self, operand, line=-1):
-        super(IsSingleLinePropertyExpr, self).__init__(operand, 'is-single-line', line)
+        super(IsSingleLinePropertyExpr, self).__init__(operand, ExprConstants.IS_SINGLE_LINE, line)
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
+
+
+class IsKeyPropertyExpr(PropertyExpr):
+    def __init__(self, operand, line=-1):
+        super(IsKeyPropertyExpr, self).__init__(operand, ExprConstants.IS_KEY, line)
+
+    def get_return_type(self):
+        return Boolean.TYPE
 
 
 class UnitPropertyExpr(PropertyExpr):
     def __init__(self, operand, line=-1):
-        super(UnitPropertyExpr, self).__init__(operand, 'unit', line)
+        super(UnitPropertyExpr, self).__init__(operand, ExprConstants.UNIT, line)
 
     def get_return_type(self):
-        return types.String.TYPE
+        return String.TYPE
 
 
 class OpacityPropertyExpr(PropertyExpr):
     def __init__(self, operand, line=-1):
-        super(OpacityPropertyExpr, self).__init__(operand, 'opacity', line)
+        super(OpacityPropertyExpr, self).__init__(operand, ExprConstants.OPACITY, line)
 
     def get_return_type(self):
-        return types.Decimal.TYPE
+        return Decimal.TYPE
 
 
 class ValuePropertyExpr(PropertyExpr):
     def __init__(self, operand, line=-1):
-        super(ValuePropertyExpr, self).__init__(operand, 'value', line)
+        super(ValuePropertyExpr, self).__init__(operand, ExprConstants.VALUE, line)
 
     def get_return_type(self):
-        return types.CssNode.TYPE
+        return CssNode.TYPE
 
 
 class NumValuePropertyExpr(PropertyExpr):
     def __init__(self, operand, line=-1):
-        super(NumValuePropertyExpr, self).__init__(operand, 'num-value', line)
+        super(NumValuePropertyExpr, self).__init__(operand, ExprConstants.NUM_VALUE, line)
 
     def get_return_type(self):
-        return types.Integer.TYPE
+        return Integer.TYPE
 
 
 class PropertyPropertyExpr(PropertyExpr):
     def __init__(self, operand, line=-1):
-        super(PropertyPropertyExpr, self).__init__(operand, 'property', line)
+        super(PropertyPropertyExpr, self).__init__(operand, ExprConstants.PROPERTY, line)
 
     def get_return_type(self):
-        return types.CssNode.TYPE
+        return CssNode.TYPE
 
 
 class NamePropertyExpr(PropertyExpr):
     def __init__(self, operand, line=-1):
-        super(NamePropertyExpr, self).__init__(operand, 'name', line)
+        super(NamePropertyExpr, self).__init__(operand, ExprConstants.NAME, line)
 
     def get_return_type(self):
-        return types.String.TYPE
+        return String.TYPE
 
 
 class StringPropertyExpr(PropertyExpr):
     def __init__(self, operand, line=-1):
-        super(StringPropertyExpr, self).__init__(operand, 'string', line)
+        super(StringPropertyExpr, self).__init__(operand, ExprConstants.STRING, line)
 
     def get_return_type(self):
-        return types.String.TYPE
+        return String.TYPE
 
 
 class IsLongPropertyExpr(PropertyExpr):
     def __init__(self, operand, line=-1):
-        super(IsLongPropertyExpr, self).__init__(operand, 'is-long', line)
+        super(IsLongPropertyExpr, self).__init__(operand, ExprConstants.IS_LONG, line)
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class HasSingleQuotesPropertyExpr(PropertyExpr):
     def __init__(self, operand, line=-1):
-        super(HasSingleQuotesPropertyExpr, self).__init__(operand, 'has-single-quotes', line)
+        super(HasSingleQuotesPropertyExpr, self).__init__(operand, ExprConstants.HAS_SINGLE_QUOTES, line)
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
+
+
+class HasDoubleQuotesPropertyExpr(PropertyExpr):
+    def __init__(self, operand, line=-1):
+        super(HasDoubleQuotesPropertyExpr, self).__init__(operand, ExprConstants.HAS_DOUBLE_QUOTES, line)
+
+    def get_return_type(self):
+        return Boolean.TYPE
 
 
 class StandardPropertyExpr(PropertyExpr):
     def __init__(self, operand, line=-1):
-        super(StandardPropertyExpr, self).__init__(operand, 'standard', line)
+        super(StandardPropertyExpr, self).__init__(operand, ExprConstants.STANDARD, line)
 
     def get_return_type(self):
-        return types.String.TYPE
+        return String.TYPE
+
+
+class ArgumentExpr(PropertyExpr):
+    def __init__(self, operand, line=-1):
+        super(ArgumentExpr, self).__init__(operand, ExprConstants.ARGUMENT, line)
+
+    def get_return_type(self):
+        return CssNode.TYPE
 
 
 class InvalidPropertyExpr(PropertyExpr):
@@ -585,7 +610,7 @@ class InvalidPropertyExpr(PropertyExpr):
         super(InvalidPropertyExpr, self).__init__(operand, value, line)
 
     def get_return_type(self):
-        return types.Error.TYPE
+        return Error.TYPE
 
 
 class MethodExpr(PropertyExpr):
@@ -594,7 +619,7 @@ class MethodExpr(PropertyExpr):
         self.argument = argument
 
     @abc.abstractmethod
-    def are_types_valid(self, operand_type, argument_type):
+    def are_valid(self, operand_type, argument_type):
         pass
 
     @abc.abstractmethod
@@ -604,12 +629,12 @@ class MethodExpr(PropertyExpr):
 
 class ChildMethodExpr(MethodExpr):
     def __init__(self, operand, argument, line=-1):
-        super(ChildMethodExpr, self).__init__(operand, 'child', argument, line)
+        super(ChildMethodExpr, self).__init__(operand, ExprConstants.CHILD, argument, line)
 
     def get_return_type(self):
-        return types.CssNode.TYPE
+        return CssNode.TYPE
 
-    def are_types_valid(self, operand_type, argument_type):
+    def are_valid(self, operand_type, argument_type):
         return operand_type.is_css_node() and argument_type.is_numerical()
 
 
@@ -618,9 +643,9 @@ class InvalidMethodExpr(MethodExpr):
         super(InvalidMethodExpr, self).__init__(operand, value, argument, line)
 
     def get_return_type(self):
-        return types.Error.TYPE
+        return Error.TYPE
 
-    def are_types_valid(self, operand_type, argument_type):
+    def are_valid(self, operand_type, argument_type):
         return False
 
 
@@ -639,7 +664,7 @@ class NextSiblingExpr(NodeQueryExpr):
         super(NextSiblingExpr, self).__init__(operand, line)
 
     def get_return_type(self):
-        return types.CssNode.TYPE
+        return CssNode.TYPE
 
 
 class PreviousSiblingExpr(NodeQueryExpr):
@@ -647,7 +672,7 @@ class PreviousSiblingExpr(NodeQueryExpr):
         super(PreviousSiblingExpr, self).__init__(operand, line)
 
     def get_return_type(self):
-        return types.CssNode.TYPE
+        return CssNode.TYPE
 
 
 class NodeQueryWithArgExpr(NodeQueryExpr):
@@ -672,7 +697,7 @@ class ContainsExpr(NodeQueryWithArgExpr):
         return t.is_coco_node()
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class ContainsAllExpr(NodeQueryWithArgExpr):
@@ -683,7 +708,18 @@ class ContainsAllExpr(NodeQueryWithArgExpr):
         return t.is_list() and t.elements_type.is_coco_node()
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
+
+
+class ContainsAnyExpr(NodeQueryWithArgExpr):
+    def __init__(self, operand, argument, line=-1):
+        super(ContainsAnyExpr, self).__init__(operand, argument, line)
+
+    def is_type_compatible(self, t):
+        return t.is_list() and t.elements_type.is_coco_node()
+
+    def get_return_type(self):
+        return Boolean.TYPE
 
 
 class CountExpr(NodeQueryWithArgExpr):
@@ -694,7 +730,7 @@ class CountExpr(NodeQueryWithArgExpr):
         return t.is_coco_node()
 
     def get_return_type(self):
-        return types.Integer.TYPE
+        return Integer.TYPE
 
 
 class BeforeExpr(NodeQueryWithArgExpr):
@@ -705,7 +741,7 @@ class BeforeExpr(NodeQueryWithArgExpr):
         return t.is_coco_node()
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class AfterExpr(NodeQueryWithArgExpr):
@@ -716,7 +752,7 @@ class AfterExpr(NodeQueryWithArgExpr):
         return t.is_coco_node()
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class BetweenExpr(NodeQueryWithArgExpr):
@@ -728,7 +764,7 @@ class BetweenExpr(NodeQueryWithArgExpr):
         return t.is_coco_node()
 
     def get_return_type(self):
-        return types.Boolean.TYPE
+        return Boolean.TYPE
 
 
 class NodeTypeDescriptor(AstNode):

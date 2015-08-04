@@ -88,7 +88,9 @@ class ViolationsFinder(object):
 
     def _evaluate_constraint(self, constraint, pattern):
         constraint_filter = p_matcher.Filter(self._context.ignored_patterns)
-        eval_context = expr.ConventionConstraintContext(p_matcher.PatternMatcher(constraint_filter), pattern)
+        eval_context = expr.ConventionConstraintContext(p_matcher.PatternMatcher(constraint_filter),
+                                                        pattern,
+                                                        stylesheet=self._tree)
         return expr.ExprEvaluator.evaluate(constraint, eval_context)
 
     def _log_violation(self, convention, css_pattern):

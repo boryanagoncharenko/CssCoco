@@ -410,6 +410,12 @@ class PatternMatcher(Matcher):
                 return False
         return True
 
+    def find_any(self, node, descriptors):
+        for desc in descriptors:
+            for d in self.find_descendants_that_match(node, desc):
+                return True
+        return False
+
     @vis.visitor(ast.IsParentOf)
     def _find_target_nodes(self, relation, node):
         return self.find_children_that_match(node, relation.target_node)

@@ -130,6 +130,8 @@ class SExprTransformer(object):
             s_expr[0] = 'comma'
         if s_expr[0] == 'dimension':
             s_expr[2][0] = 'unit'
+        if s_expr[0] == 'combinator' and s_expr[1] == '>':
+            s_expr[0] = 'child-selector'
 
     def _push_down(self, s_expr):
         """
@@ -307,7 +309,7 @@ class SExprTransformer(object):
 
     def _is_descendant_selector(self, s_expr, child, index):
         return s_expr[0] == 'simpleselector' and child[0] == 's' and ' ' in child[1] and 1 < index < len(s_expr) - 1 \
-            and s_expr[index - 1][0] != 'combinator' and s_expr[index + 1][0] != 'combinator'
+            and s_expr[index - 1][0] != 'child-selector' and s_expr[index + 1][0] != 'child-selector'
 
     def _descendant_transformer(self, child):
         child[0] = 'descendant-selector'

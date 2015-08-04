@@ -14,18 +14,6 @@ class Value(object):
     def unary_plus(self):
         raise ValueError()
 
-    def and_(self, value):
-        raise ValueError()
-
-    def and_bool(self, value):
-        raise ValueError()
-
-    def or_(self, value):
-        raise ValueError()
-
-    def or_bool(self, value):
-        raise ValueError()
-
     def equals(self, value):
         raise ValueError()
 
@@ -102,6 +90,12 @@ class Value(object):
         raise ValueError()
 
     def in_list(self, value):
+        raise ValueError()
+
+    def get_property(self, value):
+        raise ValueError()
+
+    def get_method(self, value, arg):
         raise ValueError()
 
 
@@ -281,18 +275,6 @@ class Boolean(Value):
     def not_(self):
         return Boolean.build(not self.value)
 
-    def and_(self, value):
-        return value.and_bool(self)
-
-    def and_bool(self, value):
-        return Boolean.build(value.value and self.value)
-
-    def or_(self, value):
-        return value.or_bool(self)
-
-    def or_bool(self, value):
-        return Boolean.build(value.value or self.value)
-
     def equals(self, value):
         return value.equals_boolean(self)
 
@@ -330,6 +312,16 @@ class Node(Value):
     def is_(self, value):
         return value.is_of_type(self)
 
+    def get_property(self, value):
+        if not self.value.has_method(value):
+            return False, None
+        return True, self.value.invoke_property(value)
+
+    def get_method(self, value, arg):
+        if not self.value.has_method(value):
+            return False, None
+        return True, self.value.invoke_method(value, arg)
+
 
 class List(Value):
     def __init__(self, value):
@@ -341,3 +333,103 @@ class List(Value):
             if operand.equals(v).value:
                 return Boolean.TRUE
         return Boolean.FALSE
+
+
+class NoMatchedNodeError(Value):
+    def __init__(self):
+        super(NoMatchedNodeError, self).__init__()
+
+    def is_false(self):
+        return True
+
+    def unary_minus(self):
+        return Boolean.FALSE
+
+    def unary_plus(self):
+        return Boolean.FALSE
+
+    def equals(self, value):
+        return Boolean.FALSE
+
+    def equals_boolean(self, value):
+        return Boolean.FALSE
+
+    def equals_integer(self, value):
+        return Boolean.FALSE
+
+    def equals_decimal(self, value):
+        return Boolean.FALSE
+
+    def equals_string(self, value):
+        return Boolean.FALSE
+
+    def not_equals(self, value):
+        return Boolean.FALSE
+
+    def not_equals_integer(self, value):
+        return Boolean.FALSE
+
+    def not_equals_decimal(self, value):
+        return Boolean.FALSE
+
+    def not_equals_boolean(self, value):
+        return Boolean.FALSE
+
+    def not_equals_string(self, value):
+        return Boolean.FALSE
+
+    def greater_than(self, value):
+        return Boolean.FALSE
+
+    def greater_than_integer(self, value):
+        return Boolean.FALSE
+
+    def greater_than_decimal(self, value):
+        return Boolean.FALSE
+
+    def greater_than_equals(self, value):
+        return Boolean.FALSE
+
+    def greater_than_equals_integer(self, value):
+        return Boolean.FALSE
+
+    def greater_than_equals_decimal(self, value):
+        return Boolean.FALSE
+
+    def less_than(self, value):
+        return Boolean.FALSE
+
+    def less_than_integer(self, value):
+        return Boolean.FALSE
+
+    def less_than_decimal(self, value):
+        return Boolean.FALSE
+
+    def less_than_equals(self, value):
+        return Boolean.FALSE
+
+    def less_than_equals_integer(self, value):
+        return Boolean.FALSE
+
+    def less_than_equals_decimal(self, value):
+        return Boolean.FALSE
+
+    def is_(self, value):
+        return Boolean.FALSE
+
+    def is_of_type(self, value):
+        return Boolean.FALSE
+
+    def in_(self, value):
+        return Boolean.FALSE
+
+    def in_list(self, value):
+        return Boolean.FALSE
+
+    def get_property(self, value):
+        return True, self
+
+    def get_method(self, value, arg):
+        return True, self
+
+NoMatchedNodeError.VALUE = NoMatchedNodeError()

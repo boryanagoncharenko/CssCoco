@@ -308,29 +308,6 @@ class EvaluationTests(TestCase):
         v = values.Boolean.TRUE
         assert not v.is_false()
 
-    def test_or_false_false(self):
-        l = values.Boolean.FALSE
-        r = values.Boolean.FALSE
-        result = l.or_(r)
-        assert not result.value
-
-    def test_or_true_false(self):
-        l = values.Boolean.TRUE
-        r = values.Boolean.FALSE
-        result = l.or_(r)
-        assert result.value
-
-    def test_and_true_true(self):
-        l = values.Boolean.TRUE
-        result = l.and_(l)
-        assert result.value
-
-    def test_and_true_false(self):
-        l = values.Boolean.TRUE
-        r = values.Boolean.FALSE
-        result = l.and_(r)
-        assert not result.value
-
     def test_not_true(self):
         v = values.Boolean.TRUE
         result = v.not_()

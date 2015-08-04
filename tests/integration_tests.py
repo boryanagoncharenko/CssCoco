@@ -1,4 +1,3 @@
-import os
 from unittest import TestCase
 
 import tests.helpers as helpers
@@ -70,7 +69,7 @@ class TypeCheckerTests(TestCase):
         Properties should be lowercase (vendor-specific properties are exception)
         """
         coco_ast = self.get_coco_ast("Semantic { "
-                                     "find p=property{is-vendor-specific == false} "
+                                     "find p=property{is_vendor_specific == false} "
                                      "require p.name match lowercase "
                                      "message '' }")
         css_tree = helpers.ParseHelper.parse_css_string('a{ z-index: 1; COLOR: 2; Margin: 5px;'
@@ -131,7 +130,7 @@ class TypeCheckerTests(TestCase):
         Use short hex values
         """
         coco_ast = self.get_coco_ast("Semantic { "
-                                     "forbid hex{is-long and string match shorten} "
+                                     "forbid hex{is_long and string match shorten} "
                                      "message '' }")
         css_tree = helpers.ParseHelper.parse_css_string('a{ color: #112233; color: #E6E6E6 } ')
         _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
@@ -142,7 +141,7 @@ class TypeCheckerTests(TestCase):
         Use the shorthand margin property instead
         """
         coco_ast = self.get_coco_ast("Semantic { "
-                                     "forbid ruleset{contains-all([ "
+                                     "forbid ruleset{contains_all([ "
                                      "property{name=='margin-right'},"
                                      "property{name=='margin-left'},"
                                      "property{name=='margin-top'},"
@@ -158,7 +157,7 @@ class TypeCheckerTests(TestCase):
         Do not use units after 0 values
         """
         coco_ast = self.get_coco_ast("Semantic { "
-                                     "forbid number{num-value == 0} in (dimension or percentage) message '' }")
+                                     "forbid number{num_value == 0} in (dimension or percentage) message '' }")
         css_tree = helpers.ParseHelper.parse_css_string('a { margin: 0; padding: 0px; offset: 0cm; top: 0%; }')
         _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
         assert violation_log.number_of_violations() == 3
@@ -168,7 +167,7 @@ class TypeCheckerTests(TestCase):
         Use a leading zero for decimal values
         """
         coco_ast = self.get_coco_ast("Semantic { "
-                                     "find n=number{num-value < 1 and num-value > -1} "
+                                     "find n=number{num_value < 1 and num_value > -1} "
                                      "require n.string match '^0.*' "
                                      "message '' }")
         css_tree = helpers.ParseHelper.parse_css_string('a { left: .6em; right: -.6em; top: 0.6em; }')
@@ -181,7 +180,7 @@ class TypeCheckerTests(TestCase):
         """
         coco_ast = self.get_coco_ast("Semantic { "
                                      "find v=attribute-value "
-                                     "require v is string and v.has-single-quotes "
+                                     "require v is string and v.has_single_quotes "
                                      "message '' }")
         css_tree = helpers.ParseHelper.parse_css_string('[attr=test] {} [attr=\'test\'] {} [attr="test"] {}')
         _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
@@ -193,7 +192,7 @@ class TypeCheckerTests(TestCase):
         """
         coco_ast = self.get_coco_ast("Semantic { "
                                      "find s=string in charset "
-                                     "require s.has-single-quotes "
+                                     "require s.has_single_quotes "
                                      "message '' }")
         css_tree = helpers.ParseHelper.parse_css_string('@charset \'UFT-8\'; @charset "UFT-8";')
         _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
@@ -205,7 +204,7 @@ class TypeCheckerTests(TestCase):
         """
         coco_ast = self.get_coco_ast("Semantic { "
                                      "find s=string in value "
-                                     "require s.has-single-quotes "
+                                     "require s.has_single_quotes "
                                      "message '' }")
         css_tree = helpers.ParseHelper.parse_css_string('a { font: "Arial" "Black"; color: \'red\'; }')
         _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
@@ -217,7 +216,7 @@ class TypeCheckerTests(TestCase):
         """
         coco_ast = self.get_coco_ast("Semantic { "
                                      "find s=string "
-                                     "require s.has-single-quotes "
+                                     "require s.has_single_quotes "
                                      "message '' }")
         css_tree = helpers.ParseHelper.parse_css_string('a[b="test"] { font: "Black"; color: \'red\'; }')
         _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
@@ -406,10 +405,10 @@ class TypeCheckerTests(TestCase):
         Do not use a vendor-prefixed property without a standard property after it.
         """
         cos = "Semantic ignore space, newline{ " \
-              "find d=declaration{property.is-vendor-specific} " \
-              "require d.next-sibling is declaration and " \
-              "((d.next-sibling.is-vendor-specific and d.next-sibling.property.standard == d.property.standard) or " \
-              "(not d.next-sibling.is-vendor-specific and d.next-sibling.property.standard == d.property.standard)) "\
+              "find d=declaration{property.is_vendor_specific} " \
+              "require d.next_sibling is declaration and " \
+              "((d.next_sibling.is_vendor_specific and d.next_sibling.property.standard == d.property.standard) or " \
+              "(not d.next_sibling.is_vendor_specific and d.next_sibling.property.standard == d.property.standard)) "\
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
         css_tree = helpers.ParseHelper.parse_css_string("a { -webkit-hyphens: none; -moz-hyphens: "
@@ -423,9 +422,9 @@ class TypeCheckerTests(TestCase):
         """
         cos = "Semantic ignore space, newline{ " \
               "find (rgba or hsl or hsla) in d=declaration{property.name == 'color'} " \
-              "require d.previous-sibling is declaration and " \
-              "d.previous-sibling.property.name == 'color' and " \
-              "(d.previous-sibling.contains(hex) or d.previous-sibling.contains(colorname)) "\
+              "require d.previous_sibling is declaration and " \
+              "d.previous_sibling.property.name == 'color' and " \
+              "(d.previous_sibling.contains(hex) or d.previous_sibling.contains(colorname)) "\
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
         css_tree = helpers.ParseHelper.parse_css_string("a { color: rgba(1,2,3,0); } "
@@ -517,7 +516,7 @@ class TypeCheckerTests(TestCase):
         One selector per line
         """
         cos = "Whitespace ignore newline comment newline { " \
-              "find s1=delim next-to s2=simpleselector " \
+              "find s1=delim next-to s2=simple-selector " \
               "require newline between s1 and s2 "\
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
@@ -733,18 +732,18 @@ class TypeCheckerTests(TestCase):
         _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
         assert violation_log.number_of_violations() == 1
 
-    # def test_use_rgba_with_opacity(self):
-    #     """
-    #     Use rgba only when opacity is needed
-    #     """
-    #     cos = "Semantic ignore indent, space, newline,  { " \
-    #           "forbid rgba{opacity == 1} " \
-    #           "message '' }"
-    #     coco_ast = self.get_coco_ast(cos)
-    #     css_tree = helpers.ParseHelper.parse_css_string("a{ color: rgba(1, 1, 2, 0.9); color: rgba(1, 1, 2, 1) }")
-    #     css_tree.pretty_print()
-    #     _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
-    #     assert violation_log.number_of_violations() == 1
+    def test_use_rgba_with_opacity(self):
+        """
+        Use rgba only when opacity is needed
+        """
+        cos = "Semantic ignore indent, space, newline,  { " \
+              "forbid rgba{opacity == 1} " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(cos)
+        css_tree = helpers.ParseHelper.parse_css_string("a{ color: rgba(1, 1, 2, 0.9); color: rgba(1, 1, 2, 1) }")
+        css_tree.pretty_print()
+        _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 1
 
     def test_use_px_for_font_size(self):
         """
@@ -779,7 +778,7 @@ class TypeCheckerTests(TestCase):
         If you must use an id selector make sure that you have no more than one in your rule declaration.
         """
         cos = "Semantic ignore indent, space, newline,  { " \
-              "find id in s=simpleselector " \
+              "find id in s=simple-selector " \
               "forbid s.count(selector-part) > 1 " \
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
@@ -794,7 +793,7 @@ class TypeCheckerTests(TestCase):
         """
         cos = "Whitespace ignore indent  { " \
               "find r1=ruleset next-to r2=ruleset " \
-              "where not r1.is-single-line or not r2.is-single-line " \
+              "where not r1.is_single_line or not r2.is_single_line " \
               "require newline{2} between r1 and r2 " \
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
@@ -816,7 +815,7 @@ class TypeCheckerTests(TestCase):
         """
         cos = "Whitespace ignore indent  { " \
               "find r1=ruleset next-to r2=ruleset " \
-              "where not r1.is-single-line or not r2.is-single-line " \
+              "where not r1.is_single_line or not r2.is_single_line " \
               "require newline{2} between r1 and r2 " \
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
@@ -839,7 +838,7 @@ class TypeCheckerTests(TestCase):
         """
         cos = "Whitespace ignore indent  { " \
               "find r1=ruleset next-to r2=ruleset " \
-              "where r1.is-single-line and r2.is-single-line " \
+              "where r1.is_single_line and r2.is_single_line " \
               "require newline{1, 2} between r1 and r2 " \
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
@@ -858,7 +857,7 @@ class TypeCheckerTests(TestCase):
         """
         cos = "Whitespace ignore indent  { " \
               "find r1=ruleset next-to r2=ruleset " \
-              "where r1.is-single-line and r2.is-single-line " \
+              "where r1.is_single_line and r2.is_single_line " \
               "require newline{1, 2} between r1 and r2 " \
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
@@ -920,7 +919,7 @@ class TypeCheckerTests(TestCase):
         Disallow selectors that look like regular expressions
         """
         cos = "Whitespace ignore indent  { " \
-              "find a=attrselector " \
+              "find a=attribute-selector-type " \
               "forbid a.string in ['*=', '|=', '^=', '~=', '$=']" \
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
@@ -943,4 +942,59 @@ class TypeCheckerTests(TestCase):
         css_tree.pretty_print()
         _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
         assert violation_log.number_of_violations() == 1
+
+    def test_over_qualify_headings(self):
+        """
+        Do not over-qualify headings
+        """
+        cos = "Semantic { " \
+              "find h=heading " \
+              "forbid h.next_sibling is class or h.next_sibling is id " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(cos)
+        css = """h1#id, h1.class, h1 {}"""
+        css_tree = helpers.ParseHelper.parse_css_string(css)
+        css_tree.pretty_print()
+        _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 2
+
+    def test_gradient_fallback_headings(self):
+        """
+        Provide fallback property for gradient values
+        """
+        cos = "Semantic ignore newline, indent, tab, comment, space { " \
+              "find d=declaration{property.name == 'background-image' and contains(function{name match 'gradient.*'})} " \
+              "require d.previous_sibling is declaration and (d.previous_sibling.property.name == 'background-image' or " \
+              "(d.previous_sibling.property.name == 'background-color' and d.previous_sibling.contains(color)))" \
+              "message '' }"
+        coco_ast = self.get_coco_ast(cos)
+        css = """ a { background-color: #444;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(#444), to(#999));
+        background-image: -webkit-linear-gradient(top, #444, #999);
+        color: red;
+        background-image: -webkit-gradient(linear, left top, left bottom, from(#444), to(#999));
+        background-image: -webkit-linear-gradient(top, #444, #999); }"""
+        css_tree = helpers.ParseHelper.parse_css_string(css)
+        css_tree.pretty_print()
+        _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 1
+
+    def test_over_qualify_attr(self):
+        """
+        Disallow unqualified attribute selectors.
+        This is a problem only if the attr selector appears as key and is unqualified
+        """
+        cos = "Semantic ignore newline, indent, tab, comment, space { " \
+              "find a=attribute-selector{is_key} " \
+              "require a.previous_sibling is selector-part " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(cos)
+        css = """[class] h1, [class], h2[class], h3 [class] {}"""
+        css_tree = helpers.ParseHelper.parse_css_string(css)
+        css_tree.pretty_print()
+        _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 2
+
+
+
 
