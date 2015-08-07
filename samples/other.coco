@@ -45,6 +45,12 @@ ignore newline, indent, comment, tab, space
     find h=hex
     forbid h.string match 'fff(fff)?' or h.string match '000(000)?'
     message 'For white and black colors, use color names not hex values'
+
+    forbid property{name in ['margin', 'padding', 'background', 'font', 'list-style']}
+    message 'Do not use shorthands, except for border'
     */
 
+    find h=hex
+    require h.string match lowercase
+    message 'Hex values should be lowercase'
 }

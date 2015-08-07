@@ -4,7 +4,7 @@ ignore space, indent, tab, comment, newline
     forbid class{name match '.*js-.*'}
     message 'Do not make js- prefixed classes. They are used exclusively from JS files. Use the is- prefix instead.'
 
-    forbid colorname
+    forbid colorname or rgb or rgba or hsl or hsla
     message 'Use hex for colors'
 
     forbid number{num_value == 0} in (dimension or percentage)
@@ -13,13 +13,13 @@ ignore space, indent, tab, comment, newline
     forbid rgba{opacity == 1}
     message 'Use rgba only when opacity is needed'
 
-    find d=declaration{property.name=='font_size'}
+    find d=declaration{property.name=='font-size'}
     require d.value.contains(dimension{unit=='px'})
     message 'Use px for font_size'
 
-    find d=declaration{property.name=='line_height'}
+    find d=declaration{property.name=='line-height'}
     require not d.contains(dimension) or d.contains(dimension{unit=='px'})
-    message 'Line height should also be unit_less, unless necessary to be defined as a specific pixel value.'
+    message 'Line height should also be unitless, unless necessary to be defined as a specific pixel value.'
 
     find id in s=simple-selector
     forbid s.count(selector_part) > 1

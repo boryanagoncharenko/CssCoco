@@ -995,6 +995,93 @@ class TypeCheckerTests(TestCase):
         _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
         assert violation_log.number_of_violations() == 2
 
+    def test_disallow_negative_text_indent(self):
+        """
+        Disallow negative text indent
+        """
+        cos = "Semantic ignore newline, indent, tab, comment, space { " \
+              "find d=declaration{property.name=='text-indent' and value.contains(unary)} in r=ruleset " \
+              "require r.contains(declaration{property.name=='direction' and value.string=='ltr'}) " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(cos)
+        css = """a {text-indent: -1; direction: rtl; } b {text-indent: -1;} c{text-indent: -1; direction: ltr; }"""
+        css_tree = helpers.ParseHelper.parse_css_string(css)
+        css_tree.pretty_print()
+        _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 2
 
+    def test_disallow_vendor_properties(self):
+        """
+        Try to avoid vendor-specific properties
+        """
+        cos = "Semantic ignore newline, indent, tab, comment, space { " \
+              "forbid declaration{is_vendor_specific} " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(cos)
+        css = """a {-o-text-indent: -1; direction: rtl; } """
+        css_tree = helpers.ParseHelper.parse_css_string(css)
+        css_tree.pretty_print()
+        _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 1
+
+    def test_tag_child_selector_clear(self):
+        """
+        Selectors that have tag as their key selector should never use the child selector
+        """
+        cos = "Semantic ignore newline, indent, tab, comment, space { " \
+              "find tag{is_key} in s=simple-selector " \
+              "require not s.contains(child-selector) " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(cos)
+        css = """h1 > .c {} h2 {}"""
+        css_tree = helpers.ParseHelper.parse_css_string(css)
+        css_tree.pretty_print()
+        _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert not violation_log.number_of_violations()
+
+    def test_tag_child_selector(self):
+        """
+        Selectors that have tag as their key selector should never use the child selector
+        """
+        cos = "Semantic ignore newline, indent, tab, comment, space { " \
+              "find tag{is_key} in s=simple-selector " \
+              "require not s.contains(child-selector) " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(cos)
+        css = """.c > h2 {}  a > .c h1 {}"""
+        css_tree = helpers.ParseHelper.parse_css_string(css)
+        css_tree.pretty_print()
+        _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 2
+
+    def test_tag_class_selector(self):
+        """
+        If a rule has a class as its key selector, don\'t add a tag name to the rule
+        """
+        cos = "Semantic ignore newline, indent, tab, comment, space { " \
+              "find c=class{is_key} " \
+              "forbid c.previous_sibling is tag " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(cos)
+        css = """h1.class {} h1 .class {}"""
+        css_tree = helpers.ParseHelper.parse_css_string(css)
+        css_tree.pretty_print()
+        _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 1
+
+    def test_tag_class_id_selector(self):
+        """
+        If a rule has an ID selector as its key selector, don\'t add the tag name to the rule. Don\'t add a class name either
+        """
+        cos = "Semantic ignore newline, indent, tab, comment, space { " \
+              "find i=id{is_key} " \
+              "forbid i.previous_sibling is tag or i.previous_sibling is class " \
+              "message '' }"
+        coco_ast = self.get_coco_ast(cos)
+        css = """h1#id {} .class#id {} #id .class {}"""
+        css_tree = helpers.ParseHelper.parse_css_string(css)
+        css_tree.pretty_print()
+        _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
+        assert violation_log.number_of_violations() == 2
 
 

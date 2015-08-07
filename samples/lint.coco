@@ -140,7 +140,7 @@ ignore space, newline, comment, indent, tab
 
     find f=fontface
     require f.contains(uri{argument.string match '#iefix'})
-    message 'Make hte font-face bulletproof'
+    message 'Make the font-face bulletproof'
 
     find d=declaration{property.name=='text-indent' and value.contains(unary)} in r=ruleset
     require r.contains(declaration{property.name=='direction' and value.string=='ltr'})
