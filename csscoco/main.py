@@ -22,7 +22,7 @@ def get_css_parse_tree():
         return None, '-----\nPlease check the validity of the css block!\n-----'
     tr = css_parser.SExprTransformer.transform(l)
     a = css.ParseTreeBuilder.build(tr)
-    print(a.pretty_print())
+    # print(a.pretty_print())
     return a, ''
 
 
@@ -41,6 +41,7 @@ def main():
     css_tree, error = get_css_parse_tree()
     if error:
         print('Please check the validity of your css.')
+        exit()
 
     coco_ast = get_coco_ast()
     errors = checker.TypeChecker.check(coco_ast)
@@ -53,3 +54,4 @@ def main():
     exit()
 
 print(main())
+

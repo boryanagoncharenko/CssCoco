@@ -1,1 +1,1 @@
-Semantic { find s=string in value require s.has_single_quotes message '' }
+Semantic { forbid ruleset{contains(property{name=='height'}) and contains(property{name in ['border','border-top','border-bottom','padding','padding-top','padding-bottom']}) }message '' }

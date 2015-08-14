@@ -50,7 +50,7 @@ ignore newline, indent, comment, tab, space
     message 'Do not use shorthands, except for border'
     */
 
-    find h=hex
+    fin h=hex
     require h.string match lowercase
     message 'Hex values should be lowercase'
 }

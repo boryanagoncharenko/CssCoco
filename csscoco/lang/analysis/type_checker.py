@@ -51,7 +51,7 @@ class TypeChecker(object):
         for node_desc in pattern_desc.nodes:
             self._visit(node_desc)
         constraint_type = self._visit(pattern_desc.constraint)
-        if self._is_not_boolean_constraint(constraint_type, pattern_desc.constaint.line):
+        if self._is_not_boolean_constraint(constraint_type, pattern_desc.constraint.line):
                 return types.Error.TYPE
 
     def _is_not_boolean_constraint(self, constraint_type, line):

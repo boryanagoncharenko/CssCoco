@@ -1,10 +1,6 @@
 Semantic
 ignore newline, indent, space, tab
 {
-
-    find (rgba or hsl or hsla) in d=declaration{property.name == 'color'}
-    require d.previous_sibling is declaration and
-            d.previous_sibling.property.name == 'color' and
-            (d.previous_sibling.contains(hex) or d.previous_sibling.contains(colorname))
-    message ''
+    forbid id
+    message 'Do not use ids'
 }

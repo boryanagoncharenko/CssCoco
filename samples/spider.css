@@ -1,49 +1,141 @@
-img {border:0;}
-.last {width:100%; text-align:right;}
-.last div#TwitterCounter {float:right;}
-.last img {border:0; width:88px; height:31px;}
-br {clear:left;}
-div.c {text-align:center;}
-div.c div {border:1px solid black; display:inline-block;}
-div.c div img {vertical-align:middle;}
-.foto {width:100%; text-align:center; display:block;}
-div.r {float:right;width:33%;border:1px solid black;margin-left:1%;padding-right:10px;}
-ul.linklist li span,.links {text-align:center; font-family:'Courier New',Courier,mono; font-weight:bold;}
-.cols {text-align:center; font-family:'Courier New',Courier,mono; font-weight:bold; width:800px;
-margin-left: auto; margin-right: auto;}
-table {border-collapse:collapse;}
-.cols table tr td {font-family:"Stencil","Stencil D",Courier,mono;font-size:64px;width:200px;font-weight:normal;}
-.cols table tr.c td {font-family:"Cochin",Courier,mono;font-size:14px;width:200px;font-style: italic;}
-.cols table tr:first-child td {border:1px solid black;color:#fff;padding:10px;}
-.col {float:left; width:200px; }
-.col br {clear:right;}
-ul.linklist li span a, .links a, .col a {text-decoration:none;}
-a:hover {text-decoration:underline;}
-body{background-color:#9C9; color:#033;}
-a:link{color:#039;}
-a:visited{color:#006;}
-ul li {list-style:disc;}
-ul li ul li, dl dd dl dd, .col {font-size:smaller;}
-dl.boldies dt {font-weight:bold;}
-.grey {color:#466;}
-.red {color:#400;}
-.grey .red a:link, .red a:link, .red a:visited, .grey .red a:visited {color:#633;}
-.grey a:link {color:#46C;}
-.grey a:visited {color:#436;}
-td.g { color:#3f691e;}
-td.r { color:#d90b00;}
-td.y { color:#fff959;}
-td.b { color:#000;}
+.goog-inline-block {
+    position: relative;
+    display: -moz-inline-box;
+    display: inline-block
+}
 
-.pbox, .bbox, .abox, .wbox, .jbox, .sbox, .gbox
-{border:1px solid black; width: 12px; height: 12px; display:inline-block; margin: 1px;}
-.col .pbox, .col .bbox, .col .abox, .col .wbox, .col .jbox, .col .sbox, .col .gbox
-{border:1px solid black; width: 10px; height: 10px; display:inline-block; float: left;}
-.abox {background-color: #0FF;}
-.bbox {background-color: #F80;}
-.gbox {background-color: #000;}
-.jbox {background-color: #F00;}
-.pbox {background-color: #00F;}
-.sbox {background-color: #CCC;}
-.wbox {background-color: #FF0;}
-/*.box {background-color: #000; color: #FFF;}*/
+* html .goog-inline-block {
+    display: inline
+}
+
+*:first-child+html .goog-inline-block {
+    display: inline
+}
+
+.jfk-bubble {
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    -moz-box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    background-color: #fff;
+    border: 1px solid;
+    border-color: #bbb #bbb #a8a8a8;
+    padding: 16px;
+    position: absolute;
+    z-index: 1201!important;
+}
+
+.jfk-bubble-closebtn {
+    background: url(//ssl.gstatic.com/ui/v1/icons/common/x_8px.png) no-repeat;
+    border: 1px solid transparent;
+    height: 21px;
+    opacity: .4;
+    outline: 0;
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    width: 21px
+}
+
+.jfk-bubble-closebtn:focus {
+    border: 1px solid #4d90fe;
+    opacity: .8
+}
+
+.jfk-bubble-arrow {
+    position: absolute
+}
+
+.jfk-bubble-arrow .jfk-bubble-arrowimplbefore,
+.jfk-bubble-arrow .jfk-bubble-arrowimplafter {
+    display: block;
+    height: 0;
+    position: absolute;
+    width: 0
+}
+
+.jfk-bubble-arrow .jfk-bubble-arrowimplbefore {
+    border: 9px solid
+}
+
+.jfk-bubble-arrow .jfk-bubble-arrowimplafter {
+    border: 8px solid
+}
+
+.jfk-bubble-arrowdown {
+    bottom: 0
+}
+
+.jfk-bubble-arrowup {
+    top: -9px
+}
+
+.jfk-bubble-arrowleft {
+    left: -9px
+}
+
+.jfk-bubble-arrowright {
+    right: 0
+}
+
+.jfk-bubble-arrowdown .jfk-bubble-arrowimplbefore,
+.jfk-bubble-arrowup .jfk-bubble-arrowimplbefore {
+    border-color: #bbb transparent;
+    left: -9px
+}
+
+.jfk-bubble-arrowdown .jfk-bubble-arrowimplbefore {
+    border-color: #a8a8a8 transparent
+}
+
+.jfk-bubble-arrowdown .jfk-bubble-arrowimplafter,
+.jfk-bubble-arrowup .jfk-bubble-arrowimplafter {
+    border-color: #fff transparent;
+    left: -8px
+}
+
+.jfk-bubble-arrowdown .jfk-bubble-arrowimplbefore {
+    border-bottom-width: 0
+}
+
+.jfk-bubble-arrowdown .jfk-bubble-arrowimplafter {
+    border-bottom-width: 0
+}
+
+.jfk-bubble-arrowup .jfk-bubble-arrowimplbefore {
+    border-top-width: 0
+}
+
+.jfk-bubble-arrowup .jfk-bubble-arrowimplafter {
+    border-top-width: 0;
+    top: 1px
+}
+
+.jfk-bubble-arrowleft .jfk-bubble-arrowimplbefore,
+.jfk-bubble-arrowright .jfk-bubble-arrowimplbefore {
+    border-color: transparent #bbb;
+    top: -9px
+}
+
+.jfk-bubble-arrowleft .jfk-bubble-arrowimplafter,
+.jfk-bubble-arrowright .jfk-bubble-arrowimplafter {
+    border-color: transparent #fff;
+    top: -8px
+}
+
+.jfk-bubble-arrowleft .jfk-bubble-arrowimplbefore {
+    border-left-width: 0
+}
+
+.jfk-bubble-arrowleft .jfk-bubble-arrowimplafter {
+    border-left-width: 0;
+    left: 1px
+}
+
+.jfk-bubble-arrowright .jfk-bubble-arrowimplbefore {
+    border-right-width: 0
+}
+
+.jfk-bubble-arrowright .jfk-bubble-arrowimplafter {
+    border-right-width: 0
+}
+

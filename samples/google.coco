@@ -28,10 +28,10 @@ ignore space, newline, comment, indent, tab
     forbid string in uri
     message 'Do not put quotes in url declarations'
 
-    forbid hex{is-long and string match shorten}
+    forbid hex{is_long and string match shorten}
     message 'Use short hex values'
 
-    forbid ruleset{contains-all([
+    forbid ruleset{contains_all([
         property{name=='margin-right'},
         property{name=='margin-left'},
         property{name=='margin-top'},
@@ -39,7 +39,7 @@ ignore space, newline, comment, indent, tab
     ])}
     message 'Use the shorthand margin property instead'
 
-    forbid ruleset{contains-all([
+    forbid ruleset{contains_all([
         property{name=='padding-right'},
         property{name=='padding-left'},
         property{name=='padding-top'},
@@ -55,7 +55,7 @@ ignore space, newline, comment, indent, tab
     message 'Use a leading zero for decimal values'
 
     find v=attribute-value
-    require v is string and v.has-single-quotes
+    require v is string and v.has_single_quotes
     message 'Use single quotes in attribute selectors'
 
     find s=string in charset

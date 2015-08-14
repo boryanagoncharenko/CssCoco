@@ -401,6 +401,12 @@ class FontFace(AtRule):
         self._categories.append('fontface')
 
 
+class Media(AtRule):
+    def __init__(self, value):
+        super(Media, self).__init__(value)
+        self._categories.append('media')
+
+
 class Uri(CssNode):
     def __init__(self, value):
         super(Uri, self).__init__(value)
@@ -530,6 +536,9 @@ class ParseTreeBuilder(object):
         if keyword == 'font-face':
             children.pop(0)
             return FontFace(children)
+        if keyword == 'media':
+            children.pop(0)
+            return Media(children)
         raise NotImplementedError()
 
     def _annotate_ast(self, node):
