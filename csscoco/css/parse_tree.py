@@ -49,10 +49,6 @@ class CssNode(object):
         return ''.join([' start[', str(self.start_position.line), ':', str(self.start_position.column), ']',
                         'end[',  str(self.end_position.line), ':', str(self.end_position.column), ']'])
 
-    def _get_terminal_nodes(self):
-        for child in self.value:
-            yield from child._get_terminal_nodes()
-
     def _register_api(self):
         self._api[ExprConstants.STRING] = self._get_string
         self._api[ExprConstants.CHILD] = self._get_child
@@ -205,7 +201,7 @@ class SelectorPart(TerminalCssNode):
         self._api[ExprConstants.NAME] = self._get_value
 
     def _get_is_key(self):
-        r = self.index == len(self.parent.value)-1
+        r = self.index == len(self.parent.value) - 1
         return values.Boolean.build(r)
 
 
@@ -250,7 +246,7 @@ class AttributeSelector(CssNode):
         return values.Node(self.attr_value)
 
     def _get_is_key(self):
-        r = self.index == len(self.parent.value)-1
+        r = self.index == len(self.parent.value) - 1
         return values.Boolean.build(r)
 
 
@@ -296,6 +292,18 @@ class Rgb(Function):
     def __init__(self, value):
         super(Rgb, self).__init__(value)
         self._categories.extend(['rgb', 'color'])
+
+
+class Hsla(Function):
+    def __init__(self, value):
+        super(Hsla, self).__init__(value)
+        self._categories.extend(['hsla', 'color'])
+
+
+class Hsl(Function):
+    def __init__(self, value):
+        super(Hsl, self).__init__(value)
+        self._categories.extend(['hsl', 'color'])
 
 
 class Hex(TerminalCssNode):
@@ -510,12 +518,12 @@ class ParseTreeBuilder(object):
         function_name = l[1][1].lower()
         if function_name == 'rgba':
             return Rgba(children)
-        # if function_name == 'hsla':
-        #     return Hsla(children)
-        # if function_name == 'rgb':
-        #     return Rgb(children)
-        # if function_name == 'hsl':
-        #     return Hsl(children)
+        if function_name == 'hsla':
+            return Hsla(children)
+        if function_name == 'rgb':
+            return Rgb(children)
+        if function_name == 'hsl':
+            return Hsl(children)
         return Function(children)
 
     def _get_attribute(self, children):
@@ -542,35 +550,35 @@ class ParseTreeBuilder(object):
         raise NotImplementedError()
 
     def _annotate_ast(self, node):
-        # TODO: what on earth have I done here? terminals' positions should be done while building
-        self._add_parent_and_child_index(node)
-        self._add_position_to_terminal_nodes(node)
-        self._add_position_to_nodes(node)
-
-    def _add_parent_and_child_index(self, node):
-        if not node.has_children():
-            return
-        for index, child in enumerate(node.value):
-            child.parent = node
-            # child.index = index
-            self._annotate_ast(child)
-
-    def _add_position_to_terminal_nodes(self, node):
         start = Position.START
-        for terminal in node._get_terminal_nodes():
-            terminal.start_position = start
-            terminal.end_position = start.get_next_position(terminal.value)
-            start = Position(terminal.end_position.line, terminal.end_position.column)
+        frontier = [node]
+        while frontier:
+            current = frontier[-1]
+            if current.has_children():
+                if self._is_last_child_annotated(current):
+                    self._annotate_non_terminal(current, frontier)
+                else:
+                    self._append_children(current, frontier)
+            else:
+                current.start_position = start
+                current.end_position = start.get_next_position(current.value)
+                start = Position(current.end_position.line, current.end_position.column)
+                frontier.pop()
 
-    def _add_position_to_nodes(self, node):
-        if node.has_children():
-            for child in node.value:
-                self._add_position_to_nodes(child)
+    def _annotate_non_terminal(self, current, frontier):
+        current.start_position = current.value[0].start_position
+        current.end_position = current.value[-1].end_position
+        frontier.pop()
 
-            first_child = node.value[0]
-            last_child = node.value[-1]
-            node.start_position = first_child.start_position
-            node.end_position = last_child.end_position
+    def _append_children(self, current, frontier):
+        length = len(current.value)
+        for i in range(0, length):
+            child = current.value[length - i - 1]
+            child.parent = current
+            frontier.append(child)
+
+    def _is_last_child_annotated(self, node):
+        return node.value[-1].start_position and node.value[-1].end_position
 
 
 class Position(object):

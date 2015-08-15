@@ -150,17 +150,19 @@ class CocoCustomVisitor(cocoVisitor):
 
     def visit_semantic_node_with_id(self, context, variable):
         node_descriptor = self.get_node_descriptor(context.type_)
+        line = context.type_.start.line
         if not context.constraint:
-            return ast.Node(node_descriptor, identifier=variable)
+            return ast.Node(node_descriptor, line, identifier=variable)
         constraint = self.visitLogic_expr(context.constraint)
-        return ast.Node(node_descriptor, identifier=variable, constraint=constraint)
+        return ast.Node(node_descriptor, line, identifier=variable, constraint=constraint)
 
     def visitSemantic_node(self, context):
         node_descriptor = self.get_node_descriptor(context.type_)
+        line = context.type_.start.line
         if not context.constraint:
-            return ast.Node(node_descriptor)
+            return ast.Node(node_descriptor, line)
         constraint = self.visitLogic_expr(context.constraint)
-        return ast.Node(node_descriptor, constraint)
+        return ast.Node(node_descriptor, line, constraint)
 
     def visitLogic_expr(self, context):
         if context.parenthesis:
@@ -214,10 +216,11 @@ class CocoCustomVisitor(cocoVisitor):
 
     def visitWhitespace_node(self, context):
         node_descriptor = self.get_ws_node_descriptor(context.type_.text)
+        line = context.type_.line
         if context.quantifier:
             repeater = self.visitRepeater(context.quantifier)
-            return ast.WhitespaceNode(node_descriptor, repeater)
-        return ast.Node(node_descriptor)
+            return ast.WhitespaceNode(node_descriptor, repeater, line)
+        return ast.Node(node_descriptor, line)
 
     def visitRepeater(self, context):
         lower = -1

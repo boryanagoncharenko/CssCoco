@@ -56,7 +56,7 @@ class TypeChecker(object):
 
     def _is_not_boolean_constraint(self, constraint_type, line):
         if not constraint_type.is_error() and not constraint_type.is_boolean():
-            self._errors.log(ErrorMessageBuilder.require_not_boolean_constraint_error(constraint_type, line))
+            self._errors.log(ErrorMessageBuilder.not_boolean_constraint_error(constraint_type, line))
             return True
         return False
 
@@ -109,11 +109,6 @@ class TypeChecker(object):
         operand_type = self._visit(expr.operand)
         if operand_type.is_error():
             return operand_type
-        # TODO: Add a check whether the invoked property is defined for the specific CssNode
-        # Consider the following example. Has-single-quotes cannot be checked
-        # statically because at runtime the type is narrowed:
-        # find v=attribute-value require v is string and v.has-single-quotes
-
         return expr.get_return_type()
 
     @vis.visitor(ast.InvalidPropertyExpr)
@@ -257,15 +252,8 @@ class ErrorMessageBuilder(object):
     def not_boolean_constraint_error(type_operand, line):
         t = type_operand.__class__.__name__
         line = str(line)
-        return ''.join(['Error on line ', line, ' - The constraint of node is of type : ',
-                        t, ' and it should be boolean instead.'])
-
-    @staticmethod
-    def require_not_boolean_constraint_error(type_operand, line):
-        t = type_operand.__class__.__name__
-        line = str(line)
-        return ''.join(['Error on line ', line, ' - The constraint is of type : ',
-                        t, ' and it should be boolean instead.'])
+        return ''.join(['Error on line ', line, ' - The constraint is of type \'',
+                        t, '\' and it should be boolean instead.'])
 
     @staticmethod
     def unknown_call_error(expr):

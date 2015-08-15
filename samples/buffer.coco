@@ -1,6 +1,6 @@
 Semantic
 ignore newline, indent, space, tab
 {
-    forbid id
+    forbid id{'string'}
     message 'Do not use ids'
 }

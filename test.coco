@@ -1,1 +1,1 @@
-Semantic { forbid ruleset{contains(property{name=='height'}) and contains(property{name in ['border','border-top','border-bottom','padding','padding-top','padding-bottom']}) }message '' }
+Semantic { forbid important message '' }

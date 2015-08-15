@@ -158,8 +158,8 @@ class IsNextSiblingOf(NodeRelation):
 
 
 class NodeDescriptor(AstNode):
-    def __init__(self, descriptor):
-        super(NodeDescriptor, self).__init__()
+    def __init__(self, descriptor, line):
+        super(NodeDescriptor, self).__init__(line)
         self.descriptor = descriptor
 
     @abc.abstractmethod
@@ -172,8 +172,8 @@ class NodeDescriptor(AstNode):
 
 
 class WhitespaceNode(NodeDescriptor):
-    def __init__(self, descriptor, repeater):
-        super(WhitespaceNode, self).__init__(descriptor)
+    def __init__(self, descriptor, repeater, line=-1):
+        super(WhitespaceNode, self).__init__(descriptor, line)
         self.repeater = repeater
 
     def has_constraint(self):
@@ -210,8 +210,8 @@ Repeater.DEFAULT = Repeater()
 
 
 class Node(NodeDescriptor):
-    def __init__(self, descriptor, constraint=None, identifier=None):
-        super(Node, self).__init__(descriptor)
+    def __init__(self, descriptor, line=-1, constraint=None, identifier=None):
+        super(Node, self).__init__(descriptor, line)
         self.constraint = constraint
         self.identifier = identifier
 

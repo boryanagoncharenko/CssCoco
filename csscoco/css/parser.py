@@ -191,12 +191,8 @@ class SExprTransformer(object):
             i = 1
             while i < len(current):
                 child = current[i]
-
                 if self._should_pull_up_child(child, current, parent, i):
-                    # TODO:
                     self._det_how_to_pull_up(stack, i)
-                    # position_in_parent = stack.get_position_in_parent()
-                    # self._pull_up_child(current, parent, i, position_in_parent)
                 else:
                     stack.append(child, i)
                     self._try_pull(stack)
@@ -243,7 +239,6 @@ class SExprTransformer(object):
             return False, stack
         for i in range(1, len(current)):
             child = current[i]
-
             parent = stack.get_parent()
             position_in_parent = stack.get_position_in_parent()
             if self._should_pull_up_child(child, current, parent, i):
