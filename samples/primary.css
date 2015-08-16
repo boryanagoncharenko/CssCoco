@@ -1,0 +1,209 @@
+/*  background: #D1D5DB;
+border-bottom: 20px solid #C1E56D;*/
+
+body {
+    font-family: Palatino, Georgia, Times, serif;
+    color: #333;
+    text-align: center;
+    background-color: white;
+}
+
+#page {
+    text-align: left;
+}
+
+#content {
+    font-size: 20px;
+    line-height: 30px;
+}
+
+#content p + p {
+    padding-top: 12px
+}
+
+.narrowcolumn .postmetadata {
+    text-align: center;
+}
+
+.alt {
+    background-color: #f8f8f8;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+small {
+    font-size: 0.9em;
+    line-height: 1.5em;
+}
+
+h3, h4, h5 {
+    font-weight: bold;
+    font-family: "Lucida Grande", tahoma, Arial, sans-serif;
+}
+
+#header {
+    border-bottom: 2px solid #eee;
+    overflow: hidden;
+}
+
+#header div {
+    float: right;
+    padding-top: 2px;
+    font-size: 18px;
+}
+
+h1 {
+    font-weight: normal;
+    font-size: 72px;
+    padding-top: 72px;
+    margin-bottom: 10px;
+}
+
+.meta {
+    font-size: 30px;
+    padding-bottom: 60px;
+}
+
+h2 {font-size: 36px; line-height: 48px}
+h3 {font-size: 32px; line-height: 42px}
+
+h1 a, h2 a, h3 a, h1 a:hover, h2 a:hover, h3 a:hover{
+    text-decoration: none; 
+    color: #333;
+}
+
+.entry p a:visited {
+    color: #b85b5a;
+}
+
+.entry p a:hover {
+    color: white;
+    background-color: #b85b5a;
+}
+
+.commentlist li, #commentform input, #commentform textarea {
+    font: 0.9em 'Lucida Grande', Verdana, Arial, Sans-Serif;
+}
+
+.commentlist li {
+    font-weight: bold;
+    overflow: auto;
+}
+
+.commentlist cite, .commentlist cite a {
+    font-weight: bold;
+    font-style: normal;
+    font-size: 1.2em;
+}
+
+.commentlist p {
+    font-weight: normal;
+    line-height: 1.6em;
+    text-transform: none;
+}
+
+.commentmetadata {
+    font-weight: normal;
+}
+
+.commentmetadata a {
+    color: #999; text-decoration: none;
+}
+
+.commeta {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 7px;
+}
+
+h2, h3, h4, h5 {
+    text-align: left;
+}
+
+h2 {
+    margin: 30px 0 0;
+}
+
+h3 {
+    padding: 0;
+    margin: 30px 0 0;
+}
+
+h3.comments {
+    padding: 0;
+    margin: 40px auto 20px ;
+}
+
+.hl-default {
+    color: Black;
+}
+
+.hl-code {
+    color: Gray;
+}
+
+.hl-brackets {
+    color: Olive;
+}
+
+.hl-comment {
+    color: Orange;
+}
+
+.hl-quotes {
+    color: Darkred;
+}
+
+.hl-string {
+    color: Red;
+}
+
+.hl-identifier {
+    color: Blue;
+}
+
+.hl-builtin {
+    color: Teal;
+}
+
+.hl-reserved {
+    color: Green;
+}
+
+.hl-inlinedoc {
+    color: Blue;
+}
+
+.hl-var {
+    color: Darkblue;
+}
+
+.hl-url {
+    color: Blue;
+}
+
+.hl-special {
+    color: Navy;
+}
+
+.hl-number {
+    color: Maroon;
+}
+
+.hl-inlinetags {
+    color: Blue;
+}
+
+.hl-main {
+    background-color: #f8f8f8;
+}
+
+pre, code {
+    font-family: Consolas, Monaco, monospace;
+    background-color: #f8f8f8;
+    -moz-hyphens: none;
+    -webkit-hyphens: none;
+    hyphens: none;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #eee;
+}

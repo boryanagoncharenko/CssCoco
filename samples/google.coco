@@ -105,11 +105,5 @@ Custom
   find i=indent
   require i.string match '^ {4}$'
   message 'Use 4 spaces for indentation, no tabs.'
-
-  /* requires immediately-in and any
-  find a=any in block
-  require indent any{parent matches block}
-  message "Indent the contents of a block"
-  */
 }
 

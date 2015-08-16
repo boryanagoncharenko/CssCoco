@@ -1,0 +1,37 @@
+Semantic
+ignore indent, newline, space, comment
+{
+    find s=(class or id)
+    require s.string match '^[a-z\-]+$'
+    message 'Selectors must contain only lowercase letters and dashes.'
+
+    forbid property{name in ['background', 'font', 'list-style']}
+    message 'Do not use shorthands, except for border'
+
+    forbid dimension{unit == 'pix'}
+    message 'When possible, use em instead of pix.'
+}
+
+Whitespace
+ignore indent
+{
+    find d=declaration
+    require newline before d
+    message 'Put every declaration on a new line.'
+
+    find c=colon next-to v=value
+    require space between c and v
+    message 'Add exactly one space after the colon.'
+
+    find s=selector next-to b=block
+    require space between s and b
+    message 'Put exactly one space between the selector and the opening bracket.'
+
+    find r1=ruleset next-to r2=ruleset
+    require newline{2} between r1 and r2
+    message 'Add exactly one empty line between the separate style definitions.'
+
+    find d=declaration
+    require d.child(-1).string == ';'
+    message 'Missing semicolon at the end of declaration.'
+}

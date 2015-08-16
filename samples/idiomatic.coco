@@ -1,7 +1,7 @@
 Semantic
 ignore space, indent, tab, comment, newline
 {
-    find value=(not string) in value
+    find value=(not string) in value in declaration{property not in ['font', 'font-family']}
     require value.string match lowercase
     message 'All values except the contents of strings should be lowercase'
 
