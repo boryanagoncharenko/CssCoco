@@ -6,11 +6,11 @@ import csscoco.lang.analysis.pattern_matcher as p_matcher
 
 class Violation(object):
     def __init__(self, message, line):
-        self._message = message
-        self._line = line
+        self.message = message
+        self.line = line
 
     def to_string(self):
-        return ''.join(['Violation on line ', str(self._line), ': ', self._message])
+        return ''.join(['Violation on line ', str(self.line), ': ', self.message])
 
 
 class ViolationLog(object):
@@ -26,11 +26,15 @@ class ViolationLog(object):
     def to_string(self):
         if not self._inner:
             return ''
+        self._sort_violations()
         vs = []
         for v in self._inner:
             vs.append(v.to_string())
             vs.append('\n')
         return ''.join(vs[:-1])
+
+    def _sort_violations(self):
+        self._inner.sort(key=lambda v: v.line)
 
 
 class ViolationsFinder(object):
@@ -52,9 +56,9 @@ class ViolationsFinder(object):
             for conv in context.conventions:
                 try:
                     css_patterns = self.get_matched_css_patterns(conv)
+                    self.visit(conv, css_patterns)
                 except expr.InvalidPropertyException as e:
                     return False, CocoRuntimeError(e.message)
-                self.visit(conv, css_patterns)
         return True, self._violations
 
     @vis.visitor(ast.FindRequireConvention)

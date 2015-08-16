@@ -431,7 +431,6 @@ class CocoCustomVisitor(cocoVisitor):
             right = self.get_type_expression_string(ctx.right)
             return ''.join([left, ' ', ctx.operator.text, ' ', right])
         if ctx.primary:
-            # return ''.join(['\'', ctx.primary.text, '\' in n.search_labels'])
             return ''.join(['n.matches(\'', ctx.primary.text, '\')'])
         if ctx.operand:
             return 'not (' + self.get_type_expression_string(ctx.operand) + ')'

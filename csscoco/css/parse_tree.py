@@ -3,6 +3,8 @@ from csscoco.lang.common_ import ExprConstants
 
 
 class CssNode(object):
+    print_indent = '  '
+
     def __init__(self, value, categories=None):
         self.parent = None
         self.value = value
@@ -11,7 +13,6 @@ class CssNode(object):
         self.end_position = None
         self._api = {}
         self._register_api()
-        self._print_indent = '  '
         self.index = -1
         if categories:
             self._categories.extend(categories)
@@ -38,7 +39,7 @@ class CssNode(object):
         return True
 
     def pretty_print(self, level=0, verbose=False):
-        s = ''.join(['\n', self._print_indent*level, self._categories[-1], ':'])
+        s = ''.join(['\n', self.print_indent*level, self._categories[-1], ':'])
         if verbose:
             s = ''.join([s, self.get_position_str()])
         for child in self.value:
@@ -76,7 +77,7 @@ class TerminalCssNode(CssNode):
         return False
 
     def pretty_print(self, level=0, verbose=False):
-        s = ''.join(['\n', self._print_indent*level, self._categories[-1], ': \'', self.value, '\''])
+        s = ''.join(['\n', self.print_indent*level, self._categories[-1], ': \'', self.value, '\''])
         if verbose:
             s = ''.join([s, self.get_position_str()])
         return s
@@ -197,6 +198,7 @@ class SelectorPart(TerminalCssNode):
         self._categories.append('selector-part')
 
     def _register_api(self):
+        super(SelectorPart, self)._register_api()
         self._api[ExprConstants.IS_KEY] = self._get_is_key
         self._api[ExprConstants.NAME] = self._get_value
 

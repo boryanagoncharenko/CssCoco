@@ -16,6 +16,6 @@ class CocoErrorListener(ErrorListener):
             res = ''.join([res, e, '\n'])
         return res[:-1]
 
-    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+    def syntaxError(self, recognizer, offending_symbol, line, column, msg, e):
         error = ''.join(['Error on line ', str(line), ' - ', msg])
         self.errors.append(error)

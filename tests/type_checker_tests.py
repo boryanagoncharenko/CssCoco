@@ -288,3 +288,27 @@ class TypeCheckerTests(TestCase):
         error_log = checker.TypeChecker.check(convention_set)
         assert error_log.contain_errors()
         assert len(error_log.get_errors()) == 1
+
+    def test_undefined_variable_in_prop_expr(self):
+        a = ast.FindRequireConvention(ast.Node(descriptor=ast.NodeTypeDescriptor(type_='property'), identifier='a'), '',
+                                      constraint=ast.PropertyExpr(ast.VariableExpr('b'), 'string'))
+        convention_set = self.wrap_convention_in_set(a)
+        error_log = checker.TypeChecker.check(convention_set)
+        assert error_log.contain_errors()
+        assert len(error_log.get_errors()) == 1
+
+    def test_undefined_variable_in_method_expr(self):
+        a = ast.FindRequireConvention(ast.Node(descriptor=ast.NodeTypeDescriptor(type_='property'), identifier='a'), '',
+                                      constraint=ast.MethodExpr(ast.VariableExpr('b'), 'child', ast.IntegerExpr(5)))
+        convention_set = self.wrap_convention_in_set(a)
+        error_log = checker.TypeChecker.check(convention_set)
+        assert error_log.contain_errors()
+        assert len(error_log.get_errors()) == 1
+
+    def test_undefined_variable_in_node_query(self):
+        a = ast.FindRequireConvention(ast.Node(descriptor=ast.NodeTypeDescriptor(type_='property'), identifier='a'), '',
+                                      constraint=ast.NextSiblingExpr(ast.VariableExpr('b')))
+        convention_set = self.wrap_convention_in_set(a)
+        error_log = checker.TypeChecker.check(convention_set)
+        assert error_log.contain_errors()
+        assert len(error_log.get_errors()) == 1

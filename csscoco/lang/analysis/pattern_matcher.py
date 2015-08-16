@@ -1,4 +1,3 @@
-import abc
 import itertools
 
 import csscoco.css.parse_tree as css
@@ -56,7 +55,6 @@ Filter.EMPTY = Filter([])
 
 
 class TreeWalker(object):
-
     @staticmethod
     def traverse_current_and_descendants(desc, node, f):
         if f(desc, node):
@@ -130,16 +128,6 @@ class Matcher(object):
     def __init__(self, filter_):
         self.filter = filter_
 
-    @abc.abstractmethod
-    def find_pattern_in_tree(self, tree, pattern):
-        pass
-
-    # @staticmethod
-    # def build(pattern, filter_):
-    #     if type(pattern) is ast.WhitespaceVariation:
-    #         return WhitespaceVariationMatcher(filter_)
-    #     return PatternMatcher(filter_)
-
     def _is_node_desc_match(self, desc, node):
         type_ = desc.descriptor.is_node_match(node)
         if type_ and desc.has_constraint():
@@ -155,14 +143,6 @@ class Matcher(object):
 class WhitespaceVariationMatcher(Matcher):
     def __init__(self, filter_):
         super(WhitespaceVariationMatcher, self).__init__(filter_)
-
-    # def find_pattern_in_tree(self, tree, pattern):
-    #     nodes = self._filter_by(tree, pattern.root_desc, TreeWalker.traverse_current_and_descendants)
-    #     if len(pattern.all_descs) == 1:
-    #         return nodes
-    #     for n in nodes:
-    #         if self.is_start_of_variation(pattern, n):
-    #             yield n
 
     def is_variation_before_node(self, variation, node):
         """

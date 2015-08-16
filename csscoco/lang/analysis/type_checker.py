@@ -125,12 +125,16 @@ class TypeChecker(object):
 
     @vis.visitor(ast.NodeQueryExpr)
     def _visit(self, expr):
+        operand = self._visit(expr.operand)
+        if operand.is_error():
+            return types.Error.TYPE
         return expr.get_return_type()
 
     @vis.visitor(ast.NodeQueryWithArgExpr)
     def _visit(self, expr):
+        operand = self._visit(expr.operand)
         arg_type = self._visit(expr.argument)
-        if arg_type.is_error():
+        if operand.is_error() or arg_type.is_error():
             return types.Error.TYPE
         if not expr.is_type_compatible(arg_type):
             self._errors.log(ErrorMessageBuilder.invalid_argument_error(expr, arg_type))
