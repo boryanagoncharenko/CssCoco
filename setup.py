@@ -6,7 +6,7 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name='csscoco',
-    version='0.1.17',
+    version='0.1.18',
     description='A DSL for CSS Code Convetions',
     long_description="The package detects violations of CSS code conventions automatically. "\
       "It contains a number of predefined conventons sets, however, it also comprises a "\
