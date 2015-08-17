@@ -5,20 +5,22 @@ ignore indent, newline, space, comment
     require s.string match '^[a-z\-]+$'
     message 'Selectors must contain only lowercase letters and dashes.'
 
-    forbid property{name in ['background', 'font', 'list-style']}
+    forbid property{name in ['margin', 'padding', 'background', 'font', 'list-style']}
     message 'Do not use shorthands, except for border'
 
-    forbid dimension{unit == 'pix'}
-    message 'When possible, use em instead of pix.'
+    find c=colorname
+    require c.string match lowercase
+    message 'Colors should be lowercase'
+
+/*
+    forbid dimension{unit == 'px'}
+    message 'When possible, use em instead of px.'
+*/
 }
 
 Whitespace
-ignore indent
+ignore newline indent comment, newline comment, indent, comment
 {
-    find d=declaration
-    require newline before d
-    message 'Put every declaration on a new line.'
-
     find c=colon next-to v=value
     require space between c and v
     message 'Add exactly one space after the colon.'
@@ -26,6 +28,10 @@ ignore indent
     find s=selector next-to b=block
     require space between s and b
     message 'Put exactly one space between the selector and the opening bracket.'
+
+    find d=declaration
+    require newline before d
+    message 'Put every declaration on a new line.'
 
     find r1=ruleset next-to r2=ruleset
     require newline{2} between r1 and r2

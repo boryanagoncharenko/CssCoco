@@ -16,7 +16,7 @@ class Parser(object):
     def parse_css(css):
         encoded_css = css.encode('utf8')
         try:
-            node_command = Parser.get_node_command()
+            node_command = Parser._get_node_command()
             process = Popen([node_command, GONZO_PATH, encoded_css], stdout=PIPE, stdin=PIPE, stderr=PIPE)
         except OSError:
             raise Exception('')
@@ -27,7 +27,7 @@ class Parser(object):
         return err
 
     @staticmethod
-    def get_node_command():
+    def _get_node_command():
         system = platform.system().lower()
         if system in NODE_PATH:
             return NODE_PATH[system]
@@ -75,8 +75,6 @@ class SExprTransformer(object):
 
     def _is_terminal_expr(self, s_expr):
         s = type(s_expr) is not list
-        if s:
-            pass
         return s
 
     def _add_value_transformation(self, s_expr):

@@ -31,7 +31,7 @@ class NodeConstraintContext(EvaluationContext):
 
 
 class ConventionConstraintContext(EvaluationContext):
-    def __init__(self, pattern_matcher, id_to_node_table, stylesheet=None):
+    def __init__(self, pattern_matcher, id_to_node_table, stylesheet):
         super(ConventionConstraintContext, self).__init__(pattern_matcher)
         self._id_node_table = id_to_node_table
         self._stylesheet = stylesheet
@@ -57,134 +57,134 @@ class ExprEvaluator(object):
     @staticmethod
     def evaluate(expr, context):
         evaluator = ExprEvaluator(context)
-        return evaluator.visit(expr)
+        return evaluator._visit(expr)
 
     @vis.visitor(ast.NotExpr)
-    def visit(self, not_expr):
-        operand = self.visit(not_expr.operand)
+    def _visit(self, not_expr):
+        operand = self._visit(not_expr.operand)
         return operand.not_()
 
     @vis.visitor(ast.UnaryMinusExpr)
-    def visit(self, unary_minus_expr):
-        operand = self.visit(unary_minus_expr.operand)
+    def _visit(self, unary_minus_expr):
+        operand = self._visit(unary_minus_expr.operand)
         return operand.unary_minus()
 
     @vis.visitor(ast.UnaryPlusExpr)
-    def visit(self, unary_plus_expr):
-        operand = self.visit(unary_plus_expr.operand)
+    def _visit(self, unary_plus_expr):
+        operand = self._visit(unary_plus_expr.operand)
         return operand.unary_plus()
 
     @vis.visitor(ast.OrExpr)
-    def visit(self, or_expr):
-        left = self.visit(or_expr.left)
+    def _visit(self, or_expr):
+        left = self._visit(or_expr.left)
         if not left.is_false():
             return values.Boolean.TRUE
-        return self.visit(or_expr.right)
+        return self._visit(or_expr.right)
 
     @vis.visitor(ast.AndExpr)
-    def visit(self, and_expr):
-        left = self.visit(and_expr.left)
+    def _visit(self, and_expr):
+        left = self._visit(and_expr.left)
         if left.is_false():
             return values.Boolean.FALSE
-        return self.visit(and_expr.right)
+        return self._visit(and_expr.right)
 
     @vis.visitor(ast.EqualExpr)
-    def visit(self, equals_expr):
-        left = self.visit(equals_expr.left)
-        right = self.visit(equals_expr.right)
+    def _visit(self, equals_expr):
+        left = self._visit(equals_expr.left)
+        right = self._visit(equals_expr.right)
         return left.equals(right)
 
     @vis.visitor(ast.NotEqualExpr)
-    def visit(self, not_equals_expr):
-        left = self.visit(not_equals_expr.left)
-        right = self.visit(not_equals_expr.right)
+    def _visit(self, not_equals_expr):
+        left = self._visit(not_equals_expr.left)
+        right = self._visit(not_equals_expr.right)
         return left.not_equals(right)
 
     @vis.visitor(ast.GreaterThanExpr)
-    def visit(self, greater_than_expr):
-        left = self.visit(greater_than_expr.left)
-        right = self.visit(greater_than_expr.right)
+    def _visit(self, greater_than_expr):
+        left = self._visit(greater_than_expr.left)
+        right = self._visit(greater_than_expr.right)
         return left.greater_than(right)
 
     @vis.visitor(ast.GreaterThanOrEqualExpr)
-    def visit(self, greater_than_expr):
-        left = self.visit(greater_than_expr.left)
-        right = self.visit(greater_than_expr.right)
+    def _visit(self, greater_than_expr):
+        left = self._visit(greater_than_expr.left)
+        right = self._visit(greater_than_expr.right)
         return left.greater_than_equals(right)
 
     @vis.visitor(ast.LessThanExpr)
-    def visit(self, less_than_expr):
-        left = self.visit(less_than_expr.left)
-        right = self.visit(less_than_expr.right)
+    def _visit(self, less_than_expr):
+        left = self._visit(less_than_expr.left)
+        right = self._visit(less_than_expr.right)
         return left.less_than(right)
 
     @vis.visitor(ast.LessThanOrEqualExpr)
-    def visit(self, less_than_expr):
-        left = self.visit(less_than_expr.left)
-        right = self.visit(less_than_expr.right)
+    def _visit(self, less_than_expr):
+        left = self._visit(less_than_expr.left)
+        right = self._visit(less_than_expr.right)
         return left.less_than_equals(right)
 
     @vis.visitor(ast.DecimalExpr)
-    def visit(self, decimal_expr):
+    def _visit(self, decimal_expr):
         return values.Decimal(decimal_expr.value)
 
     @vis.visitor(ast.IntegerExpr)
-    def visit(self, integer_expr):
+    def _visit(self, integer_expr):
         return values.Integer(integer_expr.value)
 
     @vis.visitor(ast.StringExpr)
-    def visit(self, string_expr):
+    def _visit(self, string_expr):
         return values.String(string_expr.value)
 
     @vis.visitor(ast.BooleanExpr)
-    def visit(self, boolean_expr):
+    def _visit(self, boolean_expr):
         return values.Boolean.build(boolean_expr.value)
 
     @vis.visitor(ast.ListExpr)
-    def visit(self, list_expr):
+    def _visit(self, list_expr):
         vs = []
         for v in list_expr.value:
-            nv = self.visit(v)
+            nv = self._visit(v)
             vs.append(nv)
         return values.List(vs)
 
     @vis.visitor(ast.NodeTypeExpr)
-    def visit(self, node_type_expr):
+    def _visit(self, node_type_expr):
         return values.NodeType(node_type_expr.value)
 
     @vis.visitor(ast.VariableExpr)
-    def visit(self, variable_expr):
+    def _visit(self, variable_expr):
         return values.Node(self._context.get_node_by_id(variable_expr.name))
 
     @vis.visitor(ast.Node)
-    def visit(self, expr):
+    def _visit(self, expr):
         return expr
 
     @vis.visitor(ast.IsExpr)
-    def visit(self, is_expr):
-        node_expr = self.visit(is_expr.left)
-        type_expr = self.visit(is_expr.right)
+    def _visit(self, is_expr):
+        node_expr = self._visit(is_expr.left)
+        type_expr = self._visit(is_expr.right)
         return node_expr.is_(type_expr)
 
     @vis.visitor(ast.MatchExpr)
-    def visit(self, match_expr):
-        operand = self.visit(match_expr.left)
+    def _visit(self, match_expr):
+        operand = self._visit(match_expr.left)
         if not operand.value:
             return values.Boolean.TRUE
-        regex = self.visit(match_expr.right)
+        regex = self._visit(match_expr.right)
         pattern = re.compile(regex.value)
         result = pattern.findall(operand.value)
         return values.Boolean.build(result)
 
     @vis.visitor(ast.InExpr)
-    def visit(self, in_expr):
-        operand = self.visit(in_expr.left)
-        list_ = self.visit(in_expr.right)
+    def _visit(self, in_expr):
+        operand = self._visit(in_expr.left)
+        list_ = self._visit(in_expr.right)
         return operand.in_(list_)
 
     @vis.visitor(ast.PropertyExpr)
-    def visit(self, prop_expr):
-        node = self.visit(prop_expr.operand)
+    def _visit(self, prop_expr):
+        node = self._visit(prop_expr.operand)
         successful, result = node.get_property(prop_expr.value)
         if not successful:
             msg = ''.join(['Error on line ', str(prop_expr.line), ': the matched CSS node of type \'',
@@ -193,9 +193,9 @@ class ExprEvaluator(object):
         return result
 
     @vis.visitor(ast.MethodExpr)
-    def visit(self, method_expr):
-        node = self.visit(method_expr.operand)
-        argument = self.visit(method_expr.argument)
+    def _visit(self, method_expr):
+        node = self._visit(method_expr.operand)
+        argument = self._visit(method_expr.argument)
         successful, result = node.get_method(method_expr.value, argument.value)
         if not successful:
             msg = ''.join(['Error on line ', str(method_expr.line), ': the matched CSS node of type \'',
@@ -204,70 +204,70 @@ class ExprEvaluator(object):
         return result
 
     @vis.visitor(ast.ContainsExpr)
-    def visit(self, contains_expr):
-        node_value = self.visit(contains_expr.operand)
+    def _visit(self, contains_expr):
+        node_value = self._visit(contains_expr.operand)
         for d in self._context.pattern_matcher.find_descendants_that_match(node_value.value, contains_expr.argument):
             return values.Boolean.TRUE
         return values.Boolean.FALSE
 
     @vis.visitor(ast.ContainsAllExpr)
-    def visit(self, contains_all_expr):
-        node_value = self.visit(contains_all_expr.operand)
+    def _visit(self, contains_all_expr):
+        node_value = self._visit(contains_all_expr.operand)
         list_value = contains_all_expr.argument
         result = self._context.pattern_matcher.find_all(node_value.value, list_value.value)
         return values.Boolean.build(result)
 
     @vis.visitor(ast.ContainsAnyExpr)
-    def visit(self, contains_any_expr):
-        node_value = self.visit(contains_any_expr.operand)
+    def _visit(self, contains_any_expr):
+        node_value = self._visit(contains_any_expr.operand)
         list_value = contains_any_expr.argument
         result = self._context.pattern_matcher.find_any(node_value.value, list_value.value)
         return values.Boolean.build(result)
 
     @vis.visitor(ast.CountExpr)
-    def visit(self, count_expr):
-        node_value = self.visit(count_expr.operand)
+    def _visit(self, count_expr):
+        node_value = self._visit(count_expr.operand)
         count = 0
         for _ in self._context.pattern_matcher.find_descendants_that_match(node_value.value, count_expr.argument):
             count += 1
         return values.Integer(count)
 
     @vis.visitor(ast.NextSiblingExpr)
-    def visit(self, next_sibling):
-        node_value = self.visit(next_sibling.operand)
+    def _visit(self, next_sibling):
+        node_value = self._visit(next_sibling.operand)
         node = self._context.pattern_matcher.find_next_sibling(node_value.value)
         if node:
             return values.Node(node)
-        return values.NoMatchedNodeError.VALUE
+        return values.NotExistingNodeError.VALUE
 
     @vis.visitor(ast.PreviousSiblingExpr)
-    def visit(self, prev_sibling):
-        node_value = self.visit(prev_sibling.operand)
+    def _visit(self, prev_sibling):
+        node_value = self._visit(prev_sibling.operand)
         node = self._context.pattern_matcher.find_previous_sibling(node_value.value)
         if node:
             return values.Node(node)
-        return values.NoMatchedNodeError.VALUE
+        return values.NotExistingNodeError.VALUE
 
     @vis.visitor(ast.BeforeExpr)
-    def visit(self, before):
-        operand_node_value = self.visit(before.operand)
+    def _visit(self, before):
+        operand_node_value = self._visit(before.operand)
         _filter = self._context.pattern_matcher.filter
         matcher = csscoco.lang.analysis.pattern_matcher.WhitespaceVariationMatcher(_filter)
         match = matcher.is_variation_before_node(before.argument, operand_node_value.value)
         return values.Boolean.build(match)
 
     @vis.visitor(ast.BetweenExpr)
-    def visit(self, between):
-        left_node_value = self.visit(between.operand)
-        right_node_value = self.visit(between.second_operand)
+    def _visit(self, between):
+        left_node_value = self._visit(between.operand)
+        right_node_value = self._visit(between.second_operand)
         _filter = self._context.pattern_matcher.filter
         matcher = csscoco.lang.analysis.pattern_matcher.WhitespaceVariationMatcher(_filter)
         match = matcher.is_variation_between_nodes(between.argument, left_node_value.value, right_node_value.value)
         return values.Boolean.build(match)
 
     @vis.visitor(ast.AfterExpr)
-    def visit(self, after):
-        operand_node_value = self.visit(after.operand)
+    def _visit(self, after):
+        operand_node_value = self._visit(after.operand)
         _filter = self._context.pattern_matcher.filter
         matcher = csscoco.lang.analysis.pattern_matcher.WhitespaceVariationMatcher(_filter)
         match = matcher.is_variation_after_node(after.argument, operand_node_value.value)

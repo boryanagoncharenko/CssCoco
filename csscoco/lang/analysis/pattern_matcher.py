@@ -50,7 +50,6 @@ class Filter():
                 return True, len(seq.nodes)
         return False, None
 
-
 Filter.EMPTY = Filter([])
 
 
@@ -349,7 +348,8 @@ class PatternMatcher(Matcher):
         if not pattern.has_constraint():
             result.append(css_pattern.copy())
         else:
-            context = expr.ConventionConstraintContext(self, css_pattern)
+            # TODO: evaluation might use stylesheet, however, this will introduce a dependency
+            context = expr.ConventionConstraintContext(self, css_pattern, None)
             is_met = expr.ExprEvaluator.evaluate(pattern.constraint, context)
             if is_met.value:
                 result.append(css_pattern.copy())
@@ -380,7 +380,6 @@ class PatternMatcher(Matcher):
         return prev_sibling
 
     def find_all(self, node, descriptors):
-        # TODO: provide efficient implementation
         for desc in descriptors:
             should_exit = True
             for d in self.find_descendants_that_match(node, desc):

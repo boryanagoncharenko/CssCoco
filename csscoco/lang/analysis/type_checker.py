@@ -234,7 +234,6 @@ class TypeCheckingContext(object):
 
 
 class ErrorMessageBuilder(object):
-
     @staticmethod
     def build_binary_type_error(expr, type_left, type_right):
         e = expr.__class__.__name__

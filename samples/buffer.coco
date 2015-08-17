@@ -1,6 +1,7 @@
 Semantic
 ignore newline, indent, space, tab
 {
-    forbid id
-    message 'Do not use ids'
+    find n=number{num_value < 1 and num_value != 0}
+    require n.string match '^\..*$'
+    message 'Use a leading zero for decimal values'
 }

@@ -1,6 +1,4 @@
-/**
- * Created by boryana on 05/05/15.
- */
+
 
 var str = '';
 

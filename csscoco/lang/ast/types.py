@@ -36,6 +36,8 @@ class String(Type):
     def is_string(self):
         return True
 
+String.TYPE = String()
+
 
 class Decimal(Type):
     def is_numerical(self):
@@ -43,6 +45,8 @@ class Decimal(Type):
 
     def promote_int_to(self, type_):
         return self
+
+Decimal.TYPE = Decimal()
 
 
 class Integer(Type):
@@ -52,25 +56,35 @@ class Integer(Type):
     def promote_to(self, type_):
         return type_.promote_int_to(self)
 
+Integer.TYPE = Integer()
+
 
 class Boolean(Type):
     def is_boolean(self):
         return True
+
+Boolean.TYPE = Boolean()
 
 
 class CssNodeType(Type):
     def is_css_node_type(self):
         return True
 
+CssNodeType.TYPE = CssNodeType()
+
 
 class CssNode(Type):
     def is_css_node(self):
         return True
 
+CssNode.TYPE = CssNode()
+
 
 class CocoNode(Type):
     def is_coco_node(self):
         return True
+
+CocoNode.TYPE = CocoNode()
 
 
 class List(Type):
@@ -91,11 +105,4 @@ class Error(Type):
     def is_error(self):
         return True
 
-String.TYPE = String()
-Integer.TYPE = Integer()
-Decimal.TYPE = Decimal()
-Boolean.TYPE = Boolean()
-CssNode.TYPE = CssNode()
-CssNodeType.TYPE = CssNodeType()
-CocoNode.TYPE = CocoNode()
 Error.TYPE = Error()

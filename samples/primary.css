@@ -64,11 +64,18 @@ h1 {
     padding-bottom: 60px;
 }
 
-h2 {font-size: 36px; line-height: 48px}
-h3 {font-size: 32px; line-height: 42px}
+h2 {
+    font-size: 36px;
+    line-height: 48px;
+}
+
+h3 {
+    font-size: 32px;
+    line-height: 42px;
+}
 
 h1 a, h2 a, h3 a, h1 a:hover, h2 a:hover, h3 a:hover{
-    text-decoration: none; 
+    text-decoration: none;
     color: #333;
 }
 
@@ -117,20 +124,6 @@ h1 a, h2 a, h3 a, h1 a:hover, h2 a:hover, h3 a:hover{
 
 h2, h3, h4, h5 {
     text-align: left;
-}
-
-h2 {
-    margin: 30px 0 0;
-}
-
-h3 {
-    padding: 0;
-    margin: 30px 0 0;
-}
-
-h3.comments {
-    padding: 0;
-    margin: 40px auto 20px ;
 }
 
 .hl-default {
@@ -203,7 +196,6 @@ pre, code {
     -moz-hyphens: none;
     -webkit-hyphens: none;
     hyphens: none;
-    padding: 5px;
     border-radius: 5px;
     border: 1px solid #eee;
 }

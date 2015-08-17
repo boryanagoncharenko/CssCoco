@@ -280,7 +280,7 @@ class Function(CssNode):
 class Rgba(Function):
     def __init__(self, value):
         super(Rgba, self).__init__(value)
-        self._categories.extend(['rgba', 'color'])
+        self._categories.extend(['color', 'rgba'])
 
     def _register_api(self):
         super(Rgba, self)._register_api()
@@ -293,25 +293,25 @@ class Rgba(Function):
 class Rgb(Function):
     def __init__(self, value):
         super(Rgb, self).__init__(value)
-        self._categories.extend(['rgb', 'color'])
+        self._categories.extend(['color', 'rgb'])
 
 
 class Hsla(Function):
     def __init__(self, value):
         super(Hsla, self).__init__(value)
-        self._categories.extend(['hsla', 'color'])
+        self._categories.extend(['color', 'hsla'])
 
 
 class Hsl(Function):
     def __init__(self, value):
         super(Hsl, self).__init__(value)
-        self._categories.extend(['hsl', 'color'])
+        self._categories.extend(['color', 'hsl'])
 
 
 class Hex(TerminalCssNode):
     def __init__(self, value):
         super(Hex, self).__init__(value)
-        self._categories.extend(['hex', 'color'])
+        self._categories.extend(['color', 'hex'])
         self._is_long = len(self.value) > 4
 
     def _register_api(self):
@@ -325,7 +325,7 @@ class Hex(TerminalCssNode):
 class ColorName(TerminalCssNode):
     def __init__(self, value):
         super(ColorName, self).__init__(value)
-        self._categories.extend(['colorname', 'color'])
+        self._categories.extend(['color', 'colorname'])
         self._is_long = len(self.value) > 4
 
 
@@ -630,7 +630,7 @@ class CssPattern(object):
 class CssLookUp(object):
     @staticmethod
     def is_color_name(s):
-        return s in CssLookUp._color_names
+        return s.lower() in CssLookUp._color_names
 
     @staticmethod
     def is_heading(s):

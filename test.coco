@@ -1,0 +1,1 @@
+Semantic { find s=string in value require s.has_single_quotes message '' }

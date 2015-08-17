@@ -47,34 +47,34 @@ class ViolationsFinder(object):
     @staticmethod
     def find(convention_set, tree):
         finder = ViolationsFinder(tree)
-        return finder.visit(convention_set)
+        return finder._visit(convention_set)
 
     @vis.visitor(ast.ConventionSet)
-    def visit(self, sheet):
+    def _visit(self, sheet):
         for context in sheet.contexts:
             self._set_current_context(context)
             for conv in context.conventions:
                 try:
-                    css_patterns = self.get_matched_css_patterns(conv)
-                    self.visit(conv, css_patterns)
+                    css_patterns = self._get_matched_css_patterns(conv)
+                    self._visit(conv, css_patterns)
                 except expr.InvalidPropertyException as e:
                     return False, CocoRuntimeError(e.message)
         return True, self._violations
 
     @vis.visitor(ast.FindRequireConvention)
-    def visit(self, convention, matched_patterns):
+    def _visit(self, convention, matched_patterns):
         for css_pattern in matched_patterns:
             is_fulfilled = self._evaluate_constraint(convention.constraint, css_pattern)
             if not is_fulfilled.value:
                 self._log_violation(convention, css_pattern)
 
     @vis.visitor(ast.ForbidConvention)
-    def visit(self, convention, matched_patterns):
+    def _visit(self, convention, matched_patterns):
         for css_pattern in matched_patterns:
             self._log_violation(convention, css_pattern)
 
     @vis.visitor(ast.FindForbidConvention)
-    def visit(self, convention, matched_patterns):
+    def _visit(self, convention, matched_patterns):
         for css_pattern in matched_patterns:
             is_fulfilled = self._evaluate_constraint(convention.constraint, css_pattern)
             if is_fulfilled.value:
@@ -83,7 +83,7 @@ class ViolationsFinder(object):
     def _set_current_context(self, context):
         self._context = context
 
-    def get_matched_css_patterns(self, convention):
+    def _get_matched_css_patterns(self, convention):
         ignored = self._context.ignored_patterns.copy()
         if convention.has_constraint():
             ignored += ViolationsHelper.get_additional_constraint(convention.constraint)
@@ -92,9 +92,7 @@ class ViolationsFinder(object):
 
     def _evaluate_constraint(self, constraint, pattern):
         constraint_filter = p_matcher.Filter(self._context.ignored_patterns)
-        eval_context = expr.ConventionConstraintContext(p_matcher.PatternMatcher(constraint_filter),
-                                                        pattern,
-                                                        stylesheet=self._tree)
+        eval_context = expr.ConventionConstraintContext(p_matcher.PatternMatcher(constraint_filter), pattern, self._tree)
         return expr.ExprEvaluator.evaluate(constraint, eval_context)
 
     def _log_violation(self, convention, css_pattern):
@@ -108,10 +106,14 @@ class ViolationsHelper(object):
     def get_additional_constraint(e):
         result = []
         if ViolationsHelper()._visit(e):
-            result.append(ast.SequencePattern([ast.Node(ast.NodeTypeDescriptor.build_type(type_='space'))])),
-            result.append(ast.SequencePattern([ast.Node(ast.NodeTypeDescriptor.build_type(type_='newline'))])),
-            result.append(ast.SequencePattern([ast.Node(ast.NodeTypeDescriptor.build_type(type_='tab'))]))
+            result.append(ViolationsHelper._get_sequence('space')),
+            result.append(ViolationsHelper._get_sequence('newline')),
+            result.append(ViolationsHelper._get_sequence('tab')),
         return result
+
+    @staticmethod
+    def _get_sequence(node_type):
+        return ast.SequencePattern([ast.Node(ast.NodeTypeDescriptor.build_type(type_=node_type))])
 
     @vis.visitor(ast.BinaryExpr)
     def _visit(self, e):

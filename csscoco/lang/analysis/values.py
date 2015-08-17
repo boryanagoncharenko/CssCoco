@@ -335,9 +335,9 @@ class List(Value):
         return Boolean.FALSE
 
 
-class NoMatchedNodeError(Value):
+class NotExistingNodeError(Value):
     def __init__(self):
-        super(NoMatchedNodeError, self).__init__()
+        super(NotExistingNodeError, self).__init__()
 
     def is_false(self):
         return True
@@ -432,4 +432,4 @@ class NoMatchedNodeError(Value):
     def get_method(self, value, arg):
         return True, self
 
-NoMatchedNodeError.VALUE = NoMatchedNodeError()
+NotExistingNodeError.VALUE = NotExistingNodeError()
