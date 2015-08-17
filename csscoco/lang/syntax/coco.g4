@@ -12,7 +12,7 @@ convention : action='forbid' target=pattern 'message' message=String
              'message' message=String
            ;
 
-pattern : simple=node_declaration (relation=('in'|'next-to') node_declaration)*
+pattern : simple=node_declaration ((relation='in')? node_declaration)*
         | fork=fork_pattern (relation='in' node_declaration)*
         ;
 

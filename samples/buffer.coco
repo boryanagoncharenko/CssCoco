@@ -1,7 +1,6 @@
 Semantic
-ignore newline, indent, space, tab
 {
-    find n=number{num_value < 1 and num_value != 0}
-    require n.string match '^\..*$'
-    message 'Use a leading zero for decimal values'
+    find c=colon in v=value
+    require space between c and v
+    message 'One space between colon and value'
 }

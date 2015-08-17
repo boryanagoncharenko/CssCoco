@@ -73,33 +73,33 @@ ignore space, newline, comment, indent, tab
     require u.string not match '(?i)https?:.*'
     message 'Omit the protocol http(s) in url'
 
-    forbid tag next-to (class or id)
+    forbid tag (class or id)
     message 'Do not over-qualify classes and ids with html tags'
 }
 
 Whitespace
 ignore newline indent comment, newline comment, indent, comment
 {
-    find r1=ruleset next-to r2=ruleset
+    find r1=ruleset r2=ruleset
     require newline{2} between r1 and r2
     message 'Put one blank line between rules'
 
-    find c=colon next-to v=value
+    find c=colon v=value
     require space between c and v
     message 'Put one space between the colon and the value of a declaration.'
 
-    find s=selector next-to b=block
+    find s=selector b=block
     require space between s and b
     message 'Put one space between the last selector and the block.'
 
-    find s1=delim next-to s2=simple-selector
+    find s1=delim s2=simple-selector
     require newline between s1 and s2
     message 'One selector per line.'
 }
 
 Custom
 {
-  forbid (space or indent) next-to (newline or eof)
+  forbid (space or indent) (newline or eof)
   message 'No trailing spaces.'
 
   find i=indent

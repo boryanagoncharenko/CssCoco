@@ -86,7 +86,7 @@ ignore space, newline, comment, indent, tab
     message 'Forbid empty rules.'
 
     /* tests */
-    forbid class next-to class
+    forbid class class
     message 'Disallow adjoining classes'
 
     forbid property{name == 'box-sizing'}

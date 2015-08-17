@@ -1,7 +1,6 @@
 Semantic
 ignore newline, indent, comment, tab, space
 {
-/*
     forbid dimension{unit == 'pt'}
     message 'It is forbidden to use pt, use px instead.'
 
@@ -48,9 +47,8 @@ ignore newline, indent, comment, tab, space
 
     forbid property{name in ['margin', 'padding', 'background', 'font', 'list-style']}
     message 'Do not use shorthands, except for border'
-    */
 
-    fin h=hex
+    find h=hex
     require h.string match lowercase
     message 'Hex values should be lowercase'
 }

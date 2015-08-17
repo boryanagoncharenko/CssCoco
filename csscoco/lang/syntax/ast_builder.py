@@ -100,14 +100,21 @@ class CocoCustomVisitor(cocoVisitor):
         if len(context.children) == 1:
             wrapper = self.visitNode_declaration(context.children[0])
             return ast.PatternDescriptor(wrapper, [wrapper], ast.NodeRelations.EMPTY)
-        wrappers = []
-        for i in range(0, len(context.children), 2):
-            wrapper = self.visitNode_declaration(context.children[i])
-            wrappers.append(wrapper)
-        title = context.children[1].symbol.text
-        if title == 'in':
+        wrappers = self.get_wrappers(context)
+        if self.is_vertical(context):
             return self.build_in_pattern(wrappers)
         return self.build_next_pattern(wrappers)
+
+    def get_wrappers(self, context):
+        wrappers = []
+        step = 2 if self.is_vertical(context) else 1
+        for i in range(0, len(context.children), step):
+            wrapper = self.visitNode_declaration(context.children[i])
+            wrappers.append(wrapper)
+        return wrappers
+
+    def is_vertical(self, context):
+        return type(context.children[1]) is Tree.TerminalNodeImpl
 
     def build_in_pattern(self, wrappers):
         relations = ast.NodeRelations()

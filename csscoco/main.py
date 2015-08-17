@@ -8,7 +8,7 @@ import csscoco.css.parse_tree as css
 import csscoco.lang.syntax.ast_builder as ast
 import csscoco.lang.syntax.cocoLexer as cocoLexer
 import csscoco.lang.syntax.cocoParser as cocoParser
-import csscoco.lang.syntax.error_listener as errors
+import csscoco.lang.syntax.error_listener as listener
 import csscoco.lang.analysis.violations as violations
 import csscoco.lang.analysis.type_checker as checker
 
@@ -34,7 +34,7 @@ def try_get_coco_ast():
     stream = antlr4.CommonTokenStream(lexer)
     parser = cocoParser.cocoParser(stream)
     parser.removeParseListeners()
-    error_listener = errors.CocoErrorListener()
+    error_listener = listener.CocoErrorListener()
     parser.addErrorListener(error_listener)
     tree = parser.stylesheet()
     if error_listener.has_errors():

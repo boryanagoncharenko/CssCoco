@@ -21,11 +21,11 @@ ignore indent, newline, space, comment
 Whitespace
 ignore newline indent comment, newline comment, indent, comment
 {
-    find c=colon next-to v=value
+    find c=colon v=value
     require space between c and v
     message 'Add exactly one space after the colon.'
 
-    find s=selector next-to b=block
+    find s=selector b=block
     require space between s and b
     message 'Put exactly one space between the selector and the opening bracket.'
 
@@ -33,7 +33,7 @@ ignore newline indent comment, newline comment, indent, comment
     require newline before d
     message 'Put every declaration on a new line.'
 
-    find r1=ruleset next-to r2=ruleset
+    find r1=ruleset r2=ruleset
     require newline{2} between r1 and r2
     message 'Add exactly one empty line between the separate style definitions.'
 

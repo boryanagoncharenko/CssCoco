@@ -252,7 +252,7 @@ class TypeCheckerTests(TestCase):
         Do not over-qualify classes and ids with html tags
         """
         coco_ast = self.get_coco_ast("Semantic { "
-                                     "forbid tag next-to (class or id) "
+                                     "forbid tag (class or id) "
                                      "message '' }")
         css_tree = helpers.ParseHelper.parse_css_string("h1.class {} h2#id {} h1 h2 {} ")
         _, violation_log = violations.ViolationsFinder.find(coco_ast, css_tree)
@@ -437,7 +437,7 @@ class TypeCheckerTests(TestCase):
         Put one space between the colon and the value of a declaration
         """
         cos = "Whitespace { " \
-              "find c=colon next-to v=value " \
+              "find c=colon v=value " \
               "require space between c and v "\
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
@@ -451,7 +451,7 @@ class TypeCheckerTests(TestCase):
         Put one or two blank lines between rules
         """
         cos = "Whitespace { " \
-              "find r1=ruleset next-to r2=ruleset " \
+              "find r1=ruleset r2=ruleset " \
               "require newline{2,3} between r1 and r2 "\
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
@@ -464,7 +464,7 @@ class TypeCheckerTests(TestCase):
         Put one or two blank lines between rules
         """
         cos = "Whitespace { " \
-              "find r1=ruleset next-to r2=ruleset " \
+              "find r1=ruleset r2=ruleset " \
               "require newline{2,3} between r1 and r2 "\
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
@@ -477,7 +477,7 @@ class TypeCheckerTests(TestCase):
         Put one or two blank lines between rules
         """
         cos = "Whitespace { " \
-              "find r1=ruleset next-to r2=ruleset " \
+              "find r1=ruleset r2=ruleset " \
               "require newline{2} between r1 and r2 "\
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
@@ -490,7 +490,7 @@ class TypeCheckerTests(TestCase):
         Put one space between the last selector and the block
         """
         cos = "Whitespace ignore newline comment newline { " \
-              "find s=selector next-to b=block " \
+              "find s=selector b=block " \
               "require space between s and b "\
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
@@ -503,7 +503,7 @@ class TypeCheckerTests(TestCase):
         Put one space between the last selector and the block
         """
         cos = "Whitespace ignore newline comment newline { " \
-              "find s=selector next-to b=block " \
+              "find s=selector b=block " \
               "require space between s and b "\
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
@@ -516,7 +516,7 @@ class TypeCheckerTests(TestCase):
         One selector per line
         """
         cos = "Whitespace ignore newline comment newline { " \
-              "find s1=delim next-to s2=simple-selector " \
+              "find s1=delim s2=simple-selector " \
               "require newline between s1 and s2 "\
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
@@ -529,7 +529,7 @@ class TypeCheckerTests(TestCase):
         No trailing spaces
         """
         cos = "Whitespace ignore newline comment newline { " \
-              "forbid (space or indent) next-to (newline or eof) " \
+              "forbid (space or indent) (newline or eof) " \
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
         css_tree = helpers.ParseHelper.parse_css_string("a {}  \n  b{}  \n")
@@ -792,7 +792,7 @@ class TypeCheckerTests(TestCase):
         Add one blank line between rulesets
         """
         cos = "Whitespace ignore indent  { " \
-              "find r1=ruleset next-to r2=ruleset " \
+              "find r1=ruleset r2=ruleset " \
               "where not r1.is_single_line or not r2.is_single_line " \
               "require newline{2} between r1 and r2 " \
               "message '' }"
@@ -814,7 +814,7 @@ class TypeCheckerTests(TestCase):
         Add one blank line between rulesets
         """
         cos = "Whitespace ignore indent  { " \
-              "find r1=ruleset next-to r2=ruleset " \
+              "find r1=ruleset r2=ruleset " \
               "where not r1.is_single_line or not r2.is_single_line " \
               "require newline{2} between r1 and r2 " \
               "message '' }"
@@ -837,7 +837,7 @@ class TypeCheckerTests(TestCase):
         Single-line rules may appear on adjacent lines
         """
         cos = "Whitespace ignore indent  { " \
-              "find r1=ruleset next-to r2=ruleset " \
+              "find r1=ruleset r2=ruleset " \
               "where r1.is_single_line and r2.is_single_line " \
               "require newline{1, 2} between r1 and r2 " \
               "message '' }"
@@ -856,7 +856,7 @@ class TypeCheckerTests(TestCase):
         Single-line rules may appear on adjacent lines
         """
         cos = "Whitespace ignore indent  { " \
-              "find r1=ruleset next-to r2=ruleset " \
+              "find r1=ruleset r2=ruleset " \
               "where r1.is_single_line and r2.is_single_line " \
               "require newline{1, 2} between r1 and r2 " \
               "message '' }"
@@ -875,7 +875,7 @@ class TypeCheckerTests(TestCase):
         Disallow adjoining classes
         """
         cos = "Whitespace ignore indent  { " \
-              "forbid class next-to class " \
+              "forbid class class " \
               "message '' }"
         coco_ast = self.get_coco_ast(cos)
         css = """.a.b {} .a .b{} h1.a{}"""
