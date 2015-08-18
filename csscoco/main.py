@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 
 import antlr4
@@ -44,7 +45,21 @@ def try_get_coco_ast():
     return True, convention_set
 
 
+def check_files_exist():
+    css_file = sys.argv[1]
+    coco_file = sys.argv[2]
+    message = ''
+    if not os.path.isfile(css_file):
+        message = ''.join(['Could not find css file ', css_file, '\n'])
+    if not os.path.isfile(coco_file):
+        message = ''.join([message, 'Could not find coco file ', coco_file])
+    if message:
+        print(message)
+        exit()
+
+
 def main():
+    check_files_exist()
     css_tree, error = get_css_parse_tree()
     if error:
         print('Please check the validity of your css.')
