@@ -1525,10 +1525,16 @@ hsla(100,  100,  100);
 **Actions**: Find selectors that contain more than four simpleselectors      
 
 ---
-**Description**: No trailing spaces.  
-**Source**: [Drupal](https://www.drupal.org/node/1887862), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [cbracco](https://github.com/cbracco/css-conventions)   
-**Violations**: Violations occur when there are spaces at the end of a line.  
-**Actions**: Find spaces immediately before a newline symbol  
+**Description**: Put one space between the media feature and the value.
+**Source**: [Drupal](https://www.drupal.org/node/1887862)
+**Violations**: Violations occur when there is not exactly one space between the media feature and the value.
+**Actions**: Find adjacent media feature and value; ensure there is one space between them
+
+---
+**Description**: Border-radius*-* properties should be top-left, top-right, bottom-right, bottom-left order.
+**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/)
+**Violations**: Violations occur when the border properties are not ordered in the specified way.
+**Actions**: Find every pair of the border properties within a ruleset; check if the properties do not conform to the specified order
 
 ---
 **Description**: All text files should end with a single blank line.  
