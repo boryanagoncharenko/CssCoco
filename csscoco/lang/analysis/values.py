@@ -335,9 +335,9 @@ class List(Value):
         return Boolean.FALSE
 
 
-class NotExistingNodeError(Value):
+class NonExistentNode(Value):
     def __init__(self):
-        super(NotExistingNodeError, self).__init__()
+        super(NonExistentNode, self).__init__()
 
     def is_false(self):
         return True
@@ -432,4 +432,4 @@ class NotExistingNodeError(Value):
     def get_method(self, value, arg):
         return True, self
 
-NotExistingNodeError.VALUE = NotExistingNodeError()
+NonExistentNode.VALUE = NonExistentNode()

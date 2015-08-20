@@ -238,7 +238,7 @@ class ExprEvaluator(object):
         node = self._context.pattern_matcher.find_next_sibling(node_value.value)
         if node:
             return values.Node(node)
-        return values.NotExistingNodeError.VALUE
+        return values.NonExistentNode.VALUE
 
     @vis.visitor(ast.PreviousSiblingExpr)
     def _visit(self, prev_sibling):
@@ -246,7 +246,7 @@ class ExprEvaluator(object):
         node = self._context.pattern_matcher.find_previous_sibling(node_value.value)
         if node:
             return values.Node(node)
-        return values.NotExistingNodeError.VALUE
+        return values.NonExistentNode.VALUE
 
     @vis.visitor(ast.BeforeExpr)
     def _visit(self, before):

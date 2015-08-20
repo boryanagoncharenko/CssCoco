@@ -51,4 +51,7 @@ ignore newline, indent, comment, tab, space
     find h=hex
     require h.string match lowercase
     message 'Hex values should be lowercase'
+
+    forbid selector.count(tag) > 6
+    message 'Avoid resetting html tags'
 }
