@@ -1,9 +1,8 @@
 # CssCoco
 
-```
-This is the product of a MSc Thesis hosted at the University of Amsterdam. Please keep in mind that this is work in progress. Your comments/suggestions/criticism will be highly appreciated :)
-```
 
+This is the product of a MSc Thesis hosted at the University of Amsterdam. Please keep in mind that this is work in progress. Your comments/suggestions/criticism will be highly appreciated :)
+___
 
 
 We often use a CSS code conventions that put constrains on whitespacing, indentation, choice of id and class names, usage of single quotes over double quotes, usage of !important or units after 0 values, etc. Typically, we express these conventions in natural language. Some examples are the CSS style guides of [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [GitHub](http://primercss.io/guidelines/#css), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS). 
