@@ -1,6 +1,8 @@
 # CssCoco
 
-`This is the product of a MSc Thesis hosted at the University of Amsterdam. Please keep in mind that this is work in progress. Your comments/suggestions/criticism will be highly appreciated :)`
+```
+This is the product of a MSc Thesis hosted at the University of Amsterdam. Please keep in mind that this is work in progress. Your comments/suggestions/criticism will be highly appreciated :)
+```
 
 
 
