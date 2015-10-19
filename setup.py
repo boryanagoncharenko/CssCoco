@@ -6,11 +6,9 @@ here = path.abspath(path.dirname(__file__))
 
 setup(
     name='csscoco',
-    version='0.1.20',
-    description='A DSL for CSS Code Convetions',
-    long_description="The package detects violations of CSS code conventions automatically. "\
-      "It contains a number of predefined conventons sets, however, it also comprises a "\
-      "domain-speicific language that is capable of expressing cusomt CSS conventions.",
+    version='0.1.21',
+    description='A tool that discovers violations of your CSS code conventions.',
+    long_description="CssCoco is a tool that automatically discovers violations of code conventions in your CSS code. The tool is designed to offer great flexibility and cover a wide range of conventions, e.g. whitespacing, indentation, syntax preference and anti-patterns. Unlike other solutions, CssCoco uses a domain-specific language that allows you to tailor the conventions according to your own needs and preferences. And in case writing conventions in a new DSL is a bit too much, you can always use one of the popular ready-to-use convention sets available in the CssCoco GitHub repo. Happy coding!",
 
     url='https://github.com/boryanagoncharenko/CssCoco',
     author='Boryana Goncharenko',
