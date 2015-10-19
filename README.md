@@ -5,11 +5,11 @@ This is the product of a MSc Thesis hosted at the University of Amsterdam. Pleas
 ___
 
 
-We often use a CSS code conventions that put constrains on whitespacing, indentation, choice of id and class names, usage of single quotes over double quotes, usage of !important or units after 0 values, etc. Typically, we express these conventions in natural language. Some examples are the CSS style guides of [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [GitHub](http://primercss.io/guidelines/#css), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS). 
+We often use CSS code conventions that put constrains on whitespacing, indentation, choice of id and class names, usage of single quotes over double quotes, usage of !important or units after 0 values, etc. Typically, we express these conventions in natural language. Some examples are the CSS style guides of [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml), [GitHub](http://primercss.io/guidelines/#css), [Wordpress](https://make.wordpress.org/core/handbook/best-practices/coding-standards/css/), [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS). 
 
 The problem is that we have to check whether our code complies to a given set of code conventions manually. Even though there are some great tools available that can assist us in the process, most of them specialize in a specific type of conventions, e.g. they focus on whitespacing or naming conventions, but not both. It gets even worse! Most of the tools offer a predefined set of conventions that we can enable or disable and they do not allow us to alter conventions or create our custom conventions.
 
-This is where **CssCoco** comes to the rescue! It lets developers define a custom set of **CSS** **co**de **co**nventions and discovers violations automatically. **CssCoco** uses a domain-specific language to express code conventions that refer to whitespacing, indentation, syntax preference and code anti-patterns. The tool offers great flexibility and comes with ready-to-use code convention sets.
+This is where **CssCoco** comes to the rescue! It lets developers define a custom set of **CSS** **co**de **co**nventions and discovers violations automatically. **CssCoco** uses a domain-specific language to express code conventions that refer to whitespacing, indentation, syntax preference and code anti-patterns. It is designed to offer greater flexibility and cover a wide range of conventions. The tool comes with popular code convention sets that are ready for use.
 
 ## Installation
 
