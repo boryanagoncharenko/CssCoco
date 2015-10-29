@@ -313,7 +313,7 @@ In conclusion, a violation occurs when a font-face rule does not contain a url w
 **Actions**: Find font-face statements; check they contain a url with the required suffix.  
   
 ---
-**Description**: Don't use too many web fonts.  
+**Description**: Do not use too many web fonts.  
 **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
 **Violations**: A warning is issued when a stylesheet contains more than five @font-face declarations.  
 **Actions**: Recognize @font-face declarations; count the occurrences of @font-face declarations; compare the number to a predefined value.  
@@ -440,7 +440,7 @@ div.error {}
 **Actions**: Count the number of occurrences of float; compare the number to 10.
  
 ---
-**Description**: Don't use too many font size declarations.  
+**Description**: Do not use too many font size declarations.  
 **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules)  
 **Violations**:  Violations of this convention occur when a stylesheet contains more than 10 declarations of font-size.
  Note that the implementation provided by CSS lint takes into consideration only font-size declarations. Font declarations are disregarded.  
@@ -542,7 +542,7 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
 ---
 **Description**: Use single quotation marks for attribute selectors.  
 **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Drupal](https://www.drupal.org/node/1887862), [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [ss64](http://ss64.com/css/syntax-naming.html), [CodeGuide](http://codeguide.co/), [BackdropCMS](https://api.backdropcms.org/css-standards)  
-**Violations**:  The convention refers to the values of attribute selectors. According to the [CSS specification](http://www.w3.org/TR/css3-selectors/#attribute-selectors), the values of attribute selectors can be CSS identifiers or strings. This the possible violations of this convention includes 1) using double quotes or 2) not using quotes at all:
+**Violations**:  The convention refers to the values of attribute selectors. According to the [CSS specification](http://www.w3.org/TR/css3-selectors/#attribute-selectors), the values of attribute selectors can be CSS identifiers or strings. This the possible violations of this convention include 1) using double quotes or 2) not using quotes at all:
  ```
  span[class=example]
  span[class="example"]
@@ -592,7 +592,7 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
 **Actions**: Find HTML tags used in conjunction with a class or an id.
  
 ---
-**Description**: Don’t qualify ID rules with tag names or classes.  
+**Description**: Do not qualify ID rules with tag names or classes.  
 **Source**: [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS)  
 **Violations**:  The convention states that if a rule has an ID selector as its key selector, tags should not be added to the rule. Violations include:
  ```
@@ -602,7 +602,7 @@ button#backButton {…}
 **Actions**: Find an id that is also a key selector; check if the previous sibling is an HTML tag.
  
 ---
-**Description**: Don’t qualify class rules with tag names or classes.  
+**Description**: Do not qualify class rules with tag names or classes.  
 **Source**: [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS)  
 **Violations**:  The convention states that if a rule has a class selector as its key selector, tags should not be added to the rule. Violations include:
  ```
@@ -672,7 +672,7 @@ treeitem[IsImapServer="true"] > treerow > .tree-folderpane-icon {…}
 **Description**: Do not use shorthand properties, except border.  
 **Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [LiquidContract](http://wiki.liquid-contact.com/index.php?title=CSS_Coding_Conventions#Introduction), [CodeGuide](http://codeguide.co/)  
 **Violations**:  A warning should be issued when any of the properties are encountered: margin, padding, background, font, list-style, transition  
-**Actions**: Find properties that match the list [margin, padding, backgruond, font, list-style, transition]  
+**Actions**: Find properties that match the list [margin, padding, background, font, list-style, transition]  
  
 ---
 **Description**: Do not put quotes in uri values.  
@@ -1429,7 +1429,7 @@ rgb(100,100,100);
 **Actions**: Find csv delimiters; check if there is not a after them
 
 ---
-**Description**: Don't include spaces after commas within rgb(), rgba(), hsl(), hsla(), or rect() values.  
+**Description**: Do not include spaces after commas within rgb(), rgba(), hsl(), hsla(), or rect() values.  
 **Source**: [CodeGuide](http://codeguide.co/)  
 **Violations**: Violations occur when there is a space after the delimiter in rgb, rgba, hsl, hsla, rect:
 ```
