@@ -393,7 +393,7 @@ In conclusion, a violation occurs when a font-face rule does not contain a url w
 ---
 **Description**: Disallow overqualified elements.  
 **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules), [Isobar](http://isobar-idev.github.io/code-standards/), [Orion](http://wiki.eclipse.org/Orion/Coding_conventions#CSS), [CodeGuide](http://codeguide.co/), [CKAN](http://docs.ckan.org/en/latest/contributing/css.html)  
-**Violations**: A violation occurs when an html tag and class name are used together. However, the cases when two different elements are found with the same class name are not considered violations.
+**Violations**: A violation occurs when an HTML tag and class name are used together. However, the cases when two different elements are found with the same class name are not considered violations.
  ```
 /* violation */
 li.active { ... }
@@ -402,7 +402,7 @@ li.active { ... }
 li.active { ... }
 p.active { ... }
  ```
-**Actions**: Find html tags used in conjunction with classes. Count the number of unique tags that qualify each class. Check if the number is equal to 1.
+**Actions**: Find HTML tags used in conjunction with classes. Count the number of unique tags that qualify each class. Check if the number is equal to 1.
  
 ---
 **Description**: Avoid qualifying ID and class names with type selectors.  
@@ -417,7 +417,7 @@ div.error {}
  #example {}
 .error {}
  ```
-**Actions**: Find html tags used in conjunction with classes or ids.
+**Actions**: Find HTML tags used in conjunction with classes or ids.
  
 ---
 **Description**: Disallow duplicate background images.  
@@ -585,11 +585,11 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
 ---
 **Description**: Do not use over-qualified selectors.  
 **Source**: [WordPress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
-**Violations**:  Violations occur when an html tag appears immediately before a class or an id:
+**Violations**:  Violations occur when an HTML tag appears immediately before a class or an id:
  ```
  div.container
  ```
-**Actions**: Find html tags used in conjunction with a class or an id.
+**Actions**: Find HTML tags used in conjunction with a class or an id.
  
 ---
 **Description**: Don’t qualify ID rules with tag names or classes.  
@@ -599,7 +599,7 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
 button#backButton {…}
 .menu-left#newMenuIcon {…}
  ```
-**Actions**: Find an id that is also a key selector; check if the previous sibling is an html tag.
+**Actions**: Find an id that is also a key selector; check if the previous sibling is an HTML tag.
  
 ---
 **Description**: Don’t qualify class rules with tag names or classes.  
@@ -608,7 +608,7 @@ button#backButton {…}
  ```
 treecell.indented {…}
  ```
-**Actions**: Find a class that is also a key selector; check if the previous sibling is an html tag.
+**Actions**: Find a class that is also a key selector; check if the previous sibling is an HTML tag.
  
 ---
 **Description**: Use the most specific category possible.  
@@ -617,7 +617,7 @@ treecell.indented {…}
  ```
 treeitem[mailfolder="true"] > treerow > treecell {…}
  ```
-**Actions**: Find html tags that are also key selectors.
+**Actions**: Find HTML tags that are also key selectors.
  
 ---
 **Description**: Avoid the descendant selector.  
@@ -631,11 +631,11 @@ treehead treerow treecell {...}
 ---
 **Description**: Avoid using the child selector with tag category rules.  
 **Source**: [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS)  
-**Violations**:  Violations of this convention are the selectors that have html tags as key selectors and contain a child selector:
+**Violations**:  Violations of this convention are the selectors that have HTML tags as key selectors and contain a child selector:
  ```
 treehead > treerow > treecell {...}
  ```
-**Actions**: Find selectors that have html tags as their key selectors; check whether these selectors contain a child selector.
+**Actions**: Find selectors that have HTML tags as their key selectors; check whether these selectors contain a child selector.
  
 ---
 **Description**: Question all usages of the child selector.  
@@ -916,11 +916,11 @@ color: red;
 ---
 **Description**: HTML elements should be lowercase.  
 **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [cbracco](https://github.com/cbracco/css-conventions), [ThinkUp](https://github.com/ThinkUpLLC/ThinkUp/wiki/Code-Style-Guide:-CSS), [Moodle](https://docs.moodle.org/dev/CSS_coding_style)  
-**Violations**: Violations occur when an html tag contains uppercase letters:
+**Violations**: Violations occur when an HTML tag contains uppercase letters:
 ```
 H1 { ... };
 ```
-**Actions**: Find html tags; check if they contain any uppercase letters
+**Actions**: Find HTML tags; check if they contain any uppercase letters
 
 ---
 **Description**: Attributes should be lowercase.  
@@ -1235,7 +1235,7 @@ color: red;
 **Actions**: Find occurrences of pt unit.  
 
 ---
-**Description**: In multiselectors, order the selectors in by type: html, html groupings, classes, ids.   
+**Description**: In multiselectors, order the selectors in by type: HTML, HTML groupings, classes, ids.   
 **Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
 **Violations**: Violations occur when the selectors are not ordered in the defined way.  
 **Actions**: Find selectors in multiselectors. Assert the order of the selectors based on their type.  
@@ -1271,7 +1271,7 @@ color: red;
 **Actions**: Find declarations that appear on the same line and assert none of them is shorthand.  
 
 ---
-**Description**: Require a header comment of the css file.    
+**Description**: Require a header comment of the CSS file.    
 **Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
 **Violations**: Violations occur when the file does not start with a comment.  
 **Actions**: Find the first node of the stylesheet and ensure it is a comment.  
