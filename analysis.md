@@ -159,22 +159,7 @@ font-size: 1.5rem;
 }
  ```
 **Actions**: Compare triples of declarations within a rule; check if the first and third have the same property and if the first and the second have different properties.     
- 
----
-**Description**: Disallow empty rules.  
-**Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Disallow-empty-rules)  
-**Violations**: Presence of rulesets that do not contain declarations. Sample violations are:
- ```
-.myclass { }
-.myclass { /* Comment */ }
-```
-In case at least one declaration is present, the ruleset does not violate the convention. The following snippet is not a violation:
-```
-.myclass { color: green; }
-```
-**Actions**: Recognize rulesets and declarations; determine whether a ruleset contains a declaration.
- 
-    
+
 ---
 **Description**: Disallow empty rules.  
 **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Disallow-empty-rules)  
@@ -852,8 +837,8 @@ font-size: 1.5em;
   
 ---
 **Description**: Do not abbreviate.   
-**Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Apppie](http://www.apppie.org/pages/approach/naming.html), [Moodle](https://docs.moodle.org/dev/CSS_coding_style)  
-**Violations**: Violations occur when a word in an id or a class is not present in the built-in dictionary.
+**Source**: [phpied](http://www.phpied.com/css-coding-conventions/), [Apppie](http://www.apppie.org/pages/approach/naming.html), [Moodle](https://docs.moodle.org/dev/CSS_coding_style), [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)  
+**Violations**: Violations occur when a word in an id or a class is not present in the dictionary.
 ```
 .prod { ... }
 #txt { ... }
@@ -863,7 +848,7 @@ The following two examples are not considered violations:
 .production { ... }
 #text { ... }
 ```
-**Actions**: Find words in id and class selectors; check if words are present in a built-in dictionary  
+**Actions**: Find words in id and class selectors; check if words are present in the dictionary  
 
 ---
 **Description**: Id and class names should be lowercase and separated by dashes(or underscores).  
@@ -1298,12 +1283,6 @@ color: red;
 **Actions**: Find comments and assert they appear at the end of the line before a declaration.  
 
 ---
-**Description**: Do not abbreviate.    
-**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
-**Violations**: Violations occur when words that do not belong to the built-in dictionary are used.   
-**Actions**: Find class and id words and ensure they are present in the dictionary.  
-
----
 **Description**: All except comments should be lowercase.    
 **Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
 **Violations**: Violations occur when any string that is not of type comment contains an uppercase letter.   
@@ -1542,9 +1521,3 @@ hsla(100,  100,  100);
 **Source**: [Drupal](https://www.drupal.org/node/1887862)     
 **Violations**: Violations occur when a file does not end up with a blank line.  
 **Actions**: Check whether the stylesheet ends with a newline symbol
-
----
-**Description**: Put one space between the media feature and the value.  
-**Source**: [Drupal](https://www.drupal.org/node/1887862)    
-**Violations**: Violations occur when there is not exactly one space between the media feature and the value.  
-**Actions**: Find adjacent media feature and value; ensure there is one space between them
