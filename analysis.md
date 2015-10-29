@@ -1187,6 +1187,7 @@ color:red;
 ```
 **Actions**: Find colons in declarations; check if there is not one space immediately after them
 
+---
 **Description**: Put no spaces after colons.  
 **Source**: [CSS Wizardry](http://csswizardry.com/2012/04/my-html-css-coding-style/)     
 **Violations**: Violations occur when a there is a space after the colon of a declaration:
