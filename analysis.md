@@ -256,7 +256,7 @@ Note that there might be more than one vendor prefixes. In such cases the standa
 **Actions**: Find vendor-prefixed properties; check whether the following declaration does not exist; check whether the following declaration is not of the same property group.  
  
 ---
-**Description**: Require a fallback color (rule 1).  
+**Description**: Require a fallback color.
 **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules), [Moodle](https://docs.moodle.org/dev/CSS_coding_style)  
 **Violations**: A warning is issued when a color property with a rgba(), hsl(), or hsla() color is used without a preceding color property that has an older color format, i.e. hexadecimal, named, or rgb(). Sample violations are:
  ```
@@ -1099,7 +1099,7 @@ This is the correct alignment:
 ---
 **Description**: Rulesets in media queries should be indented once.  
 **Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Drupal](https://www.drupal.org/node/1887862), [BackdropCMS](https://api.backdropcms.org/css-standards)   
-**Violations**: Violations occur when rulesets in metia at-rules are not indented once:
+**Violations**: Violations occur when rulesets in media at-rules are not indented once:
 ```
 @media all and (max-width: 699px) and (min-width: 520px) {
     .class { ... }
