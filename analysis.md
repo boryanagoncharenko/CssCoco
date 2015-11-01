@@ -575,7 +575,7 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
  
 ---
 **Description**: Font names with spaces must be surrounded by double quotes.  
-**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
+**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/), [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)  
 **Violations**:  Font names appear in font or font-family declarations. Thus, a violation of this convention is a single-quote string that appears as a value of either of the declarations:
  ```
  font-family: 'Arial Black';
@@ -1335,18 +1335,6 @@ color: red;
 **Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
 **Violations**: Violations occur the argument in a url uses double quotes or does not use quotes at all.     
 **Actions**: Find the argument of urls and assert the type is string and that it contains single quotes.  
-
----
-**Description**: Font names with spaces must surrounded by double quotes.    
-**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
-**Violations**: Violations occur font names with spaces are surrounded by single quotes.     
-**Actions**: Find font names and ensure they use single quotes.  
-
----
-**Description**: Font names with spaces must surrounded by double quotes.    
-**Source**: [nodewave](http://ovh.nodewave.com/documents/coding-guidelines/css/export/css-coding-style-conventions--standards-guidelines-rules-v1.3.pdf)   
-**Violations**: Violations occur font names with spaces are surrounded by single quotes.     
-**Actions**: Find font names and ensure they use single quotes.  
 
 ---
 **Description**: One selector per line.  
