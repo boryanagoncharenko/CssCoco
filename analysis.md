@@ -575,7 +575,7 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
  
 ---
 **Description**: Font names with spaces must be surrounded by double quotes.  
-**Source**: [WordPress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
+**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
 **Violations**:  Font names appear in font or font-family declarations. Thus, a violation of this convention is a single-quote string that appears as a value of either of the declarations:
  ```
  font-family: 'Arial Black';
@@ -584,7 +584,7 @@ background-image: -webkit-linear-gradient(top, #444444, #999999);
 
 ---
 **Description**: Do not use over-qualified selectors.  
-**Source**: [WordPress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
+**Source**: [Wordpress](https://make.wordpress.org/core/handbook/coding-standards/css/)  
 **Violations**:  Violations occur when an HTML tag appears immediately before a class or an id:
  ```
  div.container
