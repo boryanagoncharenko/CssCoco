@@ -37,7 +37,7 @@
 ---
 **Description**: Use rem units preceded by px units for a safe fallback.   
 **Source**: [Drupal](https://www.drupal.org/node/1887862)  
-**Violations**:  The convention requires declarations with value that uses rem to have a fallback declaration that uses px. The property of the two declarations has to be the same. The following snippet is a violation because the fallback declaration is missing: `font-size: 1.5rem;`. The following snippet is considered ok: `font-size: 24px; font-size: 1.5rem;`.
+**Violations**:  The convention requires declarations with value that uses rem to have a fallback declaration that uses px. The property of the two declarations has to be the same. The following snippet is a violation because the fallback declaration is missing: `font-size: 1.5rem;`. The following snippet is considered ok: `font-size: 24px; font-size: 1.5rem;`.   
 **Actions**: Recognize declarations, units with value rem, units with value px; find declarations with value that includes rem units; check if a declaration exists immediately before a given declaration; compare property names of declarations; check if the value of declaration contains a px unit.  
  
 ---
@@ -55,43 +55,43 @@
 ---
 **Description**: Beware of box model size (rule 1).   
 **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Disallow-IDs-in-selectors)  
-**Violations**: In case the ruleset contains the box-sizing property, no warnings are yielded. However, if it does not contain the property, a warning should be issued if `width` is paired with either `border` or `padding` (or their left/right variations).
+**Violations**: In case the ruleset contains the box-sizing property, no warnings are yielded. However, if it does not contain the property, a warning should be issued if `width` is paired with either `border` or `padding` (or their left/right variations).   
 **Actions**: Find rulesets that do not contain the box-sizing property; check if they contain the property width and any of the corresponding border/padding properties.
 
 ---
 **Description**: Beware of box model size (rule 2).   
 **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Disallow-IDs-in-selectors)  
-**Violations**: In case the ruleset contains the box-sizing property, no warnings are yielded. However, if it does not contain the property, a warning should be issued if `height` is paired with either `border` or `padding` (or their top/bottom variations).
+**Violations**: In case the ruleset contains the box-sizing property, no warnings are yielded. However, if it does not contain the property, a warning should be issued if `height` is paired with either `border` or `padding` (or their top/bottom variations).   
 **Actions**: Find rulesets that do not contain the box-sizing property; check if they contain the property height and any of the corresponding border/padding properties.
 
 ---
 **Description**: Require properties for display (rule 1).   
 **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Require-properties-appropriate-for-display)  
-**Violations**: A warning is issued when `display: inline` is used with width, height, margin, margin-top, margin-bottom, and float. The following snippet is considered a violation: `.mybox { display: inline; height: 25px; }`.
+**Violations**: A warning is issued when `display: inline` is used with width, height, margin, margin-top, margin-bottom, and float. The following snippet is considered a violation: `.mybox { display: inline; height: 25px; }`.   
 **Actions**: Recognize rulesets, declarations with specific properties and values; find rulesets containing a declaration with property display and value inline; check if they contain any of the properties on the list [width, height, margin, margin-top, margin-bottom, float]     
 
 ---
 **Description**: Require properties for display (rule 2).   
 **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Require-properties-appropriate-for-display)  
-**Violations**: A warning is issued when a ruleset contains a declaration `display: inline-block` and a declaration with property float. The following snippet is considered a violation: `.mybox { display: inline-block; float: left; }`.
+**Violations**: A warning is issued when a ruleset contains a declaration `display: inline-block` and a declaration with property float. The following snippet is considered a violation: `.mybox { display: inline-block; float: left; }`.   
 **Actions**: Recognize rulesets, declarations with specific properties and values; find rulesets containing a declaration with property display and value inline-block; check if they contain a declaration with property float.     
 
 ---
 **Description**: Require properties for display (rule 3).   
 **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Require-properties-appropriate-for-display)  
-**Violations**: A warning is issued when a ruleset contains a declaration `display: block` and a declaration with property `vertical-align`. The following snippet is considered a violation: `.mybox { display: block; vertical-align: text-top; }`.
+**Violations**: A warning is issued when a ruleset contains a declaration `display: block` and a declaration with property `vertical-align`. The following snippet is considered a violation: `.mybox { display: block; vertical-align: text-top; }`.   
 **Actions**: Recognize rulesets, declarations with specific properties and values; find rulesets containing a declaration with property display and value block; check if they contain a declaration with property vertical-align.     
  
 ---
 **Description**: Require properties for display (rule 4).   
 **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Require-properties-appropriate-for-display)  
-**Violations**: A warning is issued when a ruleset contains a declaration with property display and value in the form table-\* and also contains a declaration with property margin, margin-top, margin-right, margin-bottom or margin-left. The following snippet is considered a violation: `.mybox { display: table-cell; margin: 10px; }`.
+**Violations**: A warning is issued when a ruleset contains a declaration with property display and value in the form table-\* and also contains a declaration with property margin, margin-top, margin-right, margin-bottom or margin-left. The following snippet is considered a violation: `.mybox { display: table-cell; margin: 10px; }`.   
 **Actions**: Recognize rulesets, declarations with specific properties and value in a given form; find rulesets containing a declaration with property display and value that matches the form table-\*; check if it contains a declaration with any of the properties in the list [margin, margin-top, margin-right, margin-bottom, margin-left].     
 
 ---
 **Description**: Disallow duplicate properties (rule 1).  
 **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Disallow-duplicate-properties)  
-**Violations**: A warning is issued when a ruleset contains a given declaration twice, i.e. when the property and the value are identical. The following snippet is considered a violation: `.mybox { border: 1px solid black; border: 1px solid black; }`.
+**Violations**: A warning is issued when a ruleset contains a given declaration twice, i.e. when the property and the value are identical. The following snippet is considered a violation: `.mybox { border: 1px solid black; border: 1px solid black; }`.   
 **Actions**: Compare couples of declarations within a rule; check if the two declarations have equal properties and values.     
 
 ---
@@ -111,7 +111,7 @@
 **Description**: Disallow empty rules.  
 **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Disallow-empty-rules)  
 **Violations**: Presence of rulesets that do not contain declarations. Sample violations are `.myclass { }` or `.myclass { /* Comment */ }`.
-In case at least one declaration is present, the ruleset does not violate the convention. This is not a violation: `.myclass { color: green; }`.
+In case at least one declaration is present, the ruleset does not violate the convention. This is not a violation: `.myclass { color: green; }`.   
 **Actions**: Recognize rulesets and declarations; determine whether a ruleset contains a declaration.
 
 ---
@@ -193,7 +193,7 @@ Note that there might be more than one vendor prefixes. In such cases the standa
 ---
 **Description**: Require a fallback color.
 **Source**: [CSS lint](https://github.com/CSSLint/csslint/wiki/Rules), [Moodle](https://docs.moodle.org/dev/CSS_coding_style)  
-**Violations**: A warning is issued when a color property with a rgba(), hsl(), or hsla() color is used without a preceding color property that has an older color format, i.e. hexadecimal, named, or rgb(). An example violation: `.mybox { color: rgba(100, 200, 100, 0.5); }`.
+**Violations**: A warning is issued when a color property with a rgba(), hsl(), or hsla() color is used without a preceding color property that has an older color format, i.e. hexadecimal, named, or rgb(). An example violation: `.mybox { color: rgba(100, 200, 100, 0.5); }`.   
 **Actions**: Find declarations with color property and rgba, hsl or hsla value; check if a previous declaration exists; check if the previous declaration has property color and value of type hex, color-name, rgb.  
  
 ---
@@ -313,7 +313,7 @@ p.active { ... }
 **Description**: Avoid qualifying ID and class names with type selectors.  
 **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#Protocol), [WordPress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Moodle](https://docs.moodle.org/dev/CSS_coding_style)  
 **Violations**:  Do not use element names in conjunction with IDs or classes. Sample violations include: `ul#example {}` or `div.error {}`.
-The following snippets are not considered violations: `#example {}` or `.error {}`.
+The following snippets are not considered violations: `#example {}` or `.error {}`.   
 **Actions**: Find HTML tags used in conjunction with classes or ids.
  
 ---
@@ -424,7 +424,7 @@ background-image:
 ---
 **Description**: Use single quotation marks for attribute selectors.  
 **Source**: [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Drupal](https://www.drupal.org/node/1887862), [WordPress](https://make.wordpress.org/core/handbook/coding-standards/css/), [ss64](http://ss64.com/css/syntax-naming.html), [CodeGuide](http://codeguide.co/), [BackdropCMS](https://api.backdropcms.org/css-standards), [Apppie](http://www.apppie.org/pages/approach/naming.html), [Isobar](http://isobar-idev.github.io/code-standards/)  
-**Violations**:  The convention refers to the values of attribute selectors. According to the CSS spec, the values of attribute selectors can be CSS identifiers or strings. This the possible violations of this convention include using double quotes (`span[class="example"]`) or not using quotes at all (`span[class=example]`).
+**Violations**:  The convention refers to the values of attribute selectors. According to the CSS spec, the values of attribute selectors can be CSS identifiers or strings. This the possible violations of this convention include using double quotes (`span[class="example"]`) or not using quotes at all (`span[class=example]`).   
 **Actions**: Find attribute values; check if their type is string; check if they use double quotes
  
 ---
@@ -460,7 +460,7 @@ background-image:
 ---
 **Description**: Do not qualify ID rules with tag names or classes.  
 **Source**: [Mozilla](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Writing_efficient_CSS)  
-**Violations**:  The convention states that if a rule has an ID selector as its key selector, tags should not be added to the rule. Violations include `button#backButton {…}` and `.menu-left#newMenuIcon {…}`.
+**Violations**:  The convention states that if a rule has an ID selector as its key selector, tags should not be added to the rule. Violations include `button#backButton {…}` and `.menu-left#newMenuIcon {…}`.   
 **Actions**: Find an id that is also a key selector; check if the previous sibling is an HTML tag.
  
 ---
@@ -540,7 +540,7 @@ background-image:
 ---
 **Description**: Use short hexadecimal values.   
 **Source**: [WordPress](https://make.wordpress.org/core/handbook/coding-standards/css/), [Idiomatic CSS](https://github.com/necolas/idiomatic-css), [Google](https://google-styleguide.googlecode.com/svn/trunk/htmlcssguide.xml#type_Attributes), [Drupal](https://www.drupal.org/node/1887862), [Shayhowe](http://learn.shayhowe.com/html-css/writing-your-best-code/), [CKAN](http://docs.ckan.org/en/latest/contributing/css.html), [Apppie](http://www.apppie.org/pages/approach/naming.html)  
-**Violations**:  Presence of a hex value that is long and could be shortened. Long hex values contain 6 hexadecimal characters and short - 3 characters. Long hex values that could be shortened match the format #rrggbb. Sample violations: `#99EE11;` or `#ffffff;`. These do not violate the convention: `#9E1;`, `#fff;`, `#E9E9E9`.
+**Violations**:  Presence of a hex value that is long and could be shortened. Long hex values contain 6 hexadecimal characters and short - 3 characters. Long hex values that could be shortened match the format #rrggbb. Sample violations: `#99EE11;` or `#ffffff;`. These do not violate the convention: `#9E1;`, `#fff;`, `#E9E9E9`.   
 **Actions**: Find hex values that match the format #rrggbb.  
  
 ---
@@ -806,7 +806,7 @@ This is the correct alignment:
 **Description**: Align vertically vendor-specific values.  
 **Source**: [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important)  
 **Violations**: Violations occur when vendor specific values are not aligned vertically to the right
-by adding spaces between the colon and their name.
+by adding spaces between the colon and their name.   
 **Actions**: Find related vendor-speicifc values; check if they are vertically aligned
  
 ---
@@ -1194,13 +1194,13 @@ a {
 ---
 **Description**: Put one space between the media feature and the value.
 **Source**: [Drupal](https://www.drupal.org/node/1887862)
-**Violations**: Violations occur when there is not exactly one space between the media feature and the value.
+**Violations**: Violations occur when there is not exactly one space between the media feature and the value.   
 **Actions**: Find adjacent media feature and value; ensure there is one space between them
 
 ---
 **Description**: Border-radius*-* properties should be top-left, top-right, bottom-right, bottom-left order.
 **Source**: [WordPress](https://make.wordpress.org/core/handbook/coding-standards/css/)
-**Violations**: Violations occur when the border properties are not ordered in the specified way.
+**Violations**: Violations occur when the border properties are not ordered in the specified way.   
 **Actions**: Find every pair of the border properties within a ruleset; check if the properties do not conform to the specified order
 
 ---
