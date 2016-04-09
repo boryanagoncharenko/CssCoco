@@ -807,7 +807,7 @@ This is the correct alignment:
 **Source**: [MediaWiki](https://www.mediawiki.org/wiki/Manual:Coding_conventions/CSS#.21important)  
 **Violations**: Violations occur when vendor specific values are not aligned vertically to the right
 by adding spaces between the colon and their name.   
-**Actions**: Find related vendor-speicifc values; check if they are vertically aligned
+**Actions**: Find related vendor-specific values; check if they are vertically aligned
  
 ---
 **Description**: Indent multiline selectors.  
@@ -815,9 +815,9 @@ by adding spaces between the colon and their name.
 **Violations**: Violations occur if the any of the selectors in a multiline selector, except the first, are not indented once, compared to the first selector:
 ```
 .class1,
-    class2,
-    class3,
-    class4 { font-size: 80%; }
+    .class2,
+    .class3,
+    .class4 { font-size: 80%; }
 .otherClass { font-size: 2em; }
 ```
 **Actions**: Find all but the first selectors in a multiline selector; check if they are indented once compared to the first selector 
